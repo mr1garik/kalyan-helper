@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Кальянный помощник</string>
+    <string name="title_activity_main">Кальянный помощник</string>
+    <string name="package_name">ua.kalyan.helper</string>
+    <string name="custom_url_scheme">ua.kalyan.helper</string>
+</resources>

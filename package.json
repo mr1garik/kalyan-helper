@@ -1,0 +1,17 @@
+{
+  "name": "kalyan-helper",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Кальянный помощник: веб-версия в hookah/, Android-приложение в android/",
+  "scripts": {
+    "sync": "cap sync android"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/cli": "^8.5.3",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/filesystem": "^8.1.5",
+    "@capacitor/local-notifications": "^8.3.1",
+    "@capacitor/share": "^8.0.3"
+  }
+}

@@ -1,0 +1,1979 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16120f">
+<title>Кальянный помощник</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+:root {
+  --bg: #16120f;
+  --card: rgba(38, 30, 24, .78);
+  --card2: rgba(52, 42, 34, .85);
+  --line: #3a2f26;
+  --text: #f3ebe3;
+  --muted: #a8998a;
+  --accent: #ff8a3d;
+  --accent2: #ffb26b;
+  --ok: #6fcf97;
+  --danger: #ff6b6b;
+  --radius: 14px;
+}
+* { box-sizing: border-box; }
+html { background: var(--bg); }
+html, body { margin: 0; color: var(--text); font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+/* Фон в арабском стиле: восьмиконечные звёзды (руб-эль-хизб) золотом поверх тёплого свечения углей.
+   Узор тянется сеткой: звезда в центре плитки и четверти звёзд по углам складываются в сплошной орнамент. */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='none' stroke='%23e0b15c' stroke-opacity='.11' stroke-width='1.1'%3E%3Cg id='s'%3E%3Crect x='30' y='30' width='36' height='36'/%3E%3Crect x='30' y='30' width='36' height='36' transform='rotate(45 48 48)'/%3E%3Ccircle cx='48' cy='48' r='9'/%3E%3C/g%3E%3Cuse href='%23s' x='-48' y='-48'/%3E%3Cuse href='%23s' x='48' y='-48'/%3E%3Cuse href='%23s' x='-48' y='48'/%3E%3Cuse href='%23s' x='48' y='48'/%3E%3Cpath d='M48 0v12M48 84v12M0 48h12M84 48h12'/%3E%3C/g%3E%3C/svg%3E") center top / 96px 96px,
+    radial-gradient(120% 60% at 50% -10%, rgba(255, 138, 61, .24), transparent 60%),
+    radial-gradient(90% 50% at 100% 110%, rgba(255, 90, 40, .15), transparent 60%),
+    radial-gradient(70% 45% at 0% 55%, rgba(224, 177, 92, .07), transparent 70%),
+    linear-gradient(180deg, #1d1410 0%, #110c09 100%);
+}
+/* Затемнение к краям, чтобы узор не спорил с текстом */
+body::after {
+  content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: radial-gradient(90% 70% at 50% 40%, transparent 40%, rgba(10, 7, 5, .55) 100%);
+}
+/* Заголовки вкладок с золотым орнаментом */
+section.tab > h2:first-child::after {
+  content: ""; display: block; width: 120px; height: 10px; margin-top: 8px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='10' viewBox='0 0 120 10'%3E%3Cg fill='none' stroke='%23e0b15c' stroke-width='1.2'%3E%3Cpath d='M0 5h46M74 5h46'/%3E%3Cpath d='M60 0l5 5-5 5-5-5z' fill='%23e0b15c'/%3E%3Cpath d='M50 5l3-3 3 3-3 3zM64 5l3-3 3 3-3 3z'/%3E%3C/g%3E%3C/svg%3E") no-repeat;
+}
+:root { --gold: #e0b15c; }
+main { padding: calc(20px + env(safe-area-inset-top)) 16px 16px; max-width: 640px; margin: 0 auto; }
+section.tab { display: none; }
+section.tab.active { display: block; }
+h2 { font-size: 18px; margin: 18px 0 10px; }
+section.tab > h2:first-child { font-size: 26px; letter-spacing: -.3px; margin-bottom: 16px; }
+h2:first-child { margin-top: 0; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
+.muted { color: var(--muted); font-size: 14px; }
+button, .btn { font: inherit; border: 0; border-radius: 12px; padding: 12px 16px; background: var(--card2); color: var(--text); cursor: pointer; }
+button.primary { background: var(--accent); color: #1b120a; font-weight: 600; }
+button.small { padding: 6px 10px; font-size: 14px; border-radius: 10px; }
+button:disabled { opacity: .5; }
+input, textarea, select { font: inherit; width: 100%; background: var(--card2); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; }
+textarea { min-height: 70px; resize: vertical; }
+label { display: block; font-size: 14px; color: var(--muted); margin: 10px 0 4px; }
+.row { display: flex; gap: 8px; align-items: center; }
+.row > * { flex: 1; }
+.row > .shrink { flex: 0 0 auto; }
+
+.card { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: rgba(24, 18, 14, .88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); z-index: 10; }
+nav button { flex: 1; background: none; border-radius: 0; padding: 8px 2px 8px; font-size: 11px; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 3px; }
+nav button svg { width: 24px; height: 24px; padding: 4px 14px; box-sizing: content-box; border-radius: 999px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: background .2s; }
+nav button.active { color: var(--accent2); }
+nav button.active svg { background: rgba(255, 138, 61, .18); }
+
+/* Таймеры */
+.timer { display: flex; align-items: center; gap: 12px; }
+.timer .info { flex: 1; min-width: 0; }
+.timer .name { font-weight: 600; }
+.timer .time { font-size: 34px; font-variant-numeric: tabular-nums; font-weight: 700; letter-spacing: 1px; }
+.timer.running .time { color: var(--accent2); }
+.timer.done { border-color: var(--danger); animation: pulse 1s infinite; }
+.timer.done .time { color: var(--danger); }
+.timer .btns { display: flex; flex-direction: column; gap: 6px; }
+.bar { height: 4px; background: var(--card2); border-radius: 2px; margin-top: 6px; overflow: hidden; }
+.bar i { display: block; height: 100%; background: var(--accent); width: 0; }
+@keyframes pulse { 50% { background: #3a1f1a; } }
+
+/* Гайды */
+details { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 10px; }
+details summary { padding: 14px; font-weight: 600; cursor: pointer; list-style: none; }
+details summary::after { content: "＋"; float: right; color: var(--muted); }
+details[open] summary::after { content: "－"; }
+details .body { padding: 0 14px 14px; }
+details .body ul { padding-left: 20px; margin: 6px 0; }
+
+/* Миксы */
+.photos { display: flex; gap: 8px; flex-wrap: wrap; margin: 10px 0; }
+.photos .ph { position: relative; width: 76px; height: 76px; border-radius: 10px; overflow: hidden; }
+.photos img { width: 100%; height: 100%; object-fit: cover; }
+.photos .ph button { position: absolute; top: 2px; right: 2px; padding: 0 7px; font-size: 14px; background: #000a; border-radius: 8px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--card2); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 14px; cursor: pointer; user-select: none; }
+.chip.on { background: var(--accent); color: #1b120a; border-color: var(--accent); }
+.chip.sm { padding: 3px 10px; font-size: 13px; }
+/* Выпадающий список с поиском */
+.picker { position: relative; }
+.pk-list { position: absolute; left: 0; right: 0; top: 100%; margin-top: 4px; max-height: 300px; overflow-y: auto; background: #2a211b; border: 1px solid var(--line); border-radius: 12px; z-index: 20; display: none; box-shadow: 0 12px 30px #000a; }
+.pk-list.open { display: block; }
+.pk-item { padding: 10px 12px; border-bottom: 1px solid var(--line); cursor: pointer; }
+.pk-item:last-child { border-bottom: 0; }
+.pk-item:active, .pk-item.hl { background: rgba(255, 138, 61, .15); }
+.pk-item small { display: block; color: var(--muted); font-size: 13px; }
+.chip.label { border-style: dashed; }
+.chips.scroll-x { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px 12px; padding: 0 16px 4px; scrollbar-width: none; }
+.chips.scroll-x::-webkit-scrollbar { display: none; }
+.chips.scroll-x .chip { flex: 0 0 auto; }
+#toast { position: fixed; left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 60; background: #3a2a1f; border: 1px solid var(--accent); color: var(--text); border-radius: 12px; padding: 12px 14px; font-size: 14px; box-shadow: 0 10px 30px #000a; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity .2s, transform .2s; max-width: 608px; margin: 0 auto; }
+#toast.show { opacity: 1; transform: none; }
+/* Колесо миксов */
+.modal { position: fixed; inset: 0; z-index: 50; background: #000b; display: none; align-items: flex-end; justify-content: center; }
+.modal.open { display: flex; }
+.sheet { background: #211913; border: 1px solid var(--line); border-radius: 20px 20px 0 0; width: 100%; max-width: 640px; max-height: 92vh; overflow-y: auto; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); }
+.wheel-wrap { position: relative; width: min(84vw, 320px); margin: 8px auto 14px; }
+.wheel-wrap svg { width: 100%; display: block; transition: transform 4.2s cubic-bezier(.17, .84, .2, 1); }
+.wheel-pointer { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 22px solid var(--accent2); filter: drop-shadow(0 2px 3px #000); z-index: 2; }
+/* Сессии */
+.session .phase { font-size: 14px; color: var(--accent2); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+.session.alarm { border-color: var(--danger); animation: pulse 1s infinite; }
+.session .meta { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.session .actions { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.session .actions button { flex: 1; }
+/* Вкладка «Кальян» */
+.steps { display: flex; align-items: center; gap: 4px; margin: 10px 0 6px; flex-wrap: wrap; }
+.step { font-size: 13px; padding: 4px 10px; border-radius: 999px; background: var(--card2); color: var(--muted); }
+.step.on { background: var(--accent); color: #1b120a; font-weight: 700; }
+.step.done { color: var(--gold); }
+.step-sep { color: var(--muted); }
+.tips { margin: 10px 0 4px; padding-left: 18px; font-size: 14px; }
+.tips li { margin: 4px 0; }
+.tips li::marker { content: "✦ "; color: var(--gold); }
+.pack { background: rgba(224, 177, 92, .06); border: 1px solid rgba(224, 177, 92, .25); border-radius: 12px; margin-top: 10px; }
+.pack summary { padding: 10px 12px; font-size: 15px; }
+.pack > :not(summary) { margin-left: 12px; margin-right: 12px; }
+.pack > p:last-child { margin-bottom: 10px; }
+.alarm-box { background: rgba(255, 107, 107, .12); border: 1px solid var(--danger); border-radius: 12px; padding: 12px; margin: 8px 0; }
+.alarm-text { font-size: 18px; font-weight: 700; color: var(--accent2); }
+.pick { padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; margin-bottom: 6px; cursor: pointer; background: var(--card2); }
+.pick b { display: block; }
+.pick .muted { font-size: 13px; }
+.pick.on { border-color: var(--gold); background: rgba(224, 177, 92, .12); box-shadow: inset 3px 0 0 var(--gold); }
+.chosen { margin-top: 10px; padding: 12px; border-radius: 12px; border: 1px dashed var(--gold); }
+.chip.stock { border-color: rgba(224, 177, 92, .5); }
+.chip.stock.low { border-color: var(--danger); color: var(--danger); }
+.shop-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.shop-item .t { flex: 1; display: block; }
+.shop-item small { display: block; color: var(--muted); font-size: 12px; }
+.shop-item.done .t { text-decoration: line-through; color: var(--muted); }
+.shop-item input[type=checkbox] { width: auto; accent-color: var(--accent); }
+.stars.big span { font-size: 36px; cursor: pointer; color: var(--gold); opacity: .45; }
+.stars.big span:hover, .stars.big span:active { opacity: 1; }
+.mix h3 { margin: 0 0 6px; font-size: 17px; }
+.comp { display: flex; align-items: center; gap: 8px; margin: 4px 0; font-size: 15px; }
+.comp .pct { width: 46px; text-align: right; font-weight: 700; color: var(--accent2); font-variant-numeric: tabular-nums; }
+.comp .pbar { flex: 0 0 60px; height: 6px; background: var(--card2); border-radius: 3px; overflow: hidden; }
+.comp .pbar i { display: block; height: 100%; background: var(--accent); }
+.tag { display: inline-block; font-size: 12px; padding: 2px 8px; border-radius: 999px; background: var(--card2); color: var(--muted); margin-right: 4px; }
+.stars span { cursor: pointer; font-size: 22px; color: var(--line); }
+.stars span.on { color: var(--accent2); }
+.err { color: var(--danger); }
+.spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid #1b120a55; border-top-color: #1b120a; border-radius: 50%; animation: spin 0.8s linear infinite; vertical-align: -3px; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.shelf-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.shelf-item:last-child { border-bottom: 0; }
+.shelf-item .t { flex: 1; }
+.empty { text-align: center; color: var(--muted); padding: 20px 0; }
+</style>
+</head>
+<body>
+
+<main>
+  <!-- ТАЙМЕРЫ -->
+  <section class="tab active" id="tab-hookah">
+    <h2>Кальян</h2>
+    <div id="hkSessions"></div>
+    <button id="hkMore" style="width:100%;margin-bottom:12px">＋ Ещё один кальян</button>
+    <div class="card" id="hkNew">
+      <b style="font-size:17px">Новый кальян</b>
+      <label>Сетап</label>
+      <div class="chips" id="hkSetups"></div>
+      <p class="muted" id="hkSetupInfo" style="font-size:13px;margin:6px 0 0"></p>
+      <label>Что забиваем</label>
+      <div class="chips" id="hkSrc"></div>
+      <div id="hkChoices" style="margin-top:8px"></div>
+      <div id="hkChosen"></div>
+      <button class="primary" id="hkStart" style="width:100%;padding:16px;font-size:17px;margin-top:14px">🔥 Начать: ставлю угли</button>
+      <p class="muted" style="font-size:13px;margin:8px 0 0;text-align:center">Таймеры пойдут друг за другом: угли → прогрев → курим, с напоминаниями на каждом шаге.</p>
+    </div>
+  </section>
+
+  <section class="tab" id="tab-timers">
+    <h2>Таймеры</h2>
+    <div id="timers"></div>
+    <button id="addTimer" style="width:100%">＋ Добавить таймер</button>
+    <p class="muted" id="notifHint" style="margin-top:14px"></p>
+  </section>
+
+  <!-- ГАЙДЫ -->
+  <section class="tab" id="tab-guides">
+    <h2>Гайды</h2>
+    <div id="guides"></div>
+    <h2>📇 Бренды</h2>
+    <input id="brandSearch" type="search" placeholder="🔍 Бренд, страна или крепость: «крепк», «Україна»…" autocomplete="off" style="margin-bottom:12px">
+    <div id="brandInfo"></div>
+    <p class="muted" style="font-size:12px">Крепость, нарезка и дымность — по карточкам товаров магазина yolo.ski, октябрь 2026. Внутри бренда отдельные линейки могут отличаться.</p>
+  </section>
+
+  <!-- МИКСЫ -->
+  <section class="tab" id="tab-mix">
+    <h2>Подобрать микс</h2>
+    <div class="card">
+      <input id="wish" type="search" placeholder="🔍 Что хочется: арбуз, мята, свежее, десерт…" autocomplete="off">
+      <p class="muted" style="margin:6px 0 0">Ищет по базе сразу, пока печатаете. Этот же текст уйдёт в Gemini.</p>
+
+      <div id="shelfPickWrap">
+        <label>Мои табаки: выберите, и останутся миксы с ними</label>
+        <div class="chips" id="shelfPick"></div>
+      </div>
+
+      <div class="photos" id="photos"></div>
+      <input type="file" id="fileCamera" accept="image/*" capture="environment" hidden>
+      <input type="file" id="fileGallery" accept="image/*" multiple hidden>
+      <div class="row" style="margin-top:12px">
+        <button class="primary" id="btnAsk">✨ Спросить Gemini</button>
+        <button class="shrink" id="btnCamera" title="Сфоткать пачки">📷</button>
+        <button class="shrink" id="btnGallery" title="Из галереи">🖼️</button>
+      </div>
+      <p class="muted" id="askHint"></p>
+    </div>
+    <div id="mixResult"></div>
+
+    <h2>📚 Из базы <span class="muted">· без интернета</span></h2>
+    <div class="chips scroll-x" id="profiles"></div>
+    <div class="card" id="dayMix"></div>
+    <div id="offline"></div>
+    <details>
+      <summary>Все миксы базы</summary>
+      <div class="body">
+        <select id="offlineFilter"></select>
+        <div id="offlineAll" style="margin-top:10px"></div>
+      </div>
+    </details>
+  </section>
+
+  <!-- ПОЛКА -->
+  <section class="tab" id="tab-shelf">
+    <h2>Моя полка</h2>
+    <div class="card">
+      <div class="picker">
+        <input id="shelfBrand" placeholder="🔍 Бренд: начните вводить" autocomplete="off">
+        <div class="pk-list" id="brandPick"></div>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <div class="picker">
+          <input id="shelfFlavor" placeholder="🔍 Вкус: название или «арбуз»" autocomplete="off">
+          <div class="pk-list" id="flavorPick"></div>
+        </div>
+        <button class="shrink primary" id="shelfAdd">＋</button>
+      </div>
+      <p class="muted" id="shelfHint" style="margin:6px 0 0;font-size:13px"></p>
+      <div id="shelfList" style="margin-top:8px"></div>
+    </div>
+    <h2>🛒 Купить</h2>
+    <div class="card" id="shopCard">
+      <div id="shopAuto"></div>
+      <div id="shopList"></div>
+      <div class="row" style="margin-top:10px"><input id="shopInput" placeholder="Добавить: уголь, Heven Granate…"><button class="shrink primary" id="shopAdd">＋</button></div>
+      <div class="row" style="margin-top:10px"><button id="shopCopy">📋 Скопировать список</button><button class="shrink" id="shopClear">Убрать купленное</button></div>
+    </div>
+    <h2>Сохранённые миксы</h2>
+    <div id="savedMixes"></div>
+  </section>
+
+  <!-- НАСТРОЙКИ -->
+  <section class="tab" id="tab-settings">
+    <h2>Настройки</h2>
+    <div class="card">
+      <label>Ключ Gemini API</label>
+      <input id="apiKey" type="password" autocomplete="off" placeholder="Вставьте ключ из aistudio.google.com">
+      <div class="row" style="margin-top:8px">
+        <button id="btnCheckKey">Проверить ключ</button>
+        <button class="shrink" id="btnShowKey">👁️</button>
+      </div>
+      <p class="muted" id="keyStatus">Ключ хранится только на этом устройстве.</p>
+      <label>Модель</label>
+      <select id="model"></select>
+    </div>
+    <div class="card">
+      <b>🥣 Мои чаши и угли</b>
+      <p class="muted" style="margin:4px 0 8px;font-size:13px">Активный сетап используется в сессиях, советах и запросах к Gemini.</p>
+      <div class="chips" id="setupChips"></div>
+      <label>Название</label>
+      <input id="suName" placeholder="Например: Фанел + калауд">
+      <div class="row">
+        <div><label>Чаша</label>
+          <select id="suBowl">
+            <option value="phunnel">Фанел</option>
+            <option value="turk">Турка (с дырками)</option>
+            <option value="egypt">Египетская</option>
+            <option value="fruit">Фрукт</option>
+          </select></div>
+        <div><label>Жар</label>
+          <select id="suHeat">
+            <option value="kaloud">Калауд / HMD</option>
+            <option value="foil">Фольга</option>
+          </select></div>
+      </div>
+      <div class="row">
+        <div><label>Уголь</label>
+          <select id="suCoal">
+            <option value="22">22 мм</option>
+            <option value="25">25 мм</option>
+            <option value="26">26 мм</option>
+          </select></div>
+        <div><label>Сколько углей</label>
+          <select id="suCount"><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+        <div><label>Табака, г</label><input id="suGrams" type="number" min="5" max="40" inputmode="numeric"></div>
+      </div>
+      <div class="row">
+        <div><label>Розжиг, мин</label><input id="suFire" type="number" min="1" inputmode="numeric"></div>
+        <div><label>Прогрев, мин</label><input id="suWarm" type="number" min="1" inputmode="numeric"></div>
+        <div><label>Поворот углей, мин</label><input id="suEvery" type="number" min="1" inputmode="numeric"></div>
+      </div>
+      <p class="muted" id="suAdvice" style="font-size:14px"></p>
+      <div class="row"><button id="suAdd">＋ Новый сетап</button><button class="shrink" id="suDel">🗑</button></div>
+    </div>
+    <div class="card">
+      <label style="margin-top:0">Крепость по вкусу</label>
+      <select id="strength">
+        <option value="light">Лёгкая</option>
+        <option value="medium" selected>Средняя</option>
+        <option value="strong">Крепкая</option>
+      </select>
+    </div>
+    <div class="card">
+      <button id="btnNotif" style="width:100%">🔔 Разрешить уведомления</button>
+      <button id="btnTestSound" style="width:100%;margin-top:8px">🔊 Проверить звук</button>
+      <p class="muted" id="nativeStatus" style="font-size:13px;margin:8px 0 0"></p>
+    </div>
+    <div class="card">
+      <b>💾 Резервная копия</b>
+      <p class="muted" style="font-size:13px;margin:4px 0 8px">Полка, остатки, миксы, сетапы, список покупок и таймеры хранятся только в этом браузере. Сохраните копию в файл, чтобы не потерять их при смене телефона, очистке браузера или нового адреса сайта.</p>
+      <label style="display:flex;gap:8px;align-items:center;color:var(--text)"><input type="checkbox" id="bkKey" style="width:auto"> Включить в копию ключ Gemini</label>
+      <div class="row" style="margin-top:10px"><button id="bkSave">⬇️ Сохранить копию</button><button id="bkLoad">⬆️ Загрузить</button></div>
+      <input type="file" id="bkFile" accept="application/json,.json" hidden>
+      <p class="muted" id="bkStatus" style="font-size:13px;margin:8px 0 0"></p>
+    </div>
+  </section>
+</main>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<div class="modal" id="wheelModal">
+  <div class="sheet">
+    <div class="row"><h2 style="margin:0">🎡 Колесо миксов</h2><button class="shrink small" id="wheelClose">✕</button></div>
+    <div class="wheel-wrap"><div class="wheel-pointer"></div><svg id="wheelSvg" viewBox="0 0 320 320"></svg></div>
+    <button class="primary" id="btnSpin" style="width:100%">Крутить!</button>
+    <div id="wheelResult" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<nav>
+  <button data-tab="hookah" class="active">
+    <svg viewBox="0 0 24 24"><path d="M8.5 3h7l-1.5 3h-4z"/><path d="M12 6v8.5M10 9.5h4"/><path d="M10.5 14.5h3c0 1.2 3.5 2 3.5 4.5a5 3.6 0 0 1-10 0c0-2.5 3.5-3.3 3.5-4.5z"/><path d="M14 11c3 .3 5 2 5 5"/></svg>Кальян</button>
+  <button data-tab="timers">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="13.5" r="7.5"/><path d="M12 9.5v4l2.5 2M10 2.5h4M12 2.5V6M18.5 6.5l1.3-1.3"/></svg>Таймеры</button>
+  <button data-tab="guides">
+    <svg viewBox="0 0 24 24"><path d="M3.5 5.5c2.5-1.3 5.5-1.3 8.5.5v13c-3-1.8-6-1.8-8.5-.5zM20.5 5.5c-2.5-1.3-5.5-1.3-8.5.5v13c3-1.8 6-1.8 8.5-.5z"/></svg>Гайды</button>
+  <button data-tab="mix">
+    <svg viewBox="0 0 24 24"><path d="M12 2.5c3 4 6 6.8 6 11a6 6 0 0 1-12 0c0-2.4 1-4.2 2.3-5.6.3 2 1.3 3.2 2.5 3.5-.6-3.4.2-6.3 1.2-8.9z"/><path d="M12 14.5c1 1.2 2 2.2 2 3.5a2 2 0 0 1-4 0c0-1.3 1-2.3 2-3.5z"/></svg>Миксы</button>
+  <button data-tab="shelf">
+    <svg viewBox="0 0 24 24"><path d="M3 20.5h18M3 11.5h18"/><rect x="4.5" y="5" width="4" height="6.5" rx="1"/><rect x="10" y="3" width="4" height="8.5" rx="1"/><circle cx="17.5" cy="8.5" r="3"/><rect x="5" y="14.5" width="5" height="6" rx="1"/><rect x="12" y="15.5" width="7" height="5" rx="2.5"/></svg>Полка</button>
+  <button data-tab="settings">
+    <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Настройки</button>
+</nav>
+
+<script src="mixes.js"></script>
+<script src="catalog.js"></script>
+<script src="brands.js"></script>
+<script>
+// ---------- Хранилище ----------
+// Каждый ключ читается и проверяется отдельно: испорченная полка не сотрёт настройки, и наоборот.
+// check(value) возвращает очищенное значение или undefined, если данные непригодны.
+const store = {
+  get(k, def, check) {
+    let v;
+    try { const raw = localStorage.getItem("hk_" + k); if (raw == null) return def; v = JSON.parse(raw); }
+    catch { return def; }
+    if (!check) return v;
+    try { const ok = check(v); return ok === undefined ? def : ok; } catch { return def; }
+  },
+  set(k, v) {
+    try { localStorage.setItem("hk_" + k, JSON.stringify(v)); return true; }
+    catch { warnNotSaved(); return false; }
+  },
+};
+const $ = (s) => document.querySelector(s);
+
+// В Android-приложении (Capacitor) есть нативные плагины; в браузере эти константы пустые
+const Cap = window.Capacitor;
+const IS_NATIVE = !!Cap?.isNativePlatform?.();
+const nativePlugin = (name) => (IS_NATIVE ? Cap.Plugins?.[name] || Cap.registerPlugin?.(name) : null);
+const LN = nativePlugin("LocalNotifications");
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+// Короткое сообщение внизу экрана
+let toastTimer;
+function toast(text, ms = 5000) {
+  const t = $("#toast"); t.textContent = text; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove("show"), ms);
+}
+let lastSaveWarn = 0;
+function warnNotSaved() {
+  if (Date.now() - lastSaveWarn < 30000) return; // не спамим при каждом изменении
+  lastSaveWarn = Date.now();
+  toast("⚠️ Не удалось сохранить изменения: память браузера недоступна или переполнена. После закрытия приложения они пропадут.", 8000);
+}
+
+// Проверки прочитанных данных
+const isObj = (v) => v && typeof v === "object" && !Array.isArray(v);
+const str = (v, d = "") => (typeof v === "string" ? v : d);
+const num = (v) => (typeof v === "number" && Number.isFinite(v) ? v : undefined);
+const arrOf = (v, fn) => (Array.isArray(v) ? v.map((x) => { try { return fn(x); } catch { return undefined; } }).filter((x) => x !== undefined) : undefined);
+const strList = (v) => arrOf(v, (x) => (typeof x === "string" ? x : undefined)) || [];
+
+// ---------- Вкладки ----------
+document.querySelectorAll("nav button").forEach((b) => b.addEventListener("click", () => showTab(b.dataset.tab)));
+function showTab(name) {
+  document.querySelectorAll("nav button").forEach((b) => b.classList.toggle("active", b.dataset.tab === name));
+  document.querySelectorAll("section.tab").forEach((s) => s.classList.toggle("active", s.id === "tab-" + name));
+  store.set("tab", name);
+  if (name === "mix") { renderShelfPick(); renderOffline(); }
+  if (name === "hookah") renderHookah();
+  if (name === "guides") renderBrandInfo();
+  if (name === "shelf") { renderShelf(); renderShop(); renderSaved(); }
+  window.scrollTo(0, 0);
+}
+
+// ---------- Настройки ----------
+function checkSetup(s) {
+  if (!isObj(s) || num(s.id) === undefined) return undefined;
+  const n = (v, d) => (num(+v) > 0 ? +v : d);
+  return {
+    id: s.id, name: str(s.name, "Мой кальян") || "Мой кальян",
+    bowl: ["phunnel", "turk", "egypt", "fruit"].includes(s.bowl) ? s.bowl : "phunnel",
+    heat: ["kaloud", "foil"].includes(s.heat) ? s.heat : "kaloud",
+    coal: ["22", "25", "26"].includes(String(s.coal)) ? String(s.coal) : "25",
+    count: n(s.count, 3), fire: n(s.fire, 9), warm: n(s.warm, 6), every: n(s.every, 20),
+    // Сколько табака в чашу: по умолчанию от типа чаши
+    grams: n(s.grams, { phunnel: 18, turk: 15, egypt: 20, fruit: 15 }[s.bowl] || 18),
+  };
+}
+function checkSettings(v) {
+  if (!isObj(v)) return undefined;
+  const setups = arrOf(v.setups, checkSetup);
+  return {
+    apiKey: str(v.apiKey), model: str(v.model),
+    heat: ["kaloud", "foil"].includes(v.heat) ? v.heat : "kaloud",
+    bowl: ["phunnel", "turk", "egypt", "fruit"].includes(v.bowl) ? v.bowl : "phunnel",
+    strength: ["light", "medium", "strong"].includes(v.strength) ? v.strength : "medium",
+    models: strList(v.models),
+    // Раньше blocked был массивом без срока — такие блокировки сбрасываем
+    blocked: isObj(v.blocked) ? Object.fromEntries(Object.entries(v.blocked).filter(([, t]) => num(t) !== undefined)) : {},
+    ...(setups?.length ? { setups, activeSetup: num(v.activeSetup) ?? setups[0].id } : {}),
+  };
+}
+const settings = store.get("settings", null, checkSettings) || checkSettings({});
+function saveSettings() { store.set("settings", settings); }
+
+// Модели, недоступные на этом ключе, исключаем на сутки, потом пробуем снова.
+// Блокировки сбрасываются при смене ключа и при успешной «Проверке ключа».
+const BLOCK_MS = 24 * 3600e3;
+const isBlocked = (m) => (settings.blocked[m] || 0) > Date.now();
+function blockModel(m) { settings.blocked[m] = Date.now() + BLOCK_MS; saveSettings(); }
+function resetBlocked() { settings.blocked = {}; saveSettings(); }
+
+const DEFAULT_MODELS = ["gemini-2.5-flash", "gemini-2.5-flash-lite", "gemini-2.5-pro"];
+function renderModels() {
+  let list = [...new Set(settings.models.length ? settings.models : DEFAULT_MODELS)].filter((m) => !isBlocked(m));
+  if (!list.length) list = DEFAULT_MODELS;
+  if (!settings.model || !list.includes(settings.model)) settings.model = list[0];
+  $("#model").innerHTML = list.map((m) => `<option ${m === settings.model ? "selected" : ""}>${esc(m)}</option>`).join("");
+}
+$("#apiKey").value = settings.apiKey;
+// ---------- Мои чаши и угли ----------
+// Старые настройки «чаша/жар» превращаем в первый сетап
+if (!settings.setups) {
+  settings.setups = [checkSetup({ id: 1, name: "Мой кальян", bowl: settings.bowl, heat: settings.heat, coal: "25", count: 3, fire: 9, warm: settings.heat === "foil" ? 5 : 6, every: settings.heat === "foil" ? 15 : 20 })];
+  settings.activeSetup = 1; saveSettings();
+}
+const setup = () => settings.setups.find((s) => s.id === settings.activeSetup) || settings.setups[0];
+const BOWL_NAME = { phunnel: "фанел", turk: "турка", egypt: "египетская чаша", fruit: "фрукт" };
+const HEAT_NAME = { kaloud: "калауд", foil: "фольга" };
+// Короткие советы под конкретный сетап: сколько углей и как забивать
+function setupAdvice(s) {
+  const pack = { phunnel: "пушистая забивка, 2–3 мм ниже края", turk: "пушисто, вровень с краем, отверстия не забивать", egypt: "с горкой под фольгу", fruit: "пушисто, жар мягче — фрукт быстро перегревается" }[s.bowl];
+  const coals = s.heat === "kaloud" ? (s.coal === "22" ? "4 угля по 22 мм" : "3 угля") : (s.coal === "22" ? "4 угля по краю" : "3 угля по краю, не в центре");
+  return `Обычно: ${coals}; ${pack}. Прогрев ${s.warm} мин, поворачивать угли каждые ${s.every} мин.`;
+}
+function renderSetups() {
+  const s = setup();
+  $("#setupChips").innerHTML = settings.setups.map((x) => `<span class="chip ${x.id === s.id ? "on" : ""}" data-su="${x.id}">${esc(x.name)}</span>`).join("");
+  $("#suName").value = s.name; $("#suBowl").value = s.bowl; $("#suHeat").value = s.heat;
+  $("#suCoal").value = s.coal; $("#suCount").value = s.count;
+  $("#suFire").value = s.fire; $("#suWarm").value = s.warm; $("#suEvery").value = s.every; $("#suGrams").value = s.grams;
+  $("#suAdvice").textContent = setupAdvice(s);
+  $("#suDel").disabled = settings.setups.length < 2;
+}
+$("#setupChips").addEventListener("click", (e) => {
+  const id = e.target.dataset.su; if (!id) return;
+  settings.activeSetup = +id; saveSettings(); renderSetups();
+});
+[["suName", "name"], ["suBowl", "bowl"], ["suHeat", "heat"], ["suCoal", "coal"], ["suCount", "count"], ["suFire", "fire"], ["suWarm", "warm"], ["suEvery", "every"], ["suGrams", "grams"]].forEach(([el, key]) =>
+  $("#" + el).addEventListener("change", (e) => {
+    const v = e.target.value.trim();
+    setup()[key] = ["count", "fire", "warm", "every", "grams"].includes(key) ? Math.max(1, +v || 1) : v || setup()[key];
+    saveSettings(); renderSetups();
+  }));
+$("#suAdd").addEventListener("click", () => {
+  const id = Date.now();
+  settings.setups.push({ ...setup(), id, name: `Сетап ${settings.setups.length + 1}` });
+  settings.activeSetup = id; saveSettings(); renderSetups(); $("#suName").focus();
+});
+$("#suDel").addEventListener("click", () => {
+  if (settings.setups.length < 2 || !confirm(`Удалить «${setup().name}»?`)) return;
+  settings.setups = settings.setups.filter((x) => x.id !== setup().id);
+  settings.activeSetup = settings.setups[0].id; saveSettings(); renderSetups();
+});
+renderSetups();
+
+["strength"].forEach((k) => {
+  $("#" + k).value = settings[k];
+  $("#" + k).addEventListener("change", (e) => { settings[k] = e.target.value; saveSettings(); });
+});
+$("#model").addEventListener("change", (e) => { settings.model = e.target.value; saveSettings(); });
+$("#apiKey").addEventListener("change", (e) => {
+  const key = e.target.value.trim();
+  if (key !== settings.apiKey) { settings.apiKey = key; resetBlocked(); renderModels(); } // новый ключ — свои лимиты
+  saveSettings();
+});
+$("#btnShowKey").addEventListener("click", () => { const i = $("#apiKey"); i.type = i.type === "password" ? "text" : "password"; });
+
+// Проверка ключа заодно подтягивает актуальный список моделей
+$("#btnCheckKey").addEventListener("click", async () => {
+  settings.apiKey = $("#apiKey").value.trim(); saveSettings();
+  const st = $("#keyStatus");
+  if (!settings.apiKey) { st.innerHTML = '<span class="err">Сначала вставьте ключ.</span>'; return; }
+  st.textContent = "Проверяю…";
+  $("#btnCheckKey").disabled = true;
+  try {
+    const r = await fetchWithTimeout("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", { headers: { "x-goog-api-key": settings.apiKey } }, 20000);
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw friendlyError(r.status, j.error?.message || "HTTP " + r.status);
+    const names = [...new Set((Array.isArray(j.models) ? j.models : [])
+      .filter((m) => isObj(m) && typeof m.name === "string" && (m.supportedGenerationMethods || []).includes("generateContent"))
+      .map((m) => m.name.replace("models/", ""))
+      .filter((n) => /^gemini-/.test(n) && !/(tts|image|embedding|live|audio|thinking-exp)/.test(n)))];
+    // flash-модели первыми: они быстрые и щедрые на бесплатном уровне
+    names.sort((a, b) => score(b) - score(a) || b.localeCompare(a, undefined, { numeric: true }));
+    // Ключ рабочий: даём всем моделям новый шанс
+    resetBlocked();
+    if (names.length) { settings.models = names; settings.model = names[0]; }
+    saveSettings(); renderModels();
+    st.innerHTML = `<span style="color:var(--ok)">✓ Ключ работает.</span> Доступно моделей: ${names.length}.`;
+  } catch (e) {
+    st.innerHTML = `<span class="err">Не получилось: ${esc(e.message)}</span>`;
+  } finally {
+    $("#btnCheckKey").disabled = false;
+  }
+});
+function score(n) { return (/flash/.test(n) ? 2 : 0) + (/lite/.test(n) ? -1 : 0) + (/preview|exp/.test(n) ? -0.5 : 0); }
+renderModels();
+
+// ---------- Звук, вибрация, уведомления ----------
+let audioCtx;
+function beep() {
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const t = audioCtx.currentTime;
+    [0, 0.25, 0.5].forEach((d) => {
+      const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+      o.frequency.value = 880; o.type = "square";
+      g.gain.setValueAtTime(0.0001, t + d);
+      g.gain.exponentialRampToValueAtTime(0.25, t + d + 0.02);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + d + 0.2);
+      o.connect(g).connect(audioCtx.destination); o.start(t + d); o.stop(t + d + 0.22);
+    });
+  } catch {}
+}
+$("#btnTestSound").addEventListener("click", beep);
+// Честно о фоне: время считается по часам, поэтому не сбивается, но веб-приложение
+// не может гарантировать сигнал, пока оно свёрнуто или экран выключен — браузер его приостанавливает.
+function updateNotifHint() {
+  const h = $("#notifHint");
+  if (IS_NATIVE) {
+    h.textContent = nativeReady
+      ? "Сигналы ставятся в Android как будильники: придут вовремя, даже если приложение закрыто и экран заблокирован."
+      : "Чтобы сигналы приходили при заблокированном экране, разрешите уведомления и «Будильники и напоминания» в ⚙️ Настройках.";
+    return;
+  }
+  const base = "Время считается по часам и не собьётся. Но надёжный сигнал будет, только пока приложение открыто: пока таймер идёт, экран не гаснет.";
+  if (!("Notification" in window)) { h.textContent = base; return; }
+  h.textContent = Notification.permission === "granted"
+    ? base + " Если свернуть приложение, уведомление может прийти, а может опоздать — Android часто усыпляет фоновые страницы."
+    : base + " Уведомления можно включить в Настройках, но в фоне они не гарантированы.";
+}
+$("#btnNotif").addEventListener("click", async () => {
+  if (IS_NATIVE) { beep(); return nativeAskPermissions(); }
+  if ("Notification" in window) await Notification.requestPermission();
+  beep(); updateNotifHint();
+});
+async function notify(text) {
+  if (IS_NATIVE) return; // в приложении сигналы заранее поставлены будильниками Android
+  if (!("Notification" in window) || Notification.permission !== "granted") return;
+  try {
+    const reg = await navigator.serviceWorker?.getRegistration();
+    const opts = { body: text, icon: "icon.svg", vibrate: [400, 200, 400], tag: "hookah-" + text, requireInteraction: true };
+    if (reg) reg.showNotification("🔥 Кальян", opts); else new Notification("🔥 Кальян", opts);
+  } catch {}
+}
+
+// ---------- Таймеры ----------
+// Таймер хранит момент окончания, поэтому переживает перезагрузку страницы
+const PRESETS = {
+  kaloud: [["Розжиг углей", 9], ["Прогрев чаши", 6], ["Поворот / смена углей", 20]],
+  foil: [["Розжиг углей", 9], ["Прогрев чаши", 5], ["Поворот / смена углей", 15]],
+};
+const checkTimers = (v) => arrOf(v, (t) => {
+  if (!isObj(t) || num(t.dur) === undefined || t.dur <= 0) return undefined;
+  return { id: num(t.id) ?? Date.now() + Math.random(), name: str(t.name, "Таймер"), dur: t.dur,
+    endAt: num(t.endAt) ?? null, left: Math.min(t.dur, Math.max(0, num(t.left) ?? t.dur)), done: t.done === true, late: num(t.late) ?? 0 };
+});
+let timers = store.get("timers", null, checkTimers) || PRESETS[setup().heat].map(([name, min], i) => ({ id: Date.now() + i, name, dur: min * 60, endAt: null, left: min * 60, done: false }));
+const saveTimers = () => { store.set("timers", timers); nativeResync(); };
+const fmt = (s) => { s = Math.max(0, Math.ceil(s)); return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`; };
+
+function renderTimers() {
+  $("#timers").innerHTML = timers.map((t) => `
+    <div class="card timer ${t.endAt ? "running" : ""} ${t.done ? "done" : ""}" data-id="${t.id}">
+      <div class="info">
+        <div class="name">${esc(t.name)}</div>
+        ${t.done && t.late ? `<div class="muted" style="font-size:13px">⚠️ ${lateText(t.late)}</div>` : ""}
+        <div class="time" data-time>${fmt(t.endAt ? (t.endAt - Date.now()) / 1000 : t.left)}</div>
+        <div class="bar"><i data-bar></i></div>
+      </div>
+      <div class="btns">
+        ${t.done ? `<button class="primary" data-act="ok">Ок</button>`
+          : t.endAt ? `<button data-act="pause">⏸</button>` : `<button class="primary" data-act="start">▶</button>`}
+        <button class="small" data-act="reset">↺</button>
+        <button class="small" data-act="edit">✎</button>
+      </div>
+    </div>`).join("");
+  tick();
+}
+$("#timers").addEventListener("click", (e) => {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const t = timers.find((x) => x.id == b.closest(".timer").dataset.id);
+  const act = b.dataset.act;
+  if (act === "start") { beepUnlock(); t.endAt = Date.now() + t.left * 1000; t.done = false; }
+  if (act === "pause") { t.left = Math.max(0, (t.endAt - Date.now()) / 1000); t.endAt = null; }
+  if (act === "reset" || act === "ok") { t.endAt = null; t.left = t.dur; t.done = false; t.late = 0; }
+  if (act === "edit") {
+    const name = prompt("Название таймера (пусто = удалить)", t.name);
+    if (name === null) return;
+    if (!name.trim()) { timers = timers.filter((x) => x !== t); }
+    else {
+      const min = parseFloat(prompt("Сколько минут?", t.dur / 60));
+      t.name = name.trim();
+      if (min > 0) { t.dur = Math.round(min * 60); t.left = t.dur; t.endAt = null; t.done = false; }
+    }
+  }
+  saveTimers(); renderTimers(); updateWakeLock();
+});
+$("#addTimer").addEventListener("click", () => {
+  const name = prompt("Название таймера", "Мой таймер"); if (!name) return;
+  const min = parseFloat(prompt("Сколько минут?", "10")); if (!(min > 0)) return;
+  timers.push({ id: Date.now(), name, dur: Math.round(min * 60), left: Math.round(min * 60), endAt: null, done: false });
+  saveTimers(); renderTimers();
+});
+// Браузер разрешает звук только после нажатия пользователя: «разогреваем» его при старте
+function beepUnlock() { try { audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)(); audioCtx.resume(); } catch {} }
+
+let lastAlarm = 0;
+function tick() {
+  const now = Date.now();
+  let anyDone = false;
+  timers.forEach((t) => {
+    const el = document.querySelector(`.timer[data-id="${t.id}"]`);
+    if (t.endAt && now >= t.endAt) {
+      // Если страница спала в фоне, сигнал звучит при возврате — честно показываем опоздание
+      const late = now - t.endAt;
+      t.late = late > 15000 ? late : 0;
+      t.endAt = null; t.left = 0; t.done = true; saveTimers();
+      notify(`${t.name} — время вышло!${t.late ? ` (${lateText(t.late)})` : ""}`);
+      renderTimers(); updateWakeLock(); return;
+    }
+    if (t.done) anyDone = true;
+    if (!el) return;
+    const left = t.endAt ? (t.endAt - now) / 1000 : t.left;
+    el.querySelector("[data-time]").textContent = fmt(left);
+    el.querySelector("[data-bar]").style.width = (100 * (1 - left / t.dur)) + "%";
+  });
+  if (tickSessions(now)) anyDone = true;
+  // Пока таймер не подтверждён — пищим и вибрируем каждые 2 секунды
+  if (anyDone && now - lastAlarm > 2000) { lastAlarm = now; beep(); navigator.vibrate?.([400, 200, 400]); }
+}
+setInterval(tick, 250);
+
+// ---------- Вкладка «Кальян»: выбор микса и цепочка таймеров ----------
+// Этапы идут друг за другом сами: розжиг → прогрев → курим (напоминания по кругу).
+// Когда этап заканчивается, телефон пищит, а таймер следующего этапа уже идёт.
+const checkBowlMix = (m) => {
+  if (!isObj(m)) return undefined;
+  const parts = arrOf(m.parts, (p) => (isObj(p) && str(p.name) && num(p.pct) !== undefined
+    ? { name: p.name, pct: Math.min(100, Math.max(0, p.pct)), missing: p.missing === true } : undefined)) || [];
+  return parts.length ? { n: str(m.n, "Микс") || "Микс", parts } : undefined;
+};
+const checkSessions = (v) => arrOf(v, (x) => {
+  if (!isObj(x) || !["coals", "warm", "smoke"].includes(x.phase) || num(x.end) === undefined || !(num(x.dur) > 0)) return undefined;
+  const pos = (v, d) => (num(v) > 0 ? v : d);
+  return { id: num(x.id) ?? Date.now(), name: str(x.name, "Кальян"), phase: x.phase, dur: x.dur, end: x.end,
+    warm: pos(x.warm, 6), every: pos(x.every, 20), started: num(x.started) ?? Date.now(),
+    smokeStart: num(x.smokeStart) ?? null, rotations: num(x.rotations) ?? 0, alarm: x.alarm === true, late: num(x.late) ?? 0,
+    alarmMsg: str(x.alarmMsg), flipped: x.flipped === true, finishing: x.finishing === true, mix: checkBowlMix(x.mix) || null,
+    setupName: str(x.setupName), bowl: str(x.bowl, "phunnel"), heat: str(x.heat, "kaloud"),
+    grams: pos(x.grams, 18), coals: pos(x.coals, 3), coal: str(x.coal, "25") };
+});
+let sessions = store.get("sessions", [], checkSessions);
+const saveSessions = () => { store.set("sessions", sessions); nativeResync(); };
+const PHASE = {
+  coals: { icon: "🔥", name: "Угли", label: "до готовности углей", done: "Угли готовы — ставьте их на чашу. Прогрев уже пошёл" },
+  warm: { icon: "♨️", name: "Прогрев", label: "до конца прогрева", done: "Чаша прогрета — можно курить" },
+  smoke: { icon: "💨", name: "Курим", label: "до поворота углей", done: "Поверните угли и сдуйте пепел" },
+};
+const PACK = { phunnel: "пушисто, 2–3 мм ниже края, не трамбовать", turk: "пушисто, вровень с краем, отверстия не забивать", egypt: "с горкой под фольгу, фольгу натянуть", fruit: "пушисто, жар мягче — фрукт быстро перегревается" };
+const fmtLong = (s) => { s = Math.max(0, Math.floor(s)); const h = Math.floor(s / 3600); return h ? `${h}:${fmt(s % 3600)}` : fmt(s); };
+
+// Подсказки на каждом этапе
+function phaseTips(x, now) {
+  if (x.phase === "coals") {
+    const half = x.end - (x.dur * 1000) / 2;
+    return [
+      `Положите ${x.coals} угля по ${x.coal} мм на плитку. ${x.flipped ? "✓ Угли перевёрнуты" : `Перевернуть через ${fmt((half - now) / 1000)} — напомню`}`,
+      "Пока греются: налейте воду (шахта в воде на 2–3 см) и проверьте тягу",
+      x.mix ? "Забейте чашу — граммы ниже ↓" : "Забейте чашу",
+      "Угли готовы, когда полностью серые, без чёрных пятен",
+    ];
+  }
+  if (x.phase === "warm") return [
+    x.heat === "kaloud" ? "Угли на калауд, крышку прикрыть" : "Угли по краю фольги, не в центр",
+    "Первые 2–3 минуты затягивайтесь мягко",
+    "Горчит — снимите один уголь; мало дыма — подождите или сдвиньте угли к центру",
+  ];
+  return [
+    `Каждые ${x.every} мин поворачивайте угли и сдувайте пепел — напомню`,
+    "Дым слабеет — сдвиньте угли ближе к центру",
+    "Угли прогорели наполовину — меняйте на свежие (запустите отдельный таймер розжига)",
+  ];
+}
+
+// Микс для забивки в общем виде: { n, parts: [{ name, pct, missing }] }
+function toBowlMix(m) {
+  if (m.rows) return { n: m.n, parts: m.rows.map((r) => ({ name: r.tobaccos[0] || FLAVOR_NAME[r.flavor], pct: r.pct, missing: !r.tobaccos.length })) };
+  if (m.components) return { n: m.name, parts: m.components.map((c) => ({ name: c.tobacco, pct: clampPct(c.percent) })) };
+  return m;
+}
+function packingHtml(mix, grams, bowl) {
+  if (!mix) return `<p class="muted">Без микса. Забивка: ${esc(PACK[bowl] || "")}.</p>`;
+  return `${mix.parts.map((p) => `<div class="comp"><span class="pct">${Math.round((grams * p.pct) / 100)} г</span>
+      <span>${esc(p.name)} <span class="muted">· ${Math.round(p.pct)}%${p.missing ? " · 🛒 нет на полке" : ""}</span></span></div>`).join("")}
+    <p class="muted" style="font-size:13px;margin:6px 0 0">Всего ≈ ${grams} г. Смешайте в миске и забейте: ${esc(PACK[bowl] || "")}.</p>`;
+}
+
+let hkSrc = "shelf", hkChoice = null, hkNewOpen = false;
+function hookahChoices() {
+  if (hkSrc === "saved") return saved.map(toBowlMix);
+  if (hkSrc === "none") return [];
+  const { ready } = matchMixes(shelf.map((t) => ({ label: tobaccoName(t), tags: tagsOf(t) })));
+  const seen = new Set();
+  return [...ready, ...shelfCombos()].map(toBowlMix).filter((m) => !seen.has(m.n) && seen.add(m.n)).slice(0, 14);
+}
+function renderHookah() {
+  const s = setup(), now = Date.now();
+  $("#hkSessions").innerHTML = sessions.map((x) => {
+    const steps = ["coals", "warm", "smoke"].map((p, i) => {
+      const cur = ["coals", "warm", "smoke"].indexOf(x.phase);
+      return `<span class="step ${i < cur ? "done" : i === cur ? "on" : ""}">${PHASE[p].icon} ${PHASE[p].name}</span>`;
+    }).join('<span class="step-sep">›</span>');
+    if (x.finishing) return `<div class="card session" data-sid="${x.id}">
+      <b>${esc(x.name)}${x.mix ? ` · ${esc(x.mix.n)}` : ""}</b>
+      <p style="margin:10px 0 6px">Как зашёл микс? Оценка сохранит его в «Сохранённые миксы».</p>
+      <div class="stars big">${[1, 2, 3, 4, 5].map((n) => `<span data-sact="rate" data-n="${n}">★</span>`).join("")}</div>
+      <div class="actions"><button data-sact="nosave">Не сохранять</button><button data-sact="back">Назад</button></div></div>`;
+    return `<div class="card session ${x.alarm ? "alarm" : ""}" data-sid="${x.id}">
+      <div class="row"><b>${esc(x.name)}</b><span class="shrink muted" style="font-size:13px">${esc(x.setupName)}</span></div>
+      <div class="steps">${steps}</div>
+      ${x.alarm ? `<div class="alarm-box"><div class="alarm-text">${esc(x.alarmMsg)}</div>
+          ${x.late ? `<div class="meta">⚠️ ${lateText(x.late)}</div>` : ""}
+          <button class="primary" data-sact="ok" style="width:100%;margin-top:8px">Ок ✓</button></div>` : ""}
+      <div class="timer"><div class="info"><div class="time" data-stime>${fmt((x.end - now) / 1000)}</div>
+        <div class="bar"><i data-sbar></i></div></div></div>
+      <div class="meta">${PHASE[x.phase].label}</div>
+      <div class="meta" data-smeta></div>
+      <ul class="tips">${phaseTips(x, now).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
+      <details ${x.phase === "coals" ? "open" : ""} class="pack"><summary>🥣 Забивка${x.mix ? `: ${esc(x.mix.n)}` : ""}</summary>${packingHtml(x.mix, x.grams, x.bowl)}</details>
+      <div class="actions">
+        <button data-sact="next">Дальше ⏭</button><button data-sact="plus">+1 мин</button><button data-sact="restart">⟲ Заново</button>
+        <button data-sact="stop">Завершить</button>
+      </div>
+    </div>`;
+  }).join("");
+
+  // Форма нового кальяна; при идущих кальянах свёрнута в кнопку
+  const showForm = !sessions.length || hkNewOpen;
+  $("#hkMore").style.display = showForm ? "none" : "";
+  $("#hkNew").style.display = showForm ? "" : "none";
+  if (!showForm) return tickSessions(now);
+  $("#hkSetups").innerHTML = settings.setups.map((x) => `<span class="chip ${x.id === s.id ? "on" : ""}" data-hsu="${x.id}">${esc(x.name)}</span>`).join("");
+  $("#hkSetupInfo").textContent = `Розжиг ${s.fire} мин → прогрев ${s.warm} мин → угли каждые ${s.every} мин · ${s.count} угля по ${s.coal} мм · ${s.grams} г табака`;
+  $("#hkSrc").innerHTML = [["shelf", "🗂️ С полки"], ["saved", "⭐ Сохранённые"], ["wheel", "🎡 Колесо"], ["none", "Без микса"]]
+    .map(([id, name]) => `<span class="chip ${hkSrc === id ? "on" : ""}" data-hsrc="${id}">${name}</span>`).join("");
+  const list = hookahChoices();
+  $("#hkChoices").innerHTML = hkSrc === "none" ? "" : list.length
+    ? list.map((m, i) => `<div class="pick ${hkChoice?.n === m.n ? "on" : ""}" data-hpick="${i}"><b>${esc(m.n)}</b>
+        <span class="muted">${m.parts.map((p) => `${Math.round(p.pct)}% ${esc(p.name)}`).join(" · ")}</span></div>`).join("")
+    : `<p class="muted">${hkSrc === "saved" ? "Сохранённых миксов пока нет." : "На полке пока нечего смешать — добавьте 2–3 табака на 🗂️ Полку или крутаните колесо."}</p>`;
+  $("#hkChosen").innerHTML = hkChoice && hkSrc !== "none"
+    ? `<div class="chosen"><div class="muted" style="font-size:13px">Выбрано · ${s.grams} г в ${BOWL_NAME[s.bowl]}</div><b>${esc(hkChoice.n)}</b>${packingHtml(hkChoice, s.grams, s.bowl)}</div>` : "";
+  tickSessions(now);
+}
+const renderSessions = renderHookah;
+
+$("#hkNew").addEventListener("click", (e) => {
+  const el = e.target.closest("[data-hsu],[data-hsrc],[data-hpick]"); if (!el) return;
+  if (el.dataset.hsu) { settings.activeSetup = +el.dataset.hsu; saveSettings(); }
+  if (el.dataset.hsrc) {
+    if (el.dataset.hsrc === "wheel") { wheelForHookah = true; return openWheel(); }
+    hkSrc = el.dataset.hsrc; if (hkSrc === "none") hkChoice = null;
+  }
+  if (el.dataset.hpick) { const m = hookahChoices()[el.dataset.hpick]; hkChoice = hkChoice?.n === m.n ? null : m; }
+  renderHookah();
+});
+$("#hkMore").addEventListener("click", () => { hkNewOpen = true; renderHookah(); $("#hkNew").scrollIntoView({ behavior: "smooth" }); });
+// Выбрать микс из другого места приложения и перейти к запуску
+function chooseForHookah(m) { hkChoice = toBowlMix(m); hkSrc = "shelf"; hkNewOpen = true; showTab("hookah"); }
+
+$("#hkStart").addEventListener("click", () => {
+  beepUnlock();
+  const s = setup(), now = Date.now();
+  sessions.push({ id: now, name: `Кальян ${sessions.length + 1}`, phase: "coals", dur: s.fire * 60, end: now + s.fire * 60e3,
+    warm: s.warm, every: s.every, started: now, smokeStart: null, rotations: 0, alarm: false, late: 0, alarmMsg: "",
+    flipped: false, finishing: false, mix: hkSrc === "none" ? null : hkChoice,
+    setupName: s.name, bowl: s.bowl, heat: s.heat, grams: s.grams, coals: s.count, coal: s.coal });
+  hkNewOpen = false; hkChoice = null;
+  deductStock(sessions[sessions.length - 1]);
+  saveSessions(); renderHookah(); updateWakeLock(); window.scrollTo(0, 0);
+});
+// Списываем забитые граммы с остатков на полке (только у табаков, где остаток учитывается)
+function deductStock(x) {
+  if (!x.mix) return;
+  const done = [], low = [];
+  x.mix.parts.forEach((p) => {
+    const t = shelf.find((s) => tobaccoName(s) === p.name);
+    if (!t || t.stock === undefined) return;
+    const g = Math.round((x.grams * p.pct) / 100);
+    t.stock = Math.max(0, t.stock - g);
+    done.push(`${g} г ${t.flavor || t.brand}`);
+    if (isLow(t)) low.push(`${t.flavor || t.brand} (${t.stock} г)`);
+  });
+  if (!done.length) return;
+  saveShelf();
+  toast(`📦 Списано: ${done.join(", ")}${low.length ? `. Заканчивается: ${low.join(", ")} — добавлено в 🛒` : ""}`, 7000);
+}
+
+// Переход к следующему этапу; from — момент, с которого считается новый таймер
+function nextPhase(x, from = Date.now()) {
+  if (x.phase === "coals") { x.phase = "warm"; x.dur = x.warm * 60; }
+  else if (x.phase === "warm") { x.phase = "smoke"; x.smokeStart = from; x.dur = x.every * 60; }
+  else { x.rotations++; x.dur = x.every * 60; }
+  x.end = from + x.dur * 1000;
+}
+$("#hkSessions").addEventListener("click", (e) => {
+  const b = e.target.closest("[data-sact]"); if (!b) return;
+  const x = sessions.find((s) => s.id == b.closest("[data-sid]").dataset.sid); if (!x) return;
+  const act = b.dataset.sact, now = Date.now();
+  if (act === "ok") { x.alarm = false; x.late = 0; }
+  if (act === "next") { nextPhase(x, now); x.alarm = false; x.late = 0; }
+  if (act === "plus") { x.end += 60e3; x.dur += 60; }
+  if (act === "restart") { x.end = now + x.dur * 1000; x.alarm = false; if (x.phase === "coals") x.flipped = false; }
+  if (act === "stop") {
+    const mins = x.smokeStart ? Math.round((now - x.smokeStart) / 60000) : 0;
+    if (!confirm(`Завершить «${x.name}»?${mins ? ` Курили ${mins} мин.` : ""}`)) return;
+    if (x.mix) x.finishing = true; else sessions = sessions.filter((s) => s !== x);
+  }
+  if (act === "back") x.finishing = false;
+  if (act === "nosave") sessions = sessions.filter((s) => s !== x);
+  if (act === "rate") {
+    saved.unshift({ name: x.mix.n, components: x.mix.parts.map((p) => ({ tobacco: p.name, percent: p.pct })), rating: +b.dataset.n,
+      date: now, profile: `Забит ${new Date(x.started).toLocaleDateString("ru")} · ${x.setupName}`, why: "", packing: "", heat: "", strength: "", needToBuy: "" });
+    saveSaved(); toast(`⭐ Сохранено: ${x.mix.n} — ${b.dataset.n}/5`);
+    sessions = sessions.filter((s) => s !== x);
+  }
+  saveSessions(); renderHookah(); updateWakeLock();
+});
+
+// Возвращает true, если какой-то кальян ждёт подтверждения (тогда пищим)
+function tickSessions(now) {
+  let alarm = false, changed = false;
+  sessions.forEach((x) => {
+    if (x.finishing) return;
+    // На середине розжига — мягкое напоминание перевернуть угли
+    if (x.phase === "coals" && !x.flipped && now >= x.end - (x.dur * 1000) / 2) {
+      x.flipped = true; changed = true;
+      beep(); navigator.vibrate?.(300); toast(`🔥 ${x.name}: переверните угли`); notify(`${x.name}: переверните угли`);
+    }
+    if (now >= x.end) {
+      // Этап закончился: сигналим и сразу запускаем следующий. Если приложение было свёрнуто,
+      // следующий этап считаем от текущего момента — человек всё равно делает действие сейчас.
+      const late = now - x.end;
+      x.late = late > 15000 ? late : 0;
+      x.alarmMsg = PHASE[x.phase].done; x.alarm = true;
+      nextPhase(x, x.late ? now : x.end);
+      notify(`${x.name}: ${x.alarmMsg}${x.late ? ` (${lateText(x.late)})` : ""}`);
+      changed = true;
+    }
+    if (x.alarm) alarm = true;
+  });
+  if (changed) { saveSessions(); renderHookah(); return alarm; }
+  sessions.forEach((x) => {
+    const el = document.querySelector(`#hkSessions [data-sid="${x.id}"]`); if (!el || x.finishing) return;
+    const left = (x.end - now) / 1000;
+    const t = el.querySelector("[data-stime]"); if (t) t.textContent = fmt(left);
+    const bar = el.querySelector("[data-sbar]"); if (bar) bar.style.width = 100 * (1 - left / x.dur) + "%";
+    el.querySelector("[data-smeta]").textContent = x.smokeStart
+      ? `Курим ${fmtLong((now - x.smokeStart) / 1000)} · поворотов углей: ${x.rotations}`
+      : `С начала ${fmtLong((now - x.started) / 1000)}`;
+  });
+  return alarm;
+}
+
+let wakeLock = null;
+async function updateWakeLock() {
+  const need = timers.some((t) => t.endAt || t.done) || sessions.length > 0;
+  try {
+    if (need && !wakeLock && navigator.wakeLock) { wakeLock = await navigator.wakeLock.request("screen"); wakeLock.addEventListener("release", () => (wakeLock = null)); }
+    if (!need && wakeLock) { await wakeLock.release(); wakeLock = null; }
+  } catch {}
+}
+// Вернулись в приложение — сразу пересчитываем таймеры по часам и снова держим экран включённым
+const catchUp = () => { if (document.visibilityState === "visible") { tick(); updateWakeLock(); } };
+document.addEventListener("visibilitychange", catchUp);
+window.addEventListener("pageshow", catchUp);
+window.addEventListener("focus", catchUp);
+function lateText(ms) {
+  const m = Math.round(ms / 60000);
+  return `время вышло ${m >= 1 ? `${m} мин` : `${Math.round(ms / 1000)} сек`} назад — приложение было свёрнуто`;
+}
+
+// ---------- Гайды ----------
+const GUIDES = [
+  ["🌬️ Пушистая (воздушная) забивка", `
+    <p>Универсальный вариант для фанела и турки, подходит для большинства табаков.</p>
+    <ul>
+      <li>Табак слегка подсушите на салфетке, если он очень влажный, и разрыхлите пальцами.</li>
+      <li>Сыпьте щепотками с небольшой высоты, <b>не трамбуйте</b>.</li>
+      <li>Уровень: 2–3 мм ниже края для калауда, вровень с краем для фольги.</li>
+      <li>Отверстия в чаше не должны забиваться: табак лежит воздушно.</li>
+    </ul>`],
+  ["🧱 Плотная забивка", `
+    <p>Для лёгких табаков на светлом листе: дольше курится и даёт больше дыма.</p>
+    <ul>
+      <li>Сыпьте слоями и каждый слой слегка прижимайте пальцем.</li>
+      <li>Не уплотняйте до каменного состояния: воздух должен проходить.</li>
+      <li>Нужно чуть больше жара и прогрев подольше.</li>
+      <li>Крепкие табаки на тёмном листе плотно лучше не забивать: начнут горчить.</li>
+    </ul>`],
+  ["⛰️ Забивка «с горкой» (оверпак)", `
+    <p>Классика для египетской чаши с фольгой: много табака, много дыма.</p>
+    <ul>
+      <li>Табак насыпают выше края горкой, затем плотно натягивают фольгу.</li>
+      <li>Делайте много мелких отверстий, по центру реже.</li>
+      <li>Жар понадобится аккуратный: табак ближе к углям и легко пригорает.</li>
+    </ul>`],
+  ["🔥 Розжиг углей", `
+    <ul>
+      <li>Кокосовые кубики 25 мм на плитке: <b>8–10 минут</b>, на середине переверните.</li>
+      <li>Уголь готов, когда он <b>полностью серый</b> со всех сторон и нигде нет чёрных пятен.</li>
+      <li>Недожжённые угли дают горечь и неприятный запах.</li>
+      <li>Не разжигайте в закрытом помещении без проветривания: угарный газ.</li>
+    </ul>`],
+  ["🌡️ Жар и прогрев", `
+    <ul>
+      <li><b>Калауд:</b> обычно 3 угля. <b>Фольга:</b> 3–4 угля по краям, не по центру.</li>
+      <li>Прогрев 5–7 минут, первые затяжки делайте мягко.</li>
+      <li><b>Горчит, дым режет горло</b> → перегрев. Снимите уголь или сдвиньте угли к краю.</li>
+      <li><b>Мало дыма, нет вкуса</b> → недогрев. Подождите, сдвиньте угли к центру или добавьте один.</li>
+      <li>Каждые 15–20 минут поворачивайте угли и сдувайте с них пепел.</li>
+    </ul>`],
+  ["💧 Колба и вода", `
+    <ul>
+      <li>Шахта должна быть погружена в воду на <b>2–3 см</b>. Глубже — тугая тяга, мельче — дым горячий.</li>
+      <li>Холодная вода или лёд в колбе делают дым мягче.</li>
+      <li>Проверьте тягу до установки углей: она должна быть лёгкой и без свиста.</li>
+    </ul>`],
+  ["🎨 Как миксовать вкусы", `
+    <ul>
+      <li><b>База + акцент:</b> 60–70% основного вкуса и 30–40% дополнения.</li>
+      <li>Холодок (мята, ice-вкусы) берите по 10–20%: он легко забивает всё остальное.</li>
+      <li>Кислое плюс сладкое почти всегда работает: лимон и ягоды, лайм и манго.</li>
+      <li>Пряности (корица, кардамон) — по 10–15%, иначе микс получится «аптечным».</li>
+      <li>Можно смешать табаки в миске или забить секторами и слоями, но перемешанный микс курится ровнее.</li>
+    </ul>`],
+];
+$("#guides").innerHTML = GUIDES.map(([t, b]) => `<details><summary>${t}</summary><div class="body">${b}</div></details>`).join("");
+
+// ---------- Справка по брендам ----------
+let brandOpen = null;
+function renderBrandInfo() {
+  const q = norm($("#brandSearch").value.trim());
+  const list = BRANDS.filter((b) => {
+    if (!q) return true;
+    const i = BRAND_INFO[b] || {};
+    return norm([b, i.country, ...(i.strength || []), i.cut, i.smoke, ...(i.lines || []), i.note].join(" ")).includes(q);
+  });
+  $("#brandInfo").innerHTML = list.map((b) => {
+    const i = BRAND_INFO[b] || {}, flavors = catalogFor(b), open = brandOpen === b;
+    const facts = [
+      i.country && `🌍 ${i.country}`,
+      i.strength?.length && `💪 ${i.strength.join(" / ")}`,
+      i.cut && `✂️ нарезка ${i.cut.toLowerCase()}`,
+      i.smoke && `💨 дымность ${i.smoke.toLowerCase()}`,
+    ].filter(Boolean);
+    return `<div class="card" style="padding:12px 14px" data-brand="${esc(b)}">
+      <div class="row" style="cursor:pointer" data-bopen><b>${esc(b)}</b><span class="shrink muted" style="font-size:13px">${flavors.length ? flavors.length + " вкусов" : ""} ${open ? "▴" : "▾"}</span></div>
+      <div class="chips" style="margin-top:6px">${facts.length ? facts.map((f) => `<span class="chip sm">${esc(f)}</span>`).join("") : `<span class="muted" style="font-size:13px">нет данных о крепости</span>`}</div>
+      ${i.note ? `<p class="muted" style="font-size:13px;margin:6px 0 0">${esc(i.note)}</p>` : ""}
+      ${i.lines?.length ? `<p class="muted" style="font-size:13px;margin:6px 0 0">Линейки: ${esc(i.lines.join(", "))}</p>` : ""}
+      ${open ? `<div style="margin-top:10px;font-size:14px;max-height:220px;overflow:auto">${flavors.map((f) => { const s = splitFlavor(f); return `<div style="padding:4px 0;border-bottom:1px solid var(--line)">${esc(s.title)} <span class="muted">${esc(s.sub)}</span></div>`; }).join("") || "<span class='muted'>Списка вкусов нет</span>"}</div>
+        <button class="small" data-bshelf style="margin-top:10px">＋ Добавить вкусы на полку</button>` : ""}
+    </div>`;
+  }).join("") || `<div class="card muted">Ничего не нашлось</div>`;
+}
+$("#brandSearch").addEventListener("input", renderBrandInfo);
+$("#brandInfo").addEventListener("click", (e) => {
+  const card = e.target.closest("[data-brand]"); if (!card) return;
+  const b = card.dataset.brand;
+  if (e.target.closest("[data-bshelf]")) {
+    showTab("shelf"); $("#shelfBrand").value = b; $("#shelfFlavor").value = ""; $("#shelfFlavor").focus(); return;
+  }
+  if (e.target.closest("[data-bopen]")) { brandOpen = brandOpen === b ? null : b; renderBrandInfo(); }
+});
+
+// ---------- Полка ----------
+const checkShelf = (v) => arrOf(v, (t) => {
+  if (!isObj(t)) return undefined;
+  const brand = str(t.brand).trim(), flavor = str(t.flavor).trim();
+  if (!brand && !flavor) return undefined;
+  const out = { brand, flavor };
+  if (Array.isArray(t.tags)) out.tags = strList(t.tags).filter((f) => FLAVOR_NAME[f]);
+  if (Array.isArray(t.labels)) out.labels = strList(t.labels);
+  const st = num(t.stock);
+  if (st !== undefined && st >= 0) out.stock = Math.round(st);
+  return out;
+});
+const checkShop = (v) => arrOf(v, (x) => (isObj(x) && str(x.text).trim() ? { text: x.text.trim(), done: x.done === true } : undefined));
+const checkSaved = (v) => arrOf(v, (m) => {
+  if (!isObj(m)) return undefined;
+  const components = arrOf(m.components, (c) => (isObj(c) && str(c.tobacco) ? { tobacco: c.tobacco, percent: clampPct(c.percent) } : undefined)) || [];
+  if (!components.length) return undefined;
+  const out = { ...m, name: str(m.name, "Микс") || "Микс", components, rating: Math.min(5, Math.max(0, num(m.rating) ?? 0)) };
+  ["profile", "why", "packing", "heat", "strength", "needToBuy"].forEach((k) => (out[k] = str(m[k])));
+  return out;
+});
+const clampPct = (p) => { const n = typeof p === "string" ? parseFloat(p) : p; return Number.isFinite(n) ? Math.min(100, Math.max(0, n)) : 0; };
+let shelf = store.get("shelf", [], checkShelf);
+let saved = store.get("saved", [], checkSaved);
+const saveShelf = () => store.set("shelf", shelf);
+const saveSaved = () => store.set("saved", saved);
+let shop = store.get("shop", [], checkShop);
+const saveShop = () => store.set("shop", shop);
+const tobaccoName = (t) => [t.brand, t.flavor].filter(Boolean).join(" — ");
+// Остаток меньше этого — табак «заканчивается» и попадает в список покупок
+const LOW_G = 15;
+const isLow = (t) => t.stock !== undefined && t.stock < LOW_G;
+
+// Вкусы табака: заданные вручную или распознанные по названию
+const tagsOf = (t) => t.tags || detectFlavors(`${t.flavor} ${t.brand}`);
+let editingTags = null;
+
+// Свои метки к табаку: «любимый», «крепкий», «заканчивается»… По ним тоже работает поиск миксов
+const LABEL_SUGGEST = ["любимый", "крепкий", "лёгкий", "сладкий", "кислый", "свежий", "заканчивается", "для гостей"];
+
+function renderShelf() {
+  $("#shelfList").innerHTML = shelf.length ? shelf.map((t, i) => {
+    const tags = tagsOf(t), labels = t.labels || [];
+    const ru = RU_BRANDS.test(t.brand || "");
+    return `
+    <div class="shelf-item" style="flex-wrap:wrap"><div class="t">
+      <span data-gotob="${i}" style="cursor:pointer">${esc(tobaccoName(t))} <span class="muted">›</span></span>
+      <div class="chips" style="margin-top:6px">
+        ${t.stock !== undefined ? `<span class="chip sm stock ${isLow(t) ? "low" : ""}" data-tags="${i}">📦 ${t.stock ? `${t.stock} г` : "закончился"}</span>` : ""}
+        ${tags.map((f) => `<span class="chip sm" data-goflavor="${f}">${esc(FLAVOR_NAME[f])}</span>`).join("")}
+        ${labels.map((l) => `<span class="chip sm label" data-golabel="${esc(l)}">#${esc(l)}</span>`).join("")}
+        ${!tags.length && !labels.length ? `<span class="muted" style="font-size:13px">вкус не распознан — нажмите 🏷</span>` : ""}
+      </div>
+      ${ru ? `<div class="err" style="font-size:13px">Российский бренд, официально в Украину не ввозится</div>` : ""}</div>
+    <button class="small" data-tags="${i}">🏷</button>
+    <button class="small" data-del="${i}">✕</button>
+    ${editingTags === i ? `<div style="flex-basis:100%;margin-top:10px">
+      <div class="muted" style="font-size:13px;margin-bottom:6px">📦 Остаток в банке${t.stock !== undefined ? `: <b>${t.stock} г</b>` : " — не учитывается"}</div>
+      <div class="chips">${[25, 40, 50, 100, 200, 250].map((g) => `<span class="chip sm" data-stockadd="${g}" data-i="${i}">+${g} г</span>`).join("")}</div>
+      <div class="row" style="margin-top:8px"><input id="stockInput" type="number" min="0" inputmode="numeric" placeholder="Точный остаток, г" value="${t.stock ?? ""}">
+        <button class="shrink small" data-stockset="${i}">Сохранить</button>
+        ${t.stock !== undefined ? `<button class="shrink small" data-stockclear="${i}">Не учитывать</button>` : ""}</div>
+      <p class="muted" style="font-size:12px;margin:4px 0 0">«+N г» — купили пачку. Когда забиваете кальян, граммы списываются сами.</p>
+      <div class="muted" style="font-size:13px;margin:12px 0 6px">Вкусы</div>
+      <div class="chips">${FLAVORS.map(([id, name]) =>
+        `<span class="chip sm ${tags.includes(id) ? "on" : ""}" data-tag="${id}" data-i="${i}">${esc(name)}</span>`).join("")}</div>
+      <div class="muted" style="font-size:13px;margin:10px 0 6px">Свои метки</div>
+      <div class="chips">${[...new Set([...LABEL_SUGGEST, ...labels])].map((l) =>
+        `<span class="chip sm label ${labels.includes(l) ? "on" : ""}" data-label="${esc(l)}" data-i="${i}">#${esc(l)}</span>`).join("")}</div>
+      <div class="row" style="margin-top:8px"><input id="newLabel" placeholder="Своя метка"><button class="shrink small" data-addlabel="${i}">＋</button></div>
+    </div>` : ""}
+    </div>`;
+  }).join("")
+    : `<div class="empty">Полка пустая. Добавьте табаки вручную или после распознавания фото.</div>`;
+}
+// Открыть вкладку миксов с готовым поиском или выбранным табаком
+function openMixes(q, pickIdx) {
+  picked = new Set(pickIdx == null ? [] : [pickIdx]);
+  $("#wish").value = q || "";
+  showTab("mix");
+}
+$("#shelfList").addEventListener("click", (e) => {
+  const el = e.target.closest("[data-del],[data-tags],[data-tag],[data-label],[data-addlabel],[data-gotob],[data-goflavor],[data-golabel],[data-stockadd],[data-stockset],[data-stockclear]");
+  if (!el) return;
+  const d = el.dataset;
+  if (d.stockadd) { const t = shelf[d.i]; t.stock = (t.stock || 0) + +d.stockadd; saveShelf(); renderShelf(); return renderShop(); }
+  if (d.stockset != null) {
+    const v = parseFloat($("#stockInput").value);
+    if (!Number.isFinite(v) || v < 0) return toast("Введите остаток в граммах, например 85");
+    shelf[d.stockset].stock = Math.round(v); saveShelf(); renderShelf(); return renderShop();
+  }
+  if (d.stockclear != null) { delete shelf[d.stockclear].stock; saveShelf(); renderShelf(); return renderShop(); }
+  if (d.gotob != null) return openMixes("", +d.gotob);
+  if (d.goflavor) return openMixes(FLAVOR_NAME[d.goflavor].split(/[ /:]/)[0]);
+  if (d.golabel) return openMixes(d.golabel);
+  if (d.del != null) { shelf.splice(d.del, 1); editingTags = null; picked.clear(); saveShelf(); }
+  if (d.tags != null) editingTags = editingTags === +d.tags ? null : +d.tags;
+  if (d.tag) {
+    const t = shelf[d.i], tags = new Set(tagsOf(t));
+    tags.has(d.tag) ? tags.delete(d.tag) : tags.add(d.tag);
+    t.tags = [...tags]; saveShelf();
+  }
+  if (d.label || d.addlabel != null) {
+    const t = shelf[d.i ?? d.addlabel];
+    const l = (d.label || $("#newLabel").value).trim().toLowerCase().replace(/^#/, "");
+    if (!l) return;
+    const labels = new Set(t.labels || []);
+    labels.has(l) && d.label ? labels.delete(l) : labels.add(l);
+    t.labels = [...labels]; saveShelf();
+  }
+  renderShelf();
+});
+// ---------- Выбор бренда и вкуса из списка с поиском ----------
+// Поле ввода + выпадающий список, который фильтруется по мере ввода. Своё значение тоже можно вписать.
+function makePicker(input, list, getItems, onPick) {
+  const render = () => {
+    const items = getItems(input.value.trim()).slice(0, 80);
+    list._items = items;
+    list.innerHTML = items.length
+      ? items.map((it, i) => `<div class="pk-item" data-i="${i}">${esc(it.title)}${it.sub ? `<small>${esc(it.sub)}</small>` : ""}</div>`).join("")
+      : `<div class="pk-item muted">Нет в списке — впишите своё и нажмите ＋</div>`;
+    list.classList.add("open");
+  };
+  input.addEventListener("focus", render);
+  input.addEventListener("input", render);
+  // Не даём полю потерять фокус от нажатия на пункт, иначе список закроется раньше клика
+  list.addEventListener("mousedown", (e) => e.preventDefault());
+  list.addEventListener("click", (e) => {
+    const el = e.target.closest(".pk-item[data-i]"); if (!el) return;
+    list.classList.remove("open");
+    onPick(list._items[el.dataset.i]);
+  });
+  input.addEventListener("blur", () => setTimeout(() => list.classList.remove("open"), 150));
+  return render;
+}
+const BRANDS = [...new Set([...Object.keys(CATALOG), ...UA_BRANDS.map((b) => b.replace(/ \(.*/, ""))])].sort((a, b) => a.localeCompare(b, "ru"));
+const catalogFor = (brand) => CATALOG[Object.keys(CATALOG).find((k) => k.toLowerCase() === brand.toLowerCase())] || [];
+const splitFlavor = (s) => { const m = s.match(/^(.*?)\s*(\((.*)\))?\s*(·\s*(.*))?$/); return { title: m[1] || s, sub: [m[3], m[5]].filter(Boolean).join(" · ") }; };
+
+makePicker($("#shelfBrand"), $("#brandPick"), (q) => {
+  const lq = q.toLowerCase();
+  return BRANDS.filter((b) => !lq || b.toLowerCase().includes(lq)).map((b) => {
+    const n = catalogFor(b).length, note = (UA_BRANDS.find((x) => x.startsWith(b + " (")) || "").match(/\((.*)\)/)?.[1];
+    const str = BRAND_INFO[b]?.strength?.join("/");
+    return { title: b, sub: [note, str && `крепость: ${str}`, n ? `${n} вкусов в списке` : "вкусы вписываются вручную"].filter(Boolean).join(" · "), value: b };
+  });
+}, (it) => {
+  $("#shelfBrand").value = it.value;
+  $("#shelfFlavor").value = "";
+  $("#shelfFlavor").focus(); // сразу открываем вкусы этого бренда
+});
+
+makePicker($("#shelfFlavor"), $("#flavorPick"), (q) => {
+  const all = catalogFor($("#shelfBrand").value.trim());
+  if (!q) return all.map((f) => ({ ...splitFlavor(f), value: f }));
+  // Ищем по тексту и по смыслу: «арбуз» найдёт «Кавун», «свежее» — мятные и ледяные
+  const lq = norm(q), qf = flavorsForWord(lq);
+  return all.filter((f) => norm(f).includes(lq) || (qf.length && detectFlavors(f).some((x) => qf.includes(x))))
+    .map((f) => ({ ...splitFlavor(f), value: f }));
+}, (it) => {
+  $("#shelfFlavor").value = it.value;
+  addShelfFromForm();
+});
+
+function addShelfFromForm() {
+  const brand = $("#shelfBrand").value.trim(), flavor = $("#shelfFlavor").value.trim();
+  if (!brand && !flavor) return;
+  const before = shelf.length;
+  addToShelf({ brand, flavor });
+  $("#shelfFlavor").value = ""; // бренд оставляем: удобно добавить несколько вкусов подряд
+  $("#shelfHint").textContent = shelf.length > before ? `✓ Добавлено: ${tobaccoName({ brand, flavor })}` : "Такой табак уже есть на полке";
+  renderShelf();
+}
+$("#shelfAdd").addEventListener("click", addShelfFromForm);
+$("#shelfFlavor").addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); addShelfFromForm(); } });
+function addToShelf(t) {
+  const key = tobaccoName(t).toLowerCase();
+  if (!shelf.some((s) => tobaccoName(s).toLowerCase() === key)) { shelf.push({ brand: t.brand || "", flavor: t.flavor || "" }); saveShelf(); }
+}
+
+// ---------- Список покупок ----------
+// Сам собирается из двух источников: табаки, которые заканчиваются, и вкусы,
+// которых чаще всего не хватает для миксов базы. Плюс свои пункты.
+function shopSuggestions() {
+  const lowItems = shelf.filter(isLow).map((t) => ({ text: tobaccoName(t), why: t.stock ? `осталось ${t.stock} г` : "закончился" }));
+  const { almost } = matchMixes(shelf.map((t) => ({ label: tobaccoName(t), tags: tagsOf(t) })));
+  const need = {};
+  almost.forEach((m) => m.missing.forEach((f) => (need[f] = need[f] || []).push(m.n)));
+  const flavorItems = Object.entries(need).sort((a, b) => b[1].length - a[1].length).slice(0, 4).map(([f, mixes]) => ({
+    text: `${FLAVOR_NAME[f]}${UA_EXAMPLES[f] ? ` (например ${UA_EXAMPLES[f][0]})` : ""}`,
+    why: `откроет ${mixes.length} микс${mixes.length > 4 ? "ов" : mixes.length > 1 ? "а" : ""}: ${mixes.slice(0, 3).join(", ")}`,
+  }));
+  return { lowItems, flavorItems };
+}
+function renderShop() {
+  const { lowItems, flavorItems } = shopSuggestions();
+  const auto = (title, items) => items.length ? `<div class="muted" style="font-size:13px;margin:4px 0">${title}</div>` + items.map((x) =>
+    `<div class="shop-item"><span class="t">${esc(x.text)}<small>${esc(x.why)}</small></span><button class="small" data-shopadd="${esc(x.text)}">＋ в список</button></div>`).join("") : "";
+  $("#shopAuto").innerHTML = auto("📦 Заканчивается на полке", lowItems) + auto("💡 Чего не хватает для новых миксов", flavorItems)
+    || (shop.length ? "" : `<p class="muted" style="margin:0">Пока пусто. Укажите остатки табака на полке (🏷 → 📦), и то, что заканчивается, появится здесь само.</p>`);
+  $("#shopList").innerHTML = shop.length ? `<div class="muted" style="font-size:13px;margin:10px 0 4px">Мой список</div>` + shop.map((x, i) =>
+    `<div class="shop-item ${x.done ? "done" : ""}"><label class="t"><input type="checkbox" data-shopdone="${i}" ${x.done ? "checked" : ""}> ${esc(x.text)}</label><button class="small" data-shopdel="${i}">✕</button></div>`).join("") : "";
+}
+function addShopItem(text) {
+  text = text.trim(); if (!text) return;
+  if (!shop.some((x) => x.text.toLowerCase() === text.toLowerCase())) { shop.push({ text, done: false }); saveShop(); }
+  renderShop();
+}
+$("#shopAdd").addEventListener("click", () => { addShopItem($("#shopInput").value); $("#shopInput").value = ""; });
+$("#shopInput").addEventListener("keydown", (e) => { if (e.key === "Enter") { addShopItem(e.target.value); e.target.value = ""; } });
+$("#shopCard").addEventListener("click", (e) => {
+  const d = e.target.dataset;
+  if (d.shopadd) addShopItem(d.shopadd);
+  if (d.shopdel != null) { shop.splice(d.shopdel, 1); saveShop(); renderShop(); }
+  if (d.shopdone != null) { shop[d.shopdone].done = e.target.checked; saveShop(); renderShop(); }
+});
+$("#shopClear").addEventListener("click", () => { shop = shop.filter((x) => !x.done); saveShop(); renderShop(); });
+$("#shopCopy").addEventListener("click", async () => {
+  const { lowItems, flavorItems } = shopSuggestions();
+  const lines = [...shop.filter((x) => !x.done).map((x) => x.text), ...lowItems.map((x) => x.text), ...flavorItems.map((x) => x.text)];
+  const text = [...new Set(lines)].map((l) => "• " + l).join("\n");
+  if (!text) return toast("Список пуст");
+  try { await navigator.clipboard.writeText("🛒 Для кальяна:\n" + text); toast("📋 Список скопирован — вставьте в мессенджер"); }
+  catch { prompt("Скопируйте список:", text); }
+});
+
+let picked = new Set();
+function renderShelfPick() {
+  $("#shelfPickWrap").style.display = shelf.length ? "" : "none";
+  $("#shelfPick").innerHTML = shelf.map((t, i) => `<span class="chip ${picked.has(i) ? "on" : ""}" data-i="${i}">${esc(tobaccoName(t))}</span>`).join("");
+}
+$("#shelfPick").addEventListener("click", (e) => {
+  if (e.target.dataset.i == null) return;
+  const i = +e.target.dataset.i; picked.has(i) ? picked.delete(i) : picked.add(i); renderShelfPick(); renderOffline();
+});
+
+function renderSaved() {
+  $("#savedMixes").innerHTML = saved.length ? saved.map((m, i) => mixCard(m, { savedIdx: i })).join("")
+    : `<div class="empty">Тут появятся миксы, которые вы сохраните.</div>`;
+}
+$("#savedMixes").addEventListener("click", (e) => {
+  const star = e.target.closest("[data-star]");
+  if (star) { saved[star.dataset.idx].rating = +star.dataset.star; saveSaved(); renderSaved(); return; }
+  if (e.target.dataset.sbowl != null) return chooseForHookah(saved[e.target.dataset.sbowl]);
+  const del = e.target.closest("[data-unsave]");
+  if (del && confirm("Удалить микс?")) { saved.splice(del.dataset.unsave, 1); saveSaved(); renderSaved(); }
+});
+
+// ---------- Офлайн-база миксов ----------
+let offlineShown = [];
+function offlineCard(m) {
+  const i = offlineShown.push(m) - 1;
+  const rows = m.rows.map((r) => {
+    const src = r.tobaccos.length ? r.tobaccos.join(" / ")
+      : `<span class="muted">${m.missing.includes(r.flavor) ? "🛒 нет на полке" : "любой"}${UA_EXAMPLES[r.flavor] ? ` · в Украине: ${esc(UA_EXAMPLES[r.flavor].join(", "))}` : ""}</span>`;
+    return `<div class="comp"><span class="pct">${r.pct}%</span><span class="pbar"><i style="width:${r.pct}%"></i></span>
+      <span><b>${esc(FLAVOR_NAME[r.flavor])}</b><br><span style="font-size:14px">${r.tobaccos.length ? esc(src) : src}</span></span></div>`;
+  }).join("");
+  return `<div class="card mix"><h3>${esc(m.n)}</h3>
+    ${m.missing.length ? `<span class="tag">🛒 докупить: ${esc(m.missing.map((f) => FLAVOR_NAME[f]).join(", "))}</span>` : ""}
+    <div style="margin:8px 0">${rows}</div><p class="muted">${esc(m.d)}</p>
+    <button class="small" data-osave="${i}">💾 Сохранить</button> <button class="small" data-obowl="${i}">🔥 Забить</button></div>`;
+}
+// Все миксы базы с отметкой, что есть на полке и чего не хватает
+function allMixesForShelf() {
+  const { ready, almost } = matchMixes(shelf.map((t) => ({ label: tobaccoName(t), tags: tagsOf(t) })));
+  return MIXES.map((m) => ready.find((x) => x.n === m.n) || almost.find((x) => x.n === m.n) || fullMissing(m));
+}
+// Поиск понимает и вкусы («кавун», «ice»), и настроения («свежее», «десерт»), и названия,
+// и табаки с полки вместе с их метками («whitesmok», «любимый»).
+// Миксы сортируются по числу совпавших слов, так что работает и фраза «что-то свежее с ягодами».
+const STOP = new Set(["что", "то", "что-то", "щось", "хочу", "хочется", "хочеться", "не", "слишком", "занадто", "очень", "дуже", "мне", "мені", "или", "або", "без", "чтобы", "щоб", "был", "було", "было", "with", "and"]);
+const norm = (s) => String(s).toLowerCase().replace(/ё/g, "е");
+function searchMixes(q) {
+  const words = norm(q).split(/[\s,.!?;]+/).filter((w) => w.length > 1 && !STOP.has(w));
+  const labelsOf = Object.fromEntries(shelf.map((t) => [tobaccoName(t), norm((t.labels || []).join(" "))]));
+  const picks = [...picked].map((i) => shelf[i]).filter(Boolean).map(tobaccoName);
+  let list = allMixesForShelf();
+  if (picks.length) list = list.filter((m) => picks.every((p) => m.rows.some((r) => r.tobaccos.includes(p))));
+  return list.map((m) => {
+    const flavors = m.p.map(([f]) => f);
+    const text = norm([m.n, m.d, ...flavors.map((f) => FLAVOR_NAME[f])].join(" "));
+    const tob = m.rows.flatMap((r) => r.tobaccos);
+    const tobText = norm(tob.join(" ") + " " + tob.map((t) => labelsOf[t]).join(" "));
+    const score = words.filter((w) => {
+      const wf = flavorsForWord(w);
+      // Слово-вкус ищем только по вкусам микса, иначе «кола» найдёт «шоколад» и «пина коладу»
+      if (wf.length) return wf.some((f) => flavors.includes(f));
+      return text.includes(w) || tobText.includes(w);
+    }).length;
+    return { m, score };
+  }).filter((x) => !words.length || x.score > 0)
+    .sort((a, b) => b.score - a.score || a.m.missing.length - b.m.missing.length)
+    .map((x) => x.m);
+}
+$("#wish").addEventListener("input", renderOffline);
+
+// ---------- Быстрые фильтры по профилю ----------
+let profile = "";
+function renderProfiles() {
+  $("#profiles").innerHTML = PROFILES.map(([id, name]) => `<span class="chip ${profile === id ? "on" : ""}" data-prof="${id}">${name}</span>`).join("");
+}
+$("#profiles").addEventListener("click", (e) => {
+  const id = e.target.dataset.prof; if (!id) return;
+  profile = profile === id ? "" : id; renderProfiles(); renderOffline();
+});
+
+// ---------- Микс дня и колесо ----------
+// Кандидаты: то, что можно забить с полки, иначе — вся база
+function wheelCandidates() {
+  const { ready, almost } = matchMixes(shelf.map((t) => ({ label: tobaccoName(t), tags: tagsOf(t) })));
+  const own = [...ready, ...shelfCombos()];
+  let list = own.length ? own : almost.length ? almost : MIXES.map(fullMissing);
+  if (profile) { const f = list.filter((m) => inProfile(m, profile)); if (f.length) list = f; }
+  return list;
+}
+function renderDayMix() {
+  const list = wheelCandidates();
+  const d = new Date(), seed = d.getFullYear() * 400 + d.getMonth() * 32 + d.getDate();
+  const m = list[(seed * 7919) % list.length];
+  $("#dayMix").innerHTML = `<div class="row" style="align-items:flex-start">
+      <div><div class="muted" style="font-size:13px">⭐ Микс дня</div>
+        <b style="font-size:17px">${esc(m.n)}</b>
+        <div class="muted" style="font-size:14px">${m.rows.map((r) => `${r.pct}% ${esc(FLAVOR_NAME[r.flavor])}`).join(" · ")}</div></div>
+      <button class="shrink small" data-dayopen>Открыть</button></div>
+    <button class="primary" id="btnWheel" style="width:100%;margin-top:12px">🎡 Крутить колесо миксов</button>`;
+  $("#dayMix").dataset.mix = m.n;
+}
+$("#dayMix").addEventListener("click", (e) => {
+  if (e.target.id === "btnWheel") return openWheel();
+  if (e.target.closest("[data-dayopen]")) {
+    const m = wheelCandidates().find((x) => x.n === $("#dayMix").dataset.mix);
+    offlineShown = []; $("#offline").innerHTML = offlineCard(m); renderOfflineAll();
+  }
+});
+
+let wheelRot = 0, wheelItems = [], wheelShelfOnly = false, wheelForHookah = false;
+const WHEEL_COLORS = ["#ff8a3d", "#c2410c", "#ffb26b", "#9a3412", "#f97316", "#7c2d12", "#fdba74", "#b45309"];
+// Сочетания прямо из табаков на полке: пара табаков подходит друг другу,
+// если их вкусы встречаются вместе хотя бы в одном миксе базы. Мята и холодок идут к чему угодно.
+const COOL = ["mint", "ice"];
+function flavorsGoTogether(a, b) {
+  if (a === b) return false;
+  if (COOL.includes(a) || COOL.includes(b)) return true;
+  return MIXES.some((m) => m.p.some(([f]) => f === a) && m.p.some(([f]) => f === b));
+}
+function shelfCombos() {
+  const items = shelf.map((t) => ({ label: tobaccoName(t), tags: tagsOf(t) })).filter((t) => t.tags.length);
+  const isCool = (t) => t.tags.every((f) => COOL.includes(f));
+  const out = [];
+  for (let i = 0; i < items.length; i++) for (let j = 0; j < items.length; j++) {
+    const A = items[i], B = items[j];
+    if (i === j || isCool(A)) continue; // основой не делаем чистую мяту/лёд
+    if (!isCool(B) && j < i) continue; // пару двух вкусных табаков берём один раз
+    const fa = A.tags.find((f) => !COOL.includes(f)) || A.tags[0];
+    const fb = B.tags.find((f) => flavorsGoTogether(fa, f));
+    if (!fb) continue;
+    const [pa, pb] = isCool(B) ? [75, 25] : [60, 40];
+    out.push({
+      n: `${FLAVOR_NAME[fa].split(/[ /:]/)[0]} + ${FLAVOR_NAME[fb].split(/[ /:]/)[0]}`,
+      d: isCool(B) ? "Основа с холодком — с вашей полки." : "Эти вкусы часто сочетают — оба табака есть на полке.",
+      p: [[fa, pa], [fb, pb]], missing: [], fromShelf: true,
+      rows: [{ flavor: fa, pct: pa, tobaccos: [A.label] }, { flavor: fb, pct: pb, tobaccos: [B.label] }],
+    });
+  }
+  return out;
+}
+function openWheel() {
+  // Колесо крутит только то, что можно забить с полки: готовые миксы базы и сочетания табаков с полки.
+  // Если на полке меньше двух табаков, берём миксы из базы.
+  const { ready, almost } = matchMixes(shelf.map((t) => ({ label: tobaccoName(t), tags: tagsOf(t) })));
+  const shuffle = (a) => a.slice().sort(() => Math.random() - 0.5);
+  const prof = (l) => (profile ? l.filter((m) => inProfile(m, profile)) : l);
+  const seen = new Set();
+  const fromShelf = [...shuffle(prof(ready)), ...shuffle(prof(shelfCombos()))];
+  wheelShelfOnly = fromShelf.length >= 2;
+  const pool = wheelShelfOnly ? fromShelf : [...fromShelf, ...shuffle(prof(almost)), ...shuffle(prof(MIXES.map(fullMissing)))];
+  // Одинаковые по вкусу сочетания (разные табаки) оставляем по одному
+  wheelItems = pool.filter((m) => { const k = m.rows.map((r) => r.flavor).sort().join(); return !seen.has(k) && seen.add(k); }).slice(0, 8);
+  const n = wheelItems.length, a = 360 / n, R = 150, C = 160;
+  const pt = (deg, r) => [C + r * Math.cos((deg * Math.PI) / 180), C + r * Math.sin((deg * Math.PI) / 180)];
+  const segs = wheelItems.map((m, i) => {
+    const s = -90 + i * a, e = s + a, [x1, y1] = pt(s, R), [x2, y2] = pt(e, R), mid = s + a / 2, [tx, ty] = pt(mid, R * 0.58);
+    const label = m.n.length > 14 ? m.n.slice(0, 13) + "…" : m.n;
+    const dark = i % 2 === 1;
+    return `<path d="M${C},${C} L${x1},${y1} A${R},${R} 0 ${a > 180 ? 1 : 0} 1 ${x2},${y2} Z" fill="${WHEEL_COLORS[i % 8]}" stroke="#211913" stroke-width="2"/>
+      <text x="${tx}" y="${ty}" transform="rotate(${mid > 90 && mid < 270 ? mid + 180 : mid} ${tx} ${ty})" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="600" fill="${dark ? "#fff3e6" : "#2a1308"}">${esc(label)}</text>`;
+  }).join("");
+  $("#wheelSvg").innerHTML = segs + `<circle cx="${C}" cy="${C}" r="18" fill="#211913" stroke="#ffb26b" stroke-width="3"/>`;
+  const profLabel = profile ? " · " + PROFILES.find((p) => p[0] === profile)[1] : "";
+  $("#wheelResult").innerHTML = wheelShelfOnly
+    ? `<p class="muted" style="text-align:center">🗂️ Только с вашей полки: ${n} вариантов${profLabel}</p>`
+    : `<p class="muted" style="text-align:center">На полке мало табаков, поэтому крутим миксы из базы${profLabel}.<br>Добавьте хотя бы 2–3 табака на 🗂️ Полку.</p>`;
+  $("#wheelModal").classList.add("open");
+}
+function spinWheel() {
+  const n = wheelItems.length; if (!n) return;
+  const a = 360 / n, k = Math.floor(Math.random() * n);
+  // Центр сегмента k должен прийти под стрелку сверху; плюс 6 полных оборотов для эффекта
+  wheelRot = wheelRot - (wheelRot % 360) + 360 * 6 + (360 - (k + 0.5) * a);
+  $("#wheelSvg").style.transform = `rotate(${wheelRot}deg)`;
+  $("#btnSpin").disabled = true;
+  setTimeout(() => {
+    $("#btnSpin").disabled = false;
+    $("#wheelResult").innerHTML = `<p style="text-align:center;font-size:18px">🎉 Выпало: <b>${esc(wheelItems[k].n)}</b></p>
+      <button class="primary" data-wbowl="${k}" style="width:100%;margin-bottom:10px">🔥 Забить этот микс</button>` + offlineCard(wheelItems[k]);
+    navigator.vibrate?.(80);
+  }, 4300);
+}
+$("#btnSpin").addEventListener("click", spinWheel);
+const closeWheel = () => { $("#wheelModal").classList.remove("open"); wheelForHookah = false; };
+$("#wheelClose").addEventListener("click", closeWheel);
+$("#wheelModal").addEventListener("click", (e) => {
+  if (e.target.id === "wheelModal") return closeWheel();
+  const wb = e.target.closest("[data-wbowl]");
+  if (wb) { const m = wheelItems[wb.dataset.wbowl]; closeWheel(); return chooseForHookah(m); }
+  if (e.target.dataset.obowl != null) { const m = offlineShown[e.target.dataset.obowl]; closeWheel(); return chooseForHookah(m); }
+  const i = e.target.dataset.osave; if (i == null) return;
+  saveOfflineMix(offlineShown[i]); e.target.textContent = "✓ Сохранено"; e.target.disabled = true;
+});
+
+function renderOffline() {
+  offlineShown = [];
+  renderProfiles(); renderDayMix();
+  const q = $("#wish").value.trim();
+  const prof = (m) => inProfile(m, profile);
+  const profName = profile ? PROFILES.find((p) => p[0] === profile)[1] : "";
+  if (q || picked.size || profile) {
+    const found = (q || picked.size ? searchMixes(q) : allMixesForShelf().sort((a, b) => a.missing.length - b.missing.length)).filter(prof);
+    const what = [q && `«${esc(q)}»`, picked.size && "выбранным табакам", profName].filter(Boolean).join(" + ");
+    $("#offline").innerHTML = found.length
+      ? `<p class="muted">Найдено по ${what}: ${found.length}</p>` + found.slice(0, 30).map(offlineCard).join("")
+      : `<div class="card muted">Ничего не нашлось по ${what}. Попробуйте другой вкус или нажмите «Спросить Gemini».</div>`;
+    renderOfflineAll(); // кнопки «Сохранить» ссылаются на offlineShown, пересобираем и нижний список
+    return;
+  }
+  const items = shelf.map((t) => ({ label: tobaccoName(t), tags: tagsOf(t) }));
+  const { ready, almost } = matchMixes(items);
+  let html = "";
+  if (!shelf.length) html = `<div class="card muted">Добавьте свои табаки на 🗂️ Полку, и тут появятся миксы, которые можно забить прямо сейчас.</div>`;
+  else {
+    html += ready.length ? `<p class="muted">Можно забить из того, что есть: ${ready.length}</p>` + ready.map(offlineCard).join("")
+      : `<div class="card muted">Из табаков на полке готовых миксов в базе нет. Ниже те, где не хватает одного вкуса.</div>`;
+    if (almost.length) html += `<p class="muted">Не хватает одного вкуса: ${almost.length}</p>` + almost.slice(0, 12).map(offlineCard).join("");
+  }
+  $("#offline").innerHTML = html;
+  renderOfflineAll();
+}
+$("#offlineFilter").innerHTML = `<option value="">Все вкусы</option>` + FLAVORS.map(([id, name]) => `<option value="${id}">${esc(name)}</option>`).join("");
+$("#offlineFilter").addEventListener("change", renderOfflineAll);
+function renderOfflineAll() {
+  const f = $("#offlineFilter").value;
+  $("#offlineAll").innerHTML = allMixesForShelf().filter((m) => !f || m.p.some(([id]) => id === f)).map(offlineCard).join("");
+}
+function fullMissing(m) {
+  const rows = m.p.map(([flavor, pct]) => ({ flavor, pct, tobaccos: [] }));
+  return { ...m, rows, missing: m.p.filter(([, , o]) => !o).map(([f]) => f) };
+}
+function saveOfflineMix(m) {
+  saved.unshift({
+    name: m.n, profile: m.d, date: Date.now(), rating: 0,
+    components: m.rows.map((r) => ({ tobacco: r.tobaccos[0] || FLAVOR_NAME[r.flavor], percent: r.pct })),
+    needToBuy: m.missing.map((f) => FLAVOR_NAME[f]).join(", "),
+  });
+  saveSaved();
+}
+document.querySelector("#tab-mix").addEventListener("click", (e) => {
+  if (e.target.dataset.obowl != null) return chooseForHookah(offlineShown[e.target.dataset.obowl]);
+  const i = e.target.dataset.osave; if (i == null) return;
+  saveOfflineMix(offlineShown[i]); e.target.textContent = "✓ Сохранено"; e.target.disabled = true;
+});
+
+// ---------- Фото ----------
+let photos = []; // { dataUrl, b64 }
+$("#btnCamera").addEventListener("click", () => $("#fileCamera").click());
+$("#btnGallery").addEventListener("click", () => $("#fileGallery").click());
+const MAX_PHOTOS = 6;
+["#fileCamera", "#fileGallery"].forEach((s) => $(s).addEventListener("change", async (e) => {
+  const files = [...(e.target.files || [])];
+  e.target.value = "";
+  let failed = 0, skipped = 0;
+  // Каждый файл обрабатываем отдельно: один битый не мешает добавить остальные
+  for (const f of files) {
+    if (photos.length >= MAX_PHOTOS) { skipped++; continue; }
+    try { photos.push(await shrink(f)); renderPhotos(); }
+    catch { failed++; }
+  }
+  const msgs = [failed && `не удалось прочитать фото: ${failed} (файл повреждён или формат не поддерживается)`, skipped && `пропущено ${skipped}: максимум ${MAX_PHOTOS} фото`].filter(Boolean);
+  $("#askHint").innerHTML = msgs.length ? `<span class="err">${esc(msgs.join("; "))}</span>` : "";
+}));
+// Уменьшаем фото до ~1280px: этикетка читается, а запрос лёгкий
+function shrink(file) {
+  return new Promise((res, rej) => {
+    if (!file || (file.type && !file.type.startsWith("image/"))) return rej(new Error("not an image"));
+    let url;
+    try { url = URL.createObjectURL(file); } catch (e) { return rej(e); }
+    const img = new Image();
+    const done = (fn, v) => { URL.revokeObjectURL(url); fn(v); }; // URL освобождаем при любом исходе
+    img.onload = () => {
+      try {
+        if (!img.naturalWidth || !img.naturalHeight) throw new Error("empty image");
+        const k = Math.min(1, 1280 / Math.max(img.naturalWidth, img.naturalHeight));
+        const c = document.createElement("canvas");
+        c.width = Math.max(1, Math.round(img.naturalWidth * k)); c.height = Math.max(1, Math.round(img.naturalHeight * k));
+        const ctx = c.getContext("2d");
+        if (!ctx) throw new Error("no canvas");
+        ctx.drawImage(img, 0, 0, c.width, c.height);
+        const dataUrl = c.toDataURL("image/jpeg", 0.85);
+        const b64 = dataUrl.split(",")[1];
+        if (!b64) throw new Error("encode failed");
+        done(res, { dataUrl, b64 });
+      } catch (e) { done(rej, e); }
+    };
+    img.onerror = () => done(rej, new Error("decode failed"));
+    img.src = url;
+  });
+}
+function renderPhotos() {
+  $("#photos").innerHTML = photos.map((p, i) => `<div class="ph"><img src="${p.dataUrl}"><button data-rm="${i}">✕</button></div>`).join("");
+}
+$("#photos").addEventListener("click", (e) => { const i = e.target.dataset.rm; if (i != null) { photos.splice(i, 1); renderPhotos(); } });
+
+// ---------- Gemini ----------
+const HEAT = { kaloud: "калауд/HMD", foil: "фольга" };
+const BOWL = { phunnel: "фанел", turk: "турка", egypt: "египетская чаша", fruit: "фрукт" };
+const STR = { light: "лёгкая", medium: "средняя", strong: "крепкая" };
+
+function buildPrompt(wish, shelfItems) {
+  return `Ты опытный кальянный мастер. Отвечай по-русски, живо и по делу.
+Сетап: ${BOWL[setup().bowl]}, ${HEAT[setup().heat]}, ${setup().count} угля по ${setup().coal} мм. Желаемая крепость: ${STR[settings.strength]}.
+Человек живёт в Украине. Если советуешь что-то докупить, называй только бренды, которые продаются в Украине: ${UA_BRANDS.join(", ")}. Российские бренды (Darkside, Musthave, Black Burn, Sebero, Chabacco и т.п.) не предлагай.
+${photos.length ? `На фото пачки табака. Распознай бренд и вкус каждой пачки по этикетке. Если надпись не читается, напиши свою догадку и отметь это в notes.` : ""}
+${shelfItems.length ? `Табаки с полки, которые тоже есть в наличии: ${shelfItems.join("; ")}.` : ""}
+${wish ? `Пожелание: ${wish}` : "Пожеланий нет: предложи самые удачные сочетания."}
+
+Предложи 3 микса. Опирайся на известные удачные сочетания из кальянного сообщества и на собственное понимание вкуса: баланс сладкого, кислого, свежего и пряного.
+Используй в первую очередь то, что есть в наличии. Если для отличного микса не хватает одного вкуса, можно предложить один микс с докупкой и отметить это в needToBuy.
+Проценты в каждом миксе в сумме дают 100.
+
+Верни только JSON такого вида:
+{
+  "recognized": [{"brand": "", "flavor": "", "notes": ""}],
+  "mixes": [{
+    "name": "короткое красивое название",
+    "components": [{"tobacco": "Бренд — Вкус", "percent": 50}],
+    "profile": "как будет ощущаться вкус, 1–2 предложения",
+    "why": "почему эти вкусы работают вместе",
+    "packing": "как забить под этот сетап",
+    "heat": "совет по жару",
+    "strength": "лёгкий|средний|крепкий",
+    "needToBuy": ""
+  }],
+  "advice": "общий совет, можно пусто"
+}`;
+}
+
+// fetch с ограничением времени: зависший запрос обрывается и превращается в понятную ошибку
+let GEMINI_TIMEOUT_MS = 60000;
+async function fetchWithTimeout(url, opts, ms = GEMINI_TIMEOUT_MS) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    return await fetch(url, { ...opts, signal: ctrl.signal });
+  } catch (e) {
+    const err = new Error(e.name === "AbortError"
+      ? `Gemini не ответил за ${Math.round(ms / 1000)} секунд: медленный интернет или сервер перегружен. Попробуйте ещё раз.`
+      : navigator.onLine === false ? "Нет подключения к интернету." : "Не удалось связаться с Gemini: проблема с сетью.");
+    err.kind = e.name === "AbortError" ? "timeout" : "network";
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+const sleep = (ms) => new Promise((ok) => setTimeout(ok, ms));
+let RETRY_DELAY_MS = 2000;
+
+// Перебор моделей. Временные сбои (перегрузка 5xx, тайм-аут, сеть) повторяем ограниченно,
+// модели с нулевой квотой или «не найдено» исключаем на сутки, ошибки ключа сразу показываем.
+async function generateWithFallback(body, onStatus = () => {}) {
+  const all = settings.models.length ? settings.models : DEFAULT_MODELS;
+  const unique = [...new Set([settings.model, ...all].filter(Boolean))];
+  let queue = unique.filter((m) => !isBlocked(m));
+  // Все модели исключены — пробуем их снова, вдруг лимиты уже восстановились
+  if (!queue.length) queue = unique;
+  if (!queue.length) throw new Error("Список моделей пуст. Нажмите «Проверить ключ» в Настройках.");
+  let lastErr, networkFails = 0, timeouts = 0;
+  for (const model of queue) {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      onStatus(model, attempt);
+      let r;
+      try {
+        r = await fetchWithTimeout(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "x-goog-api-key": settings.apiKey },
+          body: JSON.stringify(body),
+        });
+      } catch (e) {
+        lastErr = e;
+        // Нет сети — другие модели не помогут; после двух неудач подряд прекращаем
+        if (e.kind === "network" && ++networkFails >= 2) throw e;
+        // Зависшую модель не ждём повторно: сразу следующая, а после двух зависаний — стоп (максимум ~2 минуты)
+        if (e.kind === "timeout") { if (++timeouts >= 2) throw e; break; }
+        if (attempt < 2) { await sleep(RETRY_DELAY_MS * (attempt + 1)); continue; }
+        break;
+      }
+      networkFails = 0;
+      const j = await r.json().catch(() => ({}));
+      if (r.ok) {
+        if (settings.model !== model) { settings.model = model; saveSettings(); renderModels(); }
+        return j;
+      }
+      const msg = str(j.error?.message) || "HTTP " + r.status;
+      lastErr = friendlyError(r.status, msg);
+      if (lastErr.auth) throw lastErr; // неверный ключ повторять бессмысленно
+      const busy = r.status >= 500 || /high demand|overloaded/i.test(msg);
+      if (busy && attempt < 2) { await sleep(RETRY_DELAY_MS * (attempt + 1)); continue; }
+      const unavailable = (r.status === 429 && /limit:\s*0\b/.test(msg)) || r.status === 404 || (r.status === 400 && /not (found|supported)/i.test(msg));
+      if (unavailable) blockModel(model);
+      // Перегрузка или исчерпанный лимит относятся к одной модели: у других свои лимиты
+      else if (!busy && r.status !== 429) throw lastErr;
+      break;
+    }
+  }
+  throw lastErr || new Error("Не нашлось ни одной доступной модели. Нажмите «Проверить ключ» в Настройках.");
+}
+function friendlyError(status, msg) {
+  let e;
+  if (status >= 500 || /high demand|overloaded/i.test(msg)) {
+    e = new Error("Серверы Gemini сейчас перегружены. Обычно это проходит за несколько минут. Попробуйте ещё раз чуть позже.");
+  } else if (status === 429) {
+    const wait = msg.match(/retry in ([\dhms.]+)/i)?.[1]?.replace(/\.\d+s$/, "s");
+    e = new Error(`Бесплатный лимит Gemini на сейчас исчерпан.${wait ? ` Можно повторить через ${wait}.` : " Попробуйте через минуту."} Или выберите другую модель в Настройках.`);
+  } else if (status === 401 || (status === 400 && /api.?key/i.test(msg))) {
+    e = new Error("Ключ не подходит. Проверьте его в Настройках."); e.auth = true;
+  } else if (status === 403) {
+    e = new Error("Доступ запрещён. Проверьте ключ и что Gemini API доступен в вашем регионе."); e.auth = true;
+  } else {
+    e = new Error(msg);
+  }
+  return e;
+}
+
+// Проверка ответа модели: структура, типы, проценты 0–100 и их сумма.
+// Микс с битыми процентами отбрасываем; сумму 95–105 подравниваем до 100, остальное пересчитываем пропорционально.
+function validateResult(data) {
+  const bad = (why) => { const e = new Error(`Gemini вернул ответ в неожиданном формате (${why}). Попробуйте ещё раз.`); e.format = true; return e; };
+  if (!isObj(data)) throw bad("это не объект");
+  if (data.recognized !== undefined && !Array.isArray(data.recognized)) throw bad("recognized — не список");
+  if (!Array.isArray(data.mixes)) throw bad("нет списка mixes");
+  const recognized = (data.recognized || []).filter(isObj)
+    .map((t) => ({ brand: str(t.brand).trim(), flavor: str(t.flavor).trim(), notes: str(t.notes) }))
+    .filter((t) => t.brand || t.flavor);
+  let fixed = 0;
+  const mixes = data.mixes.filter(isObj).map((m, i) => {
+    if (!Array.isArray(m.components)) return null;
+    const comps = m.components.filter(isObj).map((c) => {
+      const p = typeof c.percent === "string" ? parseFloat(c.percent) : c.percent;
+      return { tobacco: str(c.tobacco).trim(), percent: p };
+    });
+    if (!comps.length || comps.some((c) => !c.tobacco || typeof c.percent !== "number" || !Number.isFinite(c.percent) || c.percent < 0 || c.percent > 100)) return null;
+    const sum = comps.reduce((s, c) => s + c.percent, 0);
+    if (sum <= 0) return null;
+    if (Math.abs(sum - 100) > 0.5) {
+      comps.forEach((c) => (c.percent = Math.round((c.percent * 100) / sum)));
+      comps[0].percent += 100 - comps.reduce((s, c) => s + c.percent, 0);
+      if (Math.abs(sum - 100) > 5) fixed++;
+    }
+    const out = { name: str(m.name).trim() || `Микс ${i + 1}`, components: comps };
+    ["profile", "why", "packing", "heat", "strength", "needToBuy"].forEach((k) => (out[k] = str(m[k])));
+    return out;
+  }).filter(Boolean);
+  if (!mixes.length && !recognized.length) throw bad("ни одного корректного микса");
+  return { recognized, mixes, advice: str(data.advice), fixed, dropped: data.mixes.length - mixes.length };
+}
+
+$("#btnAsk").addEventListener("click", async () => {
+  const hint = $("#askHint"), btn = $("#btnAsk"), out = $("#mixResult");
+  if (!settings.apiKey) { hint.innerHTML = '<span class="err">Нужен ключ Gemini: вставьте его в ⚙️ Настройках.</span>'; return; }
+  const wish = $("#wish").value.trim();
+  const shelfItems = [...picked].map((i) => shelf[i]).filter(Boolean).map(tobaccoName);
+  if (!photos.length && !wish && !shelfItems.length) { hint.innerHTML = '<span class="err">Сфоткайте пачки, выберите табаки с полки или напишите пожелание.</span>'; return; }
+
+  hint.textContent = ""; btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Думаю над миксами…';
+  out.innerHTML = "";
+  try {
+    const parts = [{ text: buildPrompt(wish, shelfItems) }, ...photos.map((p) => ({ inline_data: { mime_type: "image/jpeg", data: p.b64 } }))];
+    const j = await generateWithFallback(
+      { contents: [{ role: "user", parts }], generationConfig: { responseMimeType: "application/json", temperature: 0.9 } },
+      (model, attempt) => { btn.innerHTML = `<span class="spinner"></span>Думаю над миксами… (${esc(model)}${attempt ? `, попытка ${attempt + 1}` : ""})`; });
+    const cand = Array.isArray(j?.candidates) ? j.candidates[0] : null;
+    const text = (Array.isArray(cand?.content?.parts) ? cand.content.parts : []).map((p) => str(p?.text)).join("");
+    if (!text) throw new Error(cand?.finishReason === "SAFETY" ? "Модель отказалась отвечать на этот запрос. Попробуйте переформулировать." : "Модель вернула пустой ответ. Попробуйте ещё раз.");
+    let raw;
+    try { raw = JSON.parse(text.replace(/^```(json)?|```$/g, "").trim()); }
+    catch { throw new Error("Gemini вернул не JSON, а обычный текст. Попробуйте ещё раз."); }
+    const data = validateResult(raw);
+    lastResult = data;
+    renderResult(data);
+  } catch (e) {
+    out.innerHTML = `<div class="card err">Ошибка: ${esc(e.message || "что-то пошло не так")}</div>`;
+  } finally {
+    btn.disabled = false; btn.innerHTML = "✨ Спросить Gemini";
+  }
+});
+
+let lastResult = null;
+function mixCard(m, { idx, savedIdx } = {}) {
+  const comps = (Array.isArray(m.components) ? m.components : []).filter(isObj).map((c) => {
+    const p = clampPct(c.percent);
+    return `<div class="comp"><span class="pct">${Math.round(p)}%</span><span class="pbar"><i style="width:${p}%"></i></span><span>${esc(c.tobacco)}</span></div>`;
+  }).join("");
+  const stars = savedIdx != null
+    ? `<div class="stars">${[1, 2, 3, 4, 5].map((n) => `<span data-star="${n}" data-idx="${savedIdx}" class="${n <= (m.rating || 0) ? "on" : ""}">★</span>`).join("")}</div>` : "";
+  return `<div class="card mix">
+    <h3>${esc(m.name)}</h3>
+    ${m.strength ? `<span class="tag">${esc(m.strength)}</span>` : ""}${m.needToBuy ? `<span class="tag">🛒 докупить: ${esc(m.needToBuy)}</span>` : ""}
+    <div style="margin:8px 0">${comps}</div>
+    ${m.profile ? `<p>${esc(m.profile)}</p>` : ""}
+    ${m.why ? `<p class="muted">💡 ${esc(m.why)}</p>` : ""}
+    ${m.packing ? `<p class="muted">🥣 ${esc(m.packing)}</p>` : ""}
+    ${m.heat ? `<p class="muted">🔥 ${esc(m.heat)}</p>` : ""}
+    ${stars}
+    ${idx != null ? `<button class="small" data-save="${idx}">💾 Сохранить</button> <button class="small" data-gbowl="${idx}">🔥 Забить</button>` : ""}
+    ${savedIdx != null ? `<button class="small" data-sbowl="${savedIdx}">🔥 Забить</button>` : ""}
+    ${savedIdx != null ? `<button class="small" data-unsave="${savedIdx}">Удалить</button>` : ""}
+  </div>`;
+}
+function renderResult(d) {
+  let html = "";
+  if (d.recognized?.length) {
+    html += `<div class="card"><b>Распознал на фото:</b>
+      ${d.recognized.map((t) => `<div class="shelf-item"><div class="t">${esc(tobaccoName(t))}${t.notes ? `<div class="muted">${esc(t.notes)}</div>` : ""}</div></div>`).join("")}
+      <button class="small" id="btnToShelf" style="margin-top:8px">＋ Всё на полку</button></div>`;
+  }
+  html += d.mixes.map((m, i) => mixCard(m, { idx: i })).join("");
+  if (!d.mixes.length) html += `<div class="card muted">Миксов в ответе нет — только распознанные табаки. Добавьте их на полку и спросите ещё раз.</div>`;
+  const notes = [d.dropped && `пропущено миксов с некорректными процентами: ${d.dropped}`, d.fixed && `проценты пересчитаны до 100% в миксах: ${d.fixed}`].filter(Boolean);
+  if (notes.length) html += `<p class="muted" style="font-size:13px">ℹ️ ${notes.join("; ")}.</p>`;
+  if (d.advice) html += `<div class="card muted">${esc(d.advice)}</div>`;
+  $("#mixResult").innerHTML = html;
+}
+$("#mixResult").addEventListener("click", (e) => {
+  if (e.target.id === "btnToShelf") { lastResult.recognized.forEach(addToShelf); e.target.textContent = "✓ Добавлено"; e.target.disabled = true; return; }
+  if (e.target.dataset.gbowl != null) return chooseForHookah(lastResult.mixes[e.target.dataset.gbowl]);
+  const s = e.target.dataset.save;
+  if (s != null) { saved.unshift({ ...lastResult.mixes[s], date: Date.now(), rating: 0 }); saveSaved(); e.target.textContent = "✓ Сохранено"; e.target.disabled = true; }
+});
+
+// ---------- Резервная копия ----------
+// Файл JSON со всеми данными. Ключ Gemini попадает в него только по галочке.
+const BACKUP_APP = "kalyan-helper";
+$("#bkSave").addEventListener("click", async () => {
+  const withKey = $("#bkKey").checked;
+  const data = {
+    app: BACKUP_APP, version: 1, created: new Date().toISOString(),
+    data: { settings: { ...settings, apiKey: withKey ? settings.apiKey : "" }, shelf, saved, shop, timers },
+  };
+  const fileName = `kalyan-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  // В приложении скачивание через ссылку не работает: пишем файл и открываем меню «Поделиться»
+  // (сохранить на Диск, в Telegram «Избранное», в Файлы)
+  if (IS_NATIVE) {
+    try {
+      const r = await nativePlugin("Filesystem").writeFile({ path: fileName, data: JSON.stringify(data, null, 1), directory: "CACHE", encoding: "utf8" });
+      await nativePlugin("Share").share({ title: "Резервная копия кальяна", files: [r.uri] });
+      $("#bkStatus").textContent = `✓ Копия готова: сохраните её туда, где не потеряется (Google Диск, Telegram «Избранное»).${withKey ? " В ней ключ — не пересылайте чужим." : ""}`;
+    } catch (e) {
+      if (!/cancel/i.test(e?.message || "")) $("#bkStatus").innerHTML = '<span class="err">Не получилось сохранить копию.</span>';
+    }
+    return;
+  }
+  try {
+    const blob = new Blob([JSON.stringify(data, null, 1)], { type: "application/json" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = fileName;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 10000);
+    $("#bkStatus").textContent = `✓ Файл ${a.download} сохранён в «Загрузки»: ${shelf.length} табаков, ${saved.length} миксов${withKey ? ", с ключом — не пересылайте его чужим" : ", без ключа"}.`;
+  } catch {
+    $("#bkStatus").innerHTML = '<span class="err">Не получилось сохранить файл.</span>';
+  }
+});
+$("#bkLoad").addEventListener("click", () => $("#bkFile").click());
+$("#bkFile").addEventListener("change", async (e) => {
+  const file = e.target.files?.[0]; e.target.value = "";
+  if (!file) return;
+  const st = $("#bkStatus");
+  let raw;
+  try { raw = JSON.parse(await file.text()); }
+  catch { st.innerHTML = '<span class="err">Это не файл резервной копии: не удалось прочитать JSON.</span>'; return; }
+  if (!isObj(raw) || raw.app !== BACKUP_APP || !isObj(raw.data)) { st.innerHTML = '<span class="err">Этот файл не похож на копию кальянного помощника.</span>'; return; }
+  // Каждый раздел проверяем как при обычном чтении: битое поле не ломает остальные
+  const d = raw.data;
+  const nShelf = checkShelf(d.shelf), nSaved = checkSaved(d.saved), nShop = checkShop(d.shop), nTimers = checkTimers(d.timers);
+  const nSettings = isObj(d.settings) ? checkSettings(d.settings) : null;
+  const when = num(Date.parse(raw.created)) ? new Date(raw.created).toLocaleString("ru") : "неизвестной даты";
+  const what = [nShelf && `${nShelf.length} табаков`, nSaved && `${nSaved.length} миксов`, nShop && `список покупок`, nSettings?.setups && `${nSettings.setups.length} сетап(ов)`].filter(Boolean).join(", ");
+  if (!what) { st.innerHTML = '<span class="err">В файле нет данных, которые можно загрузить.</span>'; return; }
+  if (!confirm(`Загрузить копию от ${when}?\n\nВ ней: ${what}.\nТекущие данные в этих разделах будут заменены.`)) return;
+  if (nShelf) { shelf = nShelf; saveShelf(); picked.clear(); }
+  if (nSaved) { saved = nSaved; saveSaved(); }
+  if (nShop) { shop = nShop; saveShop(); }
+  if (nTimers?.length) { timers = nTimers; saveTimers(); }
+  if (nSettings) {
+    const key = nSettings.apiKey || settings.apiKey; // копия без ключа не стирает текущий
+    if (!nSettings.setups) { delete nSettings.setups; delete nSettings.activeSetup; }
+    Object.assign(settings, nSettings, { apiKey: key });
+    saveSettings();
+    $("#apiKey").value = settings.apiKey; $("#strength").value = settings.strength;
+    renderModels(); renderSetups();
+  }
+  renderTimers(); renderShelf(); renderShop(); renderSaved();
+  st.innerHTML = `<span style="color:var(--ok)">✓ Загружено: ${esc(what)}.</span>`;
+});
+
+// ---------- Android-приложение: точные системные будильники ----------
+// В браузере блок ничего не делает. В приложении каждый будущий сигнал (переворот и готовность углей,
+// конец прогрева, повороты углей, отдельные таймеры) заранее ставится в Android с allowWhileIdle,
+// поэтому он придёт вовремя, даже если приложение закрыто, а экран заблокирован.
+const CHANNEL = "hookah_alarms";
+const SMOKE_AHEAD = 12; // сколько будущих «повернуть угли» ставить заранее (12 × 20 мин = 4 часа)
+let nativeReady = false;
+
+// Расписание повторяет цепочку этапов во вкладке «Кальян»
+function plannedAlarms(now = Date.now()) {
+  const out = [];
+  const add = (at, title, body) => { if (at > now + 1000) out.push({ at, title, body }); };
+  sessions.forEach((x) => {
+    if (x.finishing) return;
+    const title = `🔥 ${x.name}`;
+    let base = x.end, firstK = 0;
+    if (x.phase === "coals") {
+      if (!x.flipped) add(x.end - (x.dur * 1000) / 2, title, "Переверните угли");
+      add(x.end, title, PHASE.coals.done);
+      base = x.end + x.warm * 60e3;
+      add(base, title, PHASE.warm.done);
+      firstK = 1;
+    } else if (x.phase === "warm") {
+      add(x.end, title, PHASE.warm.done);
+      firstK = 1;
+    }
+    for (let k = firstK; k < firstK + SMOKE_AHEAD; k++) add(base + k * x.every * 60e3, title, PHASE.smoke.done);
+  });
+  timers.forEach((t) => { if (t.endAt) add(t.endAt, `⏱ ${t.name}`, "Время вышло!"); });
+  return out.sort((a, b) => a.at - b.at).slice(0, 60);
+}
+
+// Любое изменение таймеров и кальянов пересобирает расписание целиком (с небольшой задержкой)
+let resyncTimer;
+function nativeResync() {
+  if (!LN) return;
+  clearTimeout(resyncTimer);
+  resyncTimer = setTimeout(async () => {
+    try {
+      const pending = await LN.getPending();
+      if (pending?.notifications?.length) await LN.cancel({ notifications: pending.notifications.map((n) => ({ id: n.id })) });
+      const list = plannedAlarms();
+      if (list.length) await LN.schedule({ notifications: list.map((a, i) => ({
+        id: i + 1, title: a.title, body: a.body, channelId: CHANNEL, smallIcon: "ic_stat_hookah", iconColor: "#ff8a3d",
+        autoCancel: true, schedule: { at: new Date(a.at), allowWhileIdle: true },
+      })) });
+    } catch (e) { console.warn("Не удалось поставить будильники:", e?.message); }
+  }, 300);
+}
+
+// Разрешения: уведомления (Android 13+) и точные будильники (Android 12+, «Будильники и напоминания»)
+async function nativeStatus(ask = false) {
+  if (!LN) return;
+  const st = $("#nativeStatus");
+  try {
+    let p = await LN.checkPermissions();
+    if (ask && p.display !== "granted") p = await LN.requestPermissions();
+    let ex = { exact_alarm: "granted" }; // на старых Android отдельного разрешения нет
+    try { ex = await LN.checkExactNotificationSetting(); } catch {}
+    const okN = p.display === "granted", okE = ex.exact_alarm === "granted";
+    nativeReady = okN && okE;
+    st.innerHTML = `${okN ? "✅" : "❌"} Уведомления<br>${okE ? "✅" : "❌"} Будильники и напоминания (точное время)`
+      + (nativeReady ? "" : "<br>Нажмите кнопку выше, чтобы включить.");
+    $("#btnNotif").textContent = nativeReady ? "🔔 Сигналы включены" : "🔔 Разрешить сигналы";
+  } catch {
+    st.textContent = "Не удалось проверить разрешения.";
+  }
+  updateNotifHint();
+}
+async function nativeAskPermissions() {
+  await nativeStatus(true);
+  try {
+    const ex = await LN.checkExactNotificationSetting();
+    // Это разрешение выдаётся только в системных настройках — открываем нужный экран
+    if (ex.exact_alarm !== "granted") await LN.changeExactNotificationSetting();
+  } catch {}
+  await nativeStatus();
+  nativeResync();
+}
+async function nativeInit() {
+  if (!LN) return;
+  document.documentElement.classList.add("native");
+  try {
+    await LN.createChannel({ id: CHANNEL, name: "Сигналы кальяна", description: "Угли, прогрев, повороты углей и таймеры",
+      importance: 5, visibility: 1, vibration: true, lights: true, lightColor: "#FF8A3D" });
+  } catch {}
+  await nativeStatus(true);
+  // Вернулись из системных настроек — обновляем галочки
+  document.addEventListener("visibilitychange", () => { if (document.visibilityState === "visible") nativeStatus(); });
+  nativeResync();
+}
+
+// ---------- Старт ----------
+renderTimers(); renderSessions(); updateNotifHint(); updateWakeLock();
+showTab(store.get("tab", "hookah", (t) => (["hookah", "timers", "guides", "mix", "shelf", "settings"].includes(t) ? t : undefined)));
+// Офлайн-кэш нужен только сайту; в приложении файлы и так лежат внутри
+if (!IS_NATIVE && "serviceWorker" in navigator && location.protocol !== "file:") navigator.serviceWorker.register("sw.js").catch(() => {});
+nativeInit();
+</script>
+</body>
+</html>

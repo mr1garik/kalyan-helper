@@ -1,0 +1,14 @@
+{
+  "appId": "ua.kalyan.helper",
+  "appName": "Кальянный помощник",
+  "webDir": "hookah",
+  "android": {
+    "backgroundColor": "#16120f"
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_hookah",
+      "iconColor": "#ff8a3d"
+    }
+  }
+}

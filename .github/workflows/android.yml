@@ -1,0 +1,64 @@
+# Собирает подписанный APK при каждом изменении в main (и по кнопке Run workflow).
+# Готовый файл появляется в Releases — его можно скачать прямо с телефона.
+name: Android APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Установить зависимости и скопировать веб-часть в Android
+        run: |
+          npm ci
+          npx cap sync android
+
+      - name: Достать ключ подписи из секретов
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "KEYSTORE_FILE=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+      - name: Собрать APK
+        working-directory: android
+        env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+          cp app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/kalyan-helper.apk"
+
+      - name: Сохранить APK как артефакт
+        uses: actions/upload-artifact@v4
+        with:
+          name: kalyan-helper-apk
+          path: ${{ runner.temp }}/kalyan-helper.apk
+
+      - name: Выложить в Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v1.0.${{ github.run_number }}"
+          gh release create "$TAG" "$RUNNER_TEMP/kalyan-helper.apk" \
+            --title "Кальянный помощник $TAG" \
+            --notes "Сборка ${{ github.run_number }} от $(date -u '+%Y-%m-%d %H:%M') UTC. Установите APK на телефон поверх предыдущей версии."

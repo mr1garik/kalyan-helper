@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="20%" r="85%">
+      <stop offset="0" stop-color="#4a2a17"/>
+      <stop offset=".55" stop-color="#1e1510"/>
+      <stop offset="1" stop-color="#120d0a"/>
+    </radialGradient>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#a8998a"/>
+      <stop offset=".5" stop-color="#f3ebe3"/>
+      <stop offset="1" stop-color="#8a7b6d"/>
+    </linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff9a4d"/>
+      <stop offset="1" stop-color="#c2410c"/>
+    </linearGradient>
+    <radialGradient id="coal" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fff1c2"/>
+      <stop offset=".45" stop-color="#ffb24d"/>
+      <stop offset="1" stop-color="#ff5a1f"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <g transform="translate(48 34) scale(.82)">
+  <!-- дым -->
+  <path d="M262 104c-26-18-8-40 12-44M248 112c-30-22-14-50 6-58" fill="none" stroke="#f3ebe3" stroke-opacity=".35" stroke-width="9" stroke-linecap="round"/>
+  <!-- угли -->
+  <ellipse cx="256" cy="140" rx="70" ry="30" fill="#ff7a2e" opacity=".25"/>
+  <rect x="210" y="122" width="26" height="22" rx="5" fill="url(#coal)"/>
+  <rect x="243" y="118" width="26" height="22" rx="5" fill="url(#coal)"/>
+  <rect x="276" y="122" width="26" height="22" rx="5" fill="url(#coal)"/>
+  <!-- калауд и чаша -->
+  <path d="M196 146h120l-14 22H210z" fill="url(#metal)"/>
+  <path d="M214 172h84l-20 30h-44z" fill="#d8cabb"/>
+  <!-- шахта -->
+  <rect x="246" y="202" width="20" height="150" fill="url(#metal)"/>
+  <rect x="226" y="236" width="60" height="12" rx="6" fill="url(#metal)"/>
+  <rect x="232" y="290" width="48" height="10" rx="5" fill="url(#metal)"/>
+  <!-- шланг -->
+  <path d="M286 300c50 4 70 30 66 70" fill="none" stroke="#a8998a" stroke-width="10" stroke-linecap="round"/>
+  <!-- колба -->
+  <path d="M232 346h48c0 14 46 30 46 72 0 32-30 50-70 50s-70-18-70-50c0-42 46-58 46-72z" fill="url(#glass)"/>
+  <path d="M206 420c10 18 30 28 50 28" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="8" stroke-linecap="round"/>
+  </g>
+</svg>
