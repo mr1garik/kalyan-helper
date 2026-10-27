@@ -1,0 +1,591 @@
+0	Кальян	Hookah
+1	＋ Ще один кальян	＋ One more hookah
+2	Новий кальян	New hookah
+3	Сетап	Setup
+4	Що забиваємо	What are we packing
+5	🔥 Почати: ставлю вугілля	🔥 Start: coals on
+6	Таймери підуть один за одним: вугілля → прогрів → куримо, з нагадуваннями на кожному кроці.	Timers run one after another: coals → heat-up → smoking, with reminders at every step.
+7	Таймери	Timers
+8	＋ Додати таймер	＋ Add timer
+9	Гайди	Guides
+10	📇 Бренди	📇 Brands
+11	Міцність, нарізка й димність — за картками товарів магазину yolo.ski, жовтень 2026. Окремі лінійки бренду можуть відрізнятися.	Strength, cut and smoke level come from yolo.ski product pages, October 2026. Individual lines within a brand may differ.
+12	Підібрати мікс	Find a mix
+13	Шукає по базі одразу, поки ви друкуєте. Цей самий текст піде в Gemini.	Searches the database as you type. The same text is sent to Gemini.
+14	Мої тютюни: оберіть, і залишаться мікси з ними	My tobaccos: pick some to see mixes that use them
+15	✨ Запитати Gemini	✨ Ask Gemini
+16	📚 З бази	📚 From the database
+17	· без інтернету	· offline
+18	Усі мікси бази	All mixes in the database
+19	Моя полиця	My shelf
+20	🛒 Купити	🛒 Shopping list
+21	📋 Скопіювати список	📋 Copy list
+22	Прибрати куплене	Clear bought
+23	Збережені мікси	Saved mixes
+24	Налаштування	Settings
+25	Ключ Gemini API	Gemini API key
+26	Перевірити ключ	Check key
+27	Ключ зберігається лише на цьому пристрої.	The key is stored only on this device.
+28	Модель	Model
+29	🥣 Мої чаші та вугілля	🥣 My bowls and coals
+30	Активний сетап використовується в сесіях, порадах і запитах до Gemini.	The active setup is used in sessions, tips and Gemini requests.
+31	Назва	Name
+32	Чаша	Bowl
+33	Фанел	Phunnel
+34	Турка (з дірками)	Turkish (with holes)
+35	Єгипетська	Egyptian
+36	Фрукт	Fruit
+37	Жар	Heat
+38	Калауд / HMD	Kaloud / HMD
+39	Фольга	Foil
+40	Вугілля	Coals
+41	22 мм	22 mm
+42	25 мм	25 mm
+43	26 мм	26 mm
+44	Скільки вуглин	How many coals
+45	Тютюну, г	Tobacco, g
+46	Розпал, хв	Lighting, min
+47	Прогрів, хв	Heat-up, min
+48	Поворот вугілля, хв	Coal turn, min
+49	＋ Новий сетап	＋ New setup
+50	Міцність до смаку	Preferred strength
+51	Легка	Light
+52	Середня	Medium
+53	Міцна	Strong
+54	🔔 Дозволити сповіщення	🔔 Allow notifications
+55	🔊 Перевірити звук	🔊 Test sound
+56	💾 Резервна копія	💾 Backup
+57	Полиця, залишки, мікси, сетапи, список покупок і таймери зберігаються лише в цьому браузері. Збережіть копію у файл, щоб не втратити їх при зміні телефона, очищенні браузера чи новій адресі сайту.	Your shelf, stock, mixes, setups, shopping list and timers are stored only in this browser. Save a backup file so you don't lose them when you change phones, clear the browser or the site moves.
+58	Додати в копію ключ Gemini	Include the Gemini key in the backup
+59	⬇️ Зберегти копію	⬇️ Save backup
+60	⬆️ Завантажити	⬆️ Load
+61	🎡 Колесо міксів	🎡 Mix wheel
+62	Крутити!	Spin!
+63	Мікси	Mixes
+64	Полиця	Shelf
+65	🔍 Бренд, країна чи міцність: «міцн», «Україна»…	🔍 Brand, country or strength: "strong", "Ukraine"…
+66	🔍 Чого хочеться: кавун, м'ята, свіже, десерт…	🔍 What do you want: watermelon, mint, fresh, dessert…
+67	Сфоткати пачки	Photo of packs
+68	З галереї	From gallery
+69	🔍 Бренд: почніть вводити	🔍 Brand: start typing
+70	🔍 Смак: назва або «кавун»	🔍 Flavor: name or "watermelon"
+71	Додати: вугілля, Heven Granate…	Add: coals, Heven Granate…
+72	Вставте ключ з aistudio.google.com	Paste the key from aistudio.google.com
+73	Наприклад: Фанел + калауд	For example: Phunnel + Kaloud
+74	⚠️ Не вдалося зберегти зміни: пам'ять браузера недоступна або переповнена. Після закриття застосунку вони зникнуть.	⚠️ Couldn't save changes: browser storage is unavailable or full. They will be lost when the app is closed.
+75	Мій кальян	My hookah
+76	фанел	phunnel
+77	турка	Turkish bowl
+78	єгипетська чаша	Egyptian bowl
+79	фрукт	fruit bowl
+80	калауд	Kaloud
+81	фольга	foil
+82	пухке забивання, 2–3 мм нижче краю	fluffy pack, 2–3 mm below the rim
+83	пухко, врівень з краєм, отвори не забивати	fluffy, level with the rim, keep the holes clear
+84	з гіркою під фольгу	overpacked under foil
+85	пухко, жар м'якше — фрукт швидко перегрівається	fluffy, gentler heat — fruit overheats quickly
+86	4 вуглини по 22 мм	4 coals of 22 mm
+87	3 вуглини	3 coals
+88	4 вуглини по краю	4 coals around the edge
+89	3 вуглини по краю, не в центрі	3 coals around the edge, not in the center
+90	Зазвичай:	Usually:
+91	. Прогрів	. Heat-up
+92	хв, повертати вугілля кожні	min, turn the coals every
+93	хв.	min.
+94	Видалити «	Delete "
+95	Спершу вставте ключ.	Paste the key first.
+96	Перевіряю…	Checking…
+97	✓ Ключ працює.	✓ The key works.
+98	Доступно моделей:	Models available:
+99	Не вийшло:	Didn't work:
+100	Сигнали ставляться в Android як будильники: прийдуть вчасно, навіть якщо застосунок закрито, а екран заблоковано.	Signals are set as Android alarms: they arrive on time even when the app is closed and the screen is locked.
+101	Щоб сигнали приходили на заблокованому екрані, дозвольте сповіщення і «Будильники та нагадування» в ⚙️ Налаштуваннях.	To get signals on a locked screen, allow notifications and "Alarms & reminders" in ⚙️ Settings.
+102	Час рахується за годинником і не зіб'ється. Але надійний сигнал буде лише поки застосунок відкритий: поки йде таймер, екран не гасне.	Time is tracked by the clock and won't drift. But a reliable signal only comes while the app is open: the screen stays on while a timer runs.
+103	 Якщо згорнути застосунок, сповіщення може прийти, а може запізнитися — Android часто присипляє фонові сторінки.	 If you minimize the app, the notification may arrive or may be late — Android often puts background pages to sleep.
+104	 Сповіщення можна ввімкнути в Налаштуваннях, але у фоні вони не гарантовані.	 You can enable notifications in Settings, but they aren't guaranteed in the background.
+105	🔥 Кальян	🔥 Hookah
+106	Розпал вугілля	Lighting coals
+107	Прогрів чаші	Bowl heat-up
+108	Поворот / заміна вугілля	Turn / replace coals
+109	Таймер	Timer
+110	Ок	OK
+111	Назва таймера (порожньо = видалити)	Timer name (empty = delete)
+112	Скільки хвилин?	How many minutes?
+113	Назва таймера	Timer name
+114	Мій таймер	My timer
+115	— час вийшов!	— time's up!
+116	Мікс	Mix
+117	Вугілля	Coals
+118	до готовності вугілля	until the coals are ready
+119	Вугілля готове — ставте його на чашу. Прогрів уже пішов	Coals are ready — put them on the bowl. Heat-up has started
+120	Прогрів	Heat-up
+121	до кінця прогріву	until heat-up ends
+122	Чаша прогріта — можна курити	The bowl is ready — enjoy
+123	Куримо	Smoking
+124	до повороту вугілля	until the coal turn
+125	Поверніть вугілля і здуйте попіл	Turn the coals and blow off the ash
+126	пухко, 2–3 мм нижче краю, не трамбувати	fluffy, 2–3 mm below the rim, don't press
+127	з гіркою під фольгу, фольгу натягнути	overpacked, pull the foil tight
+128	Покладіть	Put
+129	вуглини по	coals of
+130	мм на плитку.	mm on the burner.
+131	✓ Вугілля перевернуте	✓ Coals flipped
+132	Перевернути через	Flip in
+133	— нагадаю	— I'll remind you
+134	Поки гріється: налийте воду (шахта у воді на 2–3 см) і перевірте тягу	While they heat: add water (stem 2–3 cm under water) and check the draw
+135	Забийте чашу — грами нижче ↓	Pack the bowl — grams below ↓
+136	Забийте чашу	Pack the bowl
+137	Вугілля готове, коли повністю сіре, без чорних плям	Coals are ready when fully gray, with no black spots
+138	Вугілля на калауд, кришку прикрити	Coals on the Kaloud, close the lid
+139	Вугілля по краю фольги, не в центр	Coals around the foil edge, not in the center
+140	Перші 2–3 хвилини затягуйтеся м'яко	Draw gently for the first 2–3 minutes
+141	Гірчить — зніміть одну вуглину; мало диму — зачекайте або посуньте вугілля до центру	Harsh — remove one coal; little smoke — wait or move the coals to the center
+142	Кожні	Every
+143	хв повертайте вугілля і здувайте попіл — нагадаю	min turn the coals and blow off the ash — I'll remind you
+144	Дим слабшає — посуньте вугілля ближче до центру	Smoke getting weaker — move the coals closer to the center
+145	Вугілля прогоріло наполовину — міняйте на свіже (запустіть окремий таймер розпалу)	Coals half burned — replace with fresh ones (start a separate lighting timer)
+146	Без міксу. Забивання:	No mix. Packing:
+147	г	g
+148	 · 🛒 немає на полиці	 · 🛒 not on the shelf
+149	Усього ≈	Total ≈
+150	г. Змішайте в мисці й забийте:	g. Mix in a bowl and pack:
+151	Як зайшов мікс? Оцінка збереже його в «Збережені мікси».	How was the mix? Rating it saves it to "Saved mixes".
+152	Не зберігати	Don't save
+153	Назад	Back
+154	Ок ✓	OK ✓
+155	🥣 Забивання	🥣 Packing
+156	Далі ⏭	Next ⏭
+157	+1 хв	+1 min
+158	⟲ Заново	⟲ Restart
+159	Завершити	Finish
+160	Розпал	Lighting
+161	хв → прогрів	min → heat-up
+162	хв → вугілля кожні	min → coals every
+163	хв ·	min ·
+164	мм ·	mm ·
+165	г тютюну	g of tobacco
+166	🗂️ З полиці	🗂️ From shelf
+167	⭐ Збережені	⭐ Saved
+168	🎡 Колесо	🎡 Wheel
+169	Без міксу	No mix
+170	Збережених міксів поки немає.	No saved mixes yet.
+171	На полиці поки нічого змішати — додайте 2–3 тютюни на 🗂️ Полицю або крутніть колесо.	Nothing to mix on the shelf yet — add 2–3 tobaccos to 🗂️ Shelf or spin the wheel.
+172	Обрано ·	Selected ·
+173	г у	g in
+174	г)	g)
+175	📦 Списано:	📦 Used:
+176	. Закінчується:	. Running low:
+177	— додано в 🛒	— added to 🛒
+178	Завершити «	Finish "
+179	Курили	Smoked for
+180	Забитий	Packed
+181	⭐ Збережено:	⭐ Saved:
+182	: переверніть вугілля	: flip the coals
+183	· поворотів вугілля:	· coal turns:
+184	З початку	Since start
+185	час вийшов	time ran out
+186	хв	min
+187	сек	sec
+188	тому — застосунок був згорнутий	ago — the app was minimized
+189	🌬️ Пухке (повітряне) забивання	🌬️ Fluffy (airy) pack
+190	Універсальний варіант для фанела й турки, підходить для більшості тютюнів.	A universal option for phunnel and Turkish bowls, suits most tobaccos.
+191	Тютюн трохи підсушіть на серветці, якщо він дуже вологий, і розпушіть пальцями.	Dry the tobacco a little on a napkin if it's very wet, and fluff it with your fingers.
+192	Сипте щіпками з невеликої висоти,	Sprinkle in pinches from a small height,
+193	не трамбуйте	don't press it down
+194	Рівень: 2–3 мм нижче краю для калауда, врівень з краєм для фольги.	Level: 2–3 mm below the rim for a Kaloud, level with the rim for foil.
+195	Отвори в чаші не мають забиватися: тютюн лежить повітряно.	The bowl holes must stay clear: the tobacco sits loosely.
+196	🧱 Щільне забивання	🧱 Dense pack
+197	Для легких тютюнів на світлому листі: довше курится й дає більше диму.	For light tobaccos on blond leaf: lasts longer and gives more smoke.
+198	Сипте шарами й кожен шар злегка притискайте пальцем.	Add in layers and press each layer lightly with a finger.
+199	Не ущільнюйте до кам'яного стану: повітря має проходити.	Don't compress it rock-hard: air must pass through.
+200	Потрібно трохи більше жару й довший прогрів.	Needs a bit more heat and a longer heat-up.
+201	Міцні тютюни на темному листі щільно краще не забивати: почнуть гірчити.	Strong dark-leaf tobaccos are better not packed densely: they turn harsh.
+202	⛰️ Забивання «з гіркою» (оверпак)	⛰️ Overpack ("mound")
+203	Класика для єгипетської чаші з фольгою: багато тютюну, багато диму.	A classic for an Egyptian bowl with foil: lots of tobacco, lots of smoke.
+204	Тютюн насипають вище краю гіркою, потім щільно натягують фольгу.	The tobacco is piled above the rim, then the foil is pulled tight.
+205	Робіть багато дрібних отворів, у центрі рідше.	Poke many small holes, fewer in the center.
+206	Жар знадобиться акуратний: тютюн ближче до вугілля й легко пригорає.	Heat must be careful: the tobacco is closer to the coals and burns easily.
+207	🔥 Розпал вугілля	🔥 Lighting coals
+208	Кокосові кубики 25 мм на плитці:	25 mm coconut cubes on a burner:
+209	8–10 хвилин	8–10 minutes
+210	, посередині переверніть.	, flip them halfway.
+211	Вугілля готове, коли воно	A coal is ready when it's
+212	повністю сіре	fully gray
+213	з усіх боків і ніде немає чорних плям.	on all sides with no black spots.
+214	Недопалене вугілля дає гіркоту й неприємний запах.	Underlit coals give bitterness and a bad smell.
+215	Не розпалюйте в закритому приміщенні без провітрювання: чадний газ.	Don't light coals indoors without ventilation: carbon monoxide.
+216	🌡️ Жар і прогрів	🌡️ Heat and heat-up
+217	Калауд:	Kaloud:
+218	зазвичай 3 вуглини.	usually 3 coals.
+219	Фольга:	Foil:
+220	3–4 вуглини по краях, не в центрі.	3–4 coals around the edges, not in the center.
+221	Прогрів 5–7 хвилин, перші затяжки робіть м'яко.	Heat up for 5–7 minutes, take the first draws gently.
+222	Гірчить, дим дере горло	Harsh, smoke burns the throat
+223	→ перегрів. Зніміть вуглину або посуньте вугілля до краю.	→ overheating. Remove a coal or move the coals to the edge.
+224	Мало диму, немає смаку	Little smoke, no flavor
+225	→ недогрів. Зачекайте, посуньте вугілля до центру або додайте одну.	→ underheating. Wait, move the coals to the center or add one.
+226	Кожні 15–20 хвилин повертайте вугілля і здувайте з нього попіл.	Every 15–20 minutes turn the coals and blow off the ash.
+227	💧 Колба і вода	💧 Base and water
+228	Шахта має бути занурена у воду на	The stem should be submerged by
+229	2–3 см	2–3 cm
+230	. Глибше — туга тяга, мілкіше — гарячий дим.	. Deeper — a tight draw, shallower — hot smoke.
+231	Холодна вода або лід у колбі роблять дим м'якшим.	Cold water or ice in the base makes the smoke smoother.
+232	Перевірте тягу до встановлення вугілля: вона має бути легкою і без свисту.	Check the draw before adding coals: it should be light and without whistling.
+233	🎨 Як міксувати смаки	🎨 How to mix flavors
+234	База + акцент:	Base + accent:
+235	60–70% основного смаку і 30–40% доповнення.	60–70% main flavor and 30–40% complement.
+236	Холодок (м'ята, ice-смаки) беріть по 10–20%: він легко забиває все інше.	Use cooling (mint, ice flavors) at 10–20%: it easily drowns everything else.
+237	Кисле плюс солодке майже завжди працює: лимон і ягоди, лайм і манго.	Sour plus sweet almost always works: lemon and berries, lime and mango.
+238	Прянощі (кориця, кардамон) — по 10–15%, інакше мікс вийде «аптечним».	Spices (cinnamon, cardamom) at 10–15%, otherwise the mix tastes "medicinal".
+239	Можна змішати тютюни в мисці або забити секторами й шарами, але перемішаний мікс куриться рівніше.	You can mix tobaccos in a bowl or pack them in sectors and layers, but a blended mix smokes more evenly.
+240	✂️ нарізка	✂️ cut
+241	💨 димність	💨 smoke
+242	 смаків	 flavors
+243	немає даних про міцність	no strength data
+244	Лінійки:	Lines:
+245	Списку смаків немає	No flavor list
+246	＋ Додати смаки на полицю	＋ Add flavors to shelf
+247	Нічого не знайшлося	Nothing found
+248	улюблений	favorite
+249	міцний	strong
+250	легкий	light
+251	солодкий	sweet
+252	кислий	sour
+253	свіжий	fresh
+254	закінчується	running low
+255	для гостей	for guests
+256	закінчився	out of stock
+257	смак не розпізнано — натисніть 🏷	flavor not recognized — tap 🏷
+258	Російський бренд, офіційно в Україну не ввозиться	Russian brand, not officially imported to Ukraine
+259	📦 Залишок у банці	📦 Left in the pack
+260	 — не враховується	 — not tracked
+261	Зберегти	Save
+262	Не враховувати	Don't track
+263	«+N г» — купили пачку. Коли забиваєте кальян, грами списуються самі.	"+N g" — you bought a pack. Grams are deducted automatically when you pack a hookah.
+264	Смаки	Flavors
+265	Свої мітки	Custom tags
+266	Полиця порожня. Додайте тютюни вручну або після розпізнавання фото.	The shelf is empty. Add tobaccos manually or after photo recognition.
+267	Введіть залишок у грамах, наприклад 85	Enter the amount left in grams, e.g. 85
+268	Немає в списку — впишіть своє й натисніть ＋	Not in the list — type your own and tap ＋
+269	міцність:	strength:
+270	смаків у списку	flavors listed
+271	смаки вписуються вручну	flavors are typed manually
+272	✓ Додано:	✓ Added:
+273	Такий тютюн уже є на полиці	This tobacco is already on the shelf
+274	залишилось	left
+275	(наприклад	(e.g.
+276	відкриє міксів:	unlocks mixes:
+277	＋ у список	＋ to list
+278	📦 Закінчується на полиці	📦 Running low on the shelf
+279	💡 Чого бракує для нових міксів	💡 Missing for new mixes
+280	Поки порожньо. Вкажіть залишки тютюну на полиці (🏷 → 📦), і те, що закінчується, з'явиться тут само.	Empty for now. Set tobacco amounts on the shelf (🏷 → 📦) and whatever runs low will appear here.
+281	Мій список	My list
+282	Список порожній	The list is empty
+283	🛒 Для кальяну:\n	🛒 For the hookah:\n
+284	📋 Список скопійовано — вставте в месенджер	📋 List copied — paste it into a messenger
+285	Скопіюйте список:	Copy the list:
+286	Тут з'являться мікси, які ви збережете.	Mixes you save will appear here.
+287	Видалити мікс?	Delete the mix?
+288	🛒 немає на полиці	🛒 not on the shelf
+289	будь-який	any
+290	· в Україні:	· in Ukraine:
+291	🛒 докупити:	🛒 to buy:
+292	💾 Зберегти	💾 Save
+293	🔥 Забити	🔥 Pack it
+294	⭐ Мікс дня	⭐ Mix of the day
+295	Відкрити	Open
+296	🎡 Крутити колесо міксів	🎡 Spin the mix wheel
+297	Основа з холодком — з вашої полиці.	A base with cooling — from your shelf.
+298	Ці смаки часто поєднують — обидва тютюни є на полиці.	These flavors are often combined — both tobaccos are on your shelf.
+299	🗂️ Лише з вашої полиці:	🗂️ Only from your shelf:
+300	варіантів	options
+301	На полиці мало тютюнів, тому крутимо мікси з бази	Few tobaccos on the shelf, so we spin mixes from the database
+302	Додайте хоча б 2–3 тютюни на 🗂️ Полицю.	Add at least 2–3 tobaccos to 🗂️ Shelf.
+303	🎉 Випало:	🎉 You got:
+304	🔥 Забити цей мікс	🔥 Pack this mix
+305	✓ Збережено	✓ Saved
+306	вибраними тютюнами	selected tobaccos
+307	Знайдено за	Found for
+308	Нічого не знайшлося за	Nothing found for
+309	. Спробуйте інший смак або натисніть «Запитати Gemini».	. Try another flavor or tap "Ask Gemini".
+310	Додайте свої тютюни на 🗂️ Полицю, і тут з'являться мікси, які можна забити просто зараз.	Add your tobaccos to 🗂️ Shelf and mixes you can pack right now will appear here.
+311	Можна забити з того, що є:	Can be packed from what you have:
+312	З тютюнів на полиці готових міксів у базі немає. Нижче ті, де бракує одного смаку.	No ready mixes in the database from your shelf. Below are those missing one flavor.
+313	Бракує одного смаку:	Missing one flavor:
+314	Усі смаки	All flavors
+315	не вдалося прочитати фото:	couldn't read photos:
+316	(файл пошкоджено або формат не підтримується)	(the file is damaged or the format isn't supported)
+317	пропущено	skipped
+318	: максимум	: maximum
+319	фото	photos
+320	Gemini не відповів за	Gemini didn't respond within
+321	секунд: повільний інтернет або сервер перевантажений. Спробуйте ще раз.	seconds: slow internet or an overloaded server. Please try again.
+322	Немає підключення до інтернету.	No internet connection.
+323	Не вдалося зв'язатися з Gemini: проблема з мережею.	Couldn't reach Gemini: network problem.
+324	Список моделей порожній. Натисніть «Перевірити ключ» у Налаштуваннях.	The model list is empty. Tap "Check key" in Settings.
+325	Не знайшлося жодної доступної моделі. Натисніть «Перевірити ключ» у Налаштуваннях.	No available model found. Tap "Check key" in Settings.
+326	Сервери Gemini зараз перевантажені. Зазвичай це минає за кілька хвилин. Спробуйте ще раз трохи згодом.	Gemini servers are overloaded right now. It usually passes in a few minutes. Try again a bit later.
+327	Безкоштовний ліміт Gemini наразі вичерпано.	The free Gemini limit is used up for now.
+328	Можна повторити через	You can retry in
+329	 Спробуйте за хвилину.	 Try again in a minute.
+330	Або оберіть іншу модель у Налаштуваннях.	Or choose another model in Settings.
+331	Ключ не підходить. Перевірте його в Налаштуваннях.	The key doesn't work. Check it in Settings.
+332	Доступ заборонено. Перевірте ключ і чи доступний Gemini API у вашому регіоні.	Access denied. Check the key and whether the Gemini API is available in your region.
+333	Gemini повернув відповідь у неочікуваному форматі (	Gemini returned an unexpected format (
+334	). Спробуйте ще раз.	). Please try again.
+335	це не об'єкт	not an object
+336	recognized — не список	recognized is not a list
+337	немає списку mixes	no mixes list
+338	жодного коректного міксу	no valid mixes
+339	Потрібен ключ Gemini: вставте його в ⚙️ Налаштуваннях.	A Gemini key is needed: paste it in ⚙️ Settings.
+340	Сфоткайте пачки, оберіть тютюни з полиці або напишіть побажання.	Take a photo of packs, pick tobaccos from the shelf or write a wish.
+341	Думаю над міксами…	Thinking about mixes…
+342	Думаю над міксами… (	Thinking about mixes… (
+343	, спроба	, attempt
+344	Модель відмовилася відповідати на цей запит. Спробуйте переформулювати.	The model refused to answer this request. Try rephrasing.
+345	Модель повернула порожню відповідь. Спробуйте ще раз.	The model returned an empty answer. Please try again.
+346	Gemini повернув не JSON, а звичайний текст. Спробуйте ще раз.	Gemini returned plain text instead of JSON. Please try again.
+347	Помилка:	Error:
+348	щось пішло не так	something went wrong
+349	Видалити	Delete
+350	Розпізнав на фото:	Recognized in the photo:
+351	＋ Усе на полицю	＋ All to shelf
+352	Міксів у відповіді немає — лише розпізнані тютюни. Додайте їх на полицю й запитайте ще раз.	No mixes in the answer — only recognized tobaccos. Add them to the shelf and ask again.
+353	пропущено міксів з некоректними відсотками:	mixes skipped due to invalid percentages:
+354	відсотки перераховано до 100% у міксах:	percentages rescaled to 100% in mixes:
+355	✓ Додано	✓ Added
+356	Резервна копія кальяну	Hookah backup
+357	✓ Копія готова: збережіть її туди, де не загубиться (Google Диск, Telegram «Збережене»).	✓ Backup ready: save it somewhere safe (Google Drive, Telegram "Saved Messages").
+358	 У ній ключ — не пересилайте чужим.	 It contains the key — don't send it to others.
+359	Не вийшло зберегти копію.	Couldn't save the backup.
+360	✓ Файл	✓ File
+361	збережено в «Завантаження»:	saved to "Downloads":
+362	тютюнів,	tobaccos,
+363	міксів	mixes
+364	, з ключем — не пересилайте його чужим	, with the key — don't send it to others
+365	, без ключа	, without the key
+366	Не вийшло зберегти файл.	Couldn't save the file.
+367	Це не файл резервної копії: не вдалося прочитати JSON.	This isn't a backup file: couldn't read the JSON.
+368	Цей файл не схожий на копію кальянного помічника.	This file doesn't look like a Hookah Helper backup.
+369	невідомої дати	an unknown date
+370	тютюнів	tobaccos
+371	список покупок	shopping list
+372	сетап(ів)	setup(s)
+373	У файлі немає даних, які можна завантажити.	The file has no data that can be loaded.
+374	Завантажити копію від	Load the backup from
+375	?\n\nУ ній:	?\n\nIt contains:
+376	.\nПоточні дані в цих розділах буде замінено.	.\nCurrent data in these sections will be replaced.
+377	✓ Завантажено:	✓ Loaded:
+378	Переверніть вугілля	Flip the coals
+379	Час вийшов!	Time's up!
+380	Не вдалося поставити будильники:	Couldn't set alarms:
+381	Сповіщення	Notifications
+382	Будильники та нагадування (точний час)	Alarms & reminders (exact time)
+383	Натисніть кнопку вище, щоб увімкнути.	Tap the button above to enable.
+384	🔔 Сигнали увімкнено	🔔 Signals on
+385	🔔 Дозволити сигнали	🔔 Allow signals
+386	Не вдалося перевірити дозволи.	Couldn't check permissions.
+387	Сигнали кальяну	Hookah signals
+388	Вугілля, прогрів, повороти вугілля і таймери	Coals, heat-up, coal turns and timers
+389	Кавун	Watermelon
+390	Грейпфрут	Grapefruit
+391	Подвійне яблуко / аніс	Double apple / anise
+392	Диня	Melon
+393	М'ята	Mint
+394	Холодок	Ice
+395	Лимонад / содова	Lemonade / soda
+396	Лимон	Lemon
+397	Лайм	Lime
+398	Апельсин / мандарин	Orange / tangerine
+399	Ананас	Pineapple
+400	Манго	Mango
+401	Маракуя	Passion fruit
+402	Персик / абрикос	Peach / apricot
+403	Банан	Banana
+404	Кокос	Coconut
+405	Ківі	Kiwi
+406	Лічі	Lychee
+407	Гуава	Guava
+408	Полуниця	Strawberry
+409	Малина	Raspberry
+410	Чорниця	Blueberry
+411	Смородина	Currant
+412	Вишня	Cherry
+413	Гранат	Pomegranate
+414	Барбарис	Barberry
+415	Ягідний мікс	Berry mix
+416	Виноград	Grape
+417	Яблуко	Apple
+418	Груша	Pear
+419	Слива	Plum
+420	Зелене: кактус / огірок / алое	Green: cactus / cucumber / aloe
+421	Шоколад	Chocolate
+422	Кола	Cola
+423	Кава	Coffee
+424	Чай	Tea
+425	Карамель	Caramel
+426	Ваніль	Vanilla
+427	Вершки / десерт	Cream / dessert
+428	Випічка	Pastry
+429	Горіхи	Nuts
+430	Жуйка / цукерки	Gum / candy
+431	Квіти	Flowers
+432	Прянощі	Spices
+433	Коктейль	Cocktail
+434	Самсварил	Самсварил
+435	Swipe (без нікотину)	Swipe (nicotine-free)
+436	IndiGo (без нікотину)	IndiGo (nicotine-free)
+437	Pixtea (без нікотину)	Pixtea (nicotine-free)
+438	Space Tea (чайна суміш)	Space Tea (tea blend)
+439	Кавуновий бриз	Watermelon breeze
+440	Соковитий кавун, м'ятна свіжість і легка кислинка.	Juicy watermelon, minty freshness and a light tang.
+441	Диня-манго з льодом	Iced melon-mango
+442	Медова диня і стигле манго, холодок за бажанням.	Honeydew melon and ripe mango, cooling optional.
+443	Грейпфрут-м'ята	Grapefruit-mint
+444	Гіркувато-кислий цитрус і м'ята. Класика, яка не набридає.	Bittersweet citrus and mint. A classic that never gets old.
+445	Мохіто	Mojito
+446	Лайм і м'ята, як у коктейлі.	Lime and mint, like the cocktail.
+447	Чорниця-лимон	Blueberry-lemon
+448	Солодка чорниця з яскравим лимоном.	Sweet blueberry with bright lemon.
+449	Малина-лайм	Raspberry-lime
+450	Ягідна солодкість і кислий лайм, дуже освіжає.	Berry sweetness and sour lime, very refreshing.
+451	Полуниця-ківі	Strawberry-kiwi
+452	Кисло-солодка фруктова пара.	A sweet-and-sour fruit pair.
+453	Полунично-банановий смузі	Strawberry-banana smoothie
+454	М'який десертний смузі.	A smooth dessert smoothie.
+455	Піна колада	Piña colada
+456	Ананас і кокос, пляжний вайб.	Pineapple and coconut, beach vibes.
+457	Тропіки	Tropics
+458	Насичений тропічний коктейль.	A rich tropical cocktail.
+459	Персик-маракуя	Peach-passion fruit
+460	Солодкий персик з кислинкою маракуї.	Sweet peach with a passion fruit tang.
+461	Вишнева кола	Cherry cola
+462	Газування з вишнею. Безпрограшний варіант.	Soda with cherry. Can't go wrong.
+463	Кола-лайм	Cola-lime
+464	Кола з часточкою лайма.	Cola with a slice of lime.
+465	Яблучний штрудель	Apple strudel
+466	Печене яблуко з корицею.	Baked apple with cinnamon.
+467	Подвійне яблуко з м'ятою	Double apple with mint
+468	Стара школа: анісове яблуко.	Old school: anise apple.
+469	Ягідний лимонад	Berry lemonade
+470	Літній лимонад з ягодами.	Summer lemonade with berries.
+471	Гранат-грейпфрут	Pomegranate-grapefruit
+472	Терпкий і кислий, для тих, хто не любить солодке.	Tart and sour, for those who don't like sweet.
+473	Смородина-м'ята	Currant-mint
+474	Насичена смородина і холодна м'ята.	Rich currant and cold mint.
+475	Барбарисові льодяники	Barberry candies
+476	Як ті самі цукерки з дитинства.	Like those candies from childhood.
+477	Чай з лимоном	Tea with lemon
+478	Затишний, не нудотний.	Cozy, not cloying.
+479	Пряний апельсиновий чай	Spiced orange tea
+480	Чай з апельсином і спеціями, для холодних вечорів.	Tea with orange and spices, for cold evenings.
+481	Лічі-троянда	Lychee-rose
+482	Ніжний квітково-фруктовий мікс.	A delicate floral-fruity mix.
+483	Чорничний чизкейк	Blueberry cheesecake
+484	Десерт з ягодами.	A dessert with berries.
+485	Банан у шоколаді	Chocolate banana
+486	Щільний солодкий десерт.	A rich sweet dessert.
+487	Карамельне лате	Caramel latte
+488	Кавовий десерт.	A coffee dessert.
+489	Апельсин у шоколаді	Chocolate orange
+490	Як новорічні цукерки.	Like holiday chocolates.
+491	П'яна вишня	Drunken cherry
+492	Вишня і шоколад.	Cherry and chocolate.
+493	Манго-лайм	Mango-lime
+494	Солодке манго, освіжене лаймом.	Sweet mango refreshed with lime.
+495	Диня-полуниця	Melon-strawberry
+496	Солодкий літній мікс.	A sweet summer mix.
+497	Кавун-полуниця	Watermelon-strawberry
+498	Ягідно-баштанний, дуже соковитий.	Berry and melon, very juicy.
+499	Кавун-диня	Watermelon-melon
+500	Баштанний дует.	A melon duo.
+501	Виноград-м'ята	Grape-mint
+502	Класика кальянних.	A lounge classic.
+503	Виноград-чорниця	Grape-blueberry
+504	Темні ягоди, насичено й солодко.	Dark berries, rich and sweet.
+505	Персиковий чай	Peach tea
+506	Як холодний чай з пляшки.	Like bottled iced tea.
+507	Ківі-лайм	Kiwi-lime
+508	Зелений кислий мікс.	A green sour mix.
+509	Ананас-лайм-м'ята	Pineapple-lime-mint
+510	Тропічна свіжість.	Tropical freshness.
+511	Баунті	Bounty
+512	Кокос у шоколаді.	Coconut in chocolate.
+513	Груша-ваніль	Pear-vanilla
+514	М'який і ніжний.	Soft and gentle.
+515	Крижані яблуко й груша	Iced apple and pear
+516	Соковитий садовий мікс з холодком.	A juicy orchard mix with cooling.
+517	Маргарита	Margarita
+518	Коктейльний: лайм з ноткою текіли.	Cocktail-style: lime with a hint of tequila.
+519	Гуава-полуниця	Guava-strawberry
+520	Екзотика з ягідною солодкістю.	Exotic with berry sweetness.
+521	Цитрусовий вибух	Citrus burst
+522	Суцільний цитрус, бадьорить.	Pure citrus, energizing.
+523	Зелена свіжість	Green freshness
+524	Огірок/кактус з лаймом: незвично й дуже свіжо.	Cucumber/cactus with lime: unusual and very fresh.
+525	Ягідна жуйка	Berry gum
+526	Солодкий цукерковий мікс.	A sweet candy mix.
+527	Малина-ваніль	Raspberry-vanilla
+528	Ягідний десерт.	A berry dessert.
+529	Полуниця з вершками	Strawberries and cream
+530	Ніжний літній десерт.	A delicate summer dessert.
+531	Персик-манго	Peach-mango
+532	Стиглий, солодкий, фруктовий.	Ripe, sweet, fruity.
+533	Банан-кокос	Banana-coconut
+534	Вершкова тропіка.	Creamy tropics.
+535	Вишня-мигдаль	Cherry-almond
+536	Як вишневий лікер.	Like cherry liqueur.
+537	Пряна слива	Spiced plum
+538	Глінтвейновий вайб.	Mulled wine vibes.
+539	Лимонний пиріг	Lemon pie
+540	Кислий крем на пісочному тісті.	Tangy cream on shortcrust.
+541	Малиновий лимонад	Raspberry lemonade
+542	Літній освіжаючий.	Summery and refreshing.
+543	Крижана чорниця	Iced blueberry
+544	Проста, але потужна пара.	A simple but powerful pair.
+545	Гранат-малина	Pomegranate-raspberry
+546	Червоні ягоди з терпкістю.	Red berries with tartness.
+547	Апельсин-маракуя	Orange-passion fruit
+548	Соковитий кисло-солодкий сік.	A juicy sweet-and-sour juice.
+549	Кава з горіхом	Coffee with nuts
+550	Щільний, для тих, хто не любить фруктове.	Rich, for those who don't like fruity.
+551	Ягоди з лавандою	Berries with lavender
+552	Ягоди з квітковою ноткою.	Berries with a floral note.
+553	Червоний морс	Red berry drink
+554	Кисло-солодкий ягідний морс.	A sweet-and-sour berry drink.
+555	М'ятна жуйка	Mint gum
+556	Бабл-гам з холодною м'ятою.	Bubble gum with cold mint.
+557	Ванільна кола	Vanilla cola
+558	Кола з вершковою ноткою.	Cola with a creamy note.
+559	Яблуко-ківі	Apple-kiwi
+560	Зелений і кислуватий.	Green and slightly sour.
+561	Абрикос-ваніль	Apricot-vanilla
+562	М'який фруктовий десерт.	A soft fruit dessert.
+563	Апероль шприц	Aperol spritz
+564	Гіркуватий апельсиновий коктейль.	A bittersweet orange cocktail.
+565	Кавун-лимонад	Watermelon lemonade
+566	Кавунове газування.	Watermelon soda.
+567	Ягоди-м'ята-лід	Berries-mint-ice
+568	Ягоди і багато холоду.	Berries and lots of cold.
+569	🍑 Фруктові	🍑 Fruity
+570	❄️ Свіжі	❄️ Fresh
+571	🍓 Ягідні	🍓 Berry
+572	🍋 Цитрусові	🍋 Citrus
+573	🍰 Десертні	🍰 Dessert
+574	🌶 Пряні	🌶 Spicy
+575	🌸 Квіткові	🌸 Floral
+576	🌴 Екзотика	🌴 Exotic
+577	🍹 Напої	🍹 Drinks
+578	Безнікотинова суміш, не тютюн.	Nicotine-free blend, not tobacco.
+579	Німеччина	Germany
+580	Йорданія	Jordan
+581	ОАЕ	UAE
+582	США	USA
+583	Туреччина	Turkey
+584	Україна	Ukraine
+585	Чайна суміш без тютюну.	Tea blend without tobacco.
+586	висока	high
+587	міцна	strong
+588	легка	light
+589	дрібна	fine
+590	середня	medium

@@ -1,6 +1,6 @@
 // Кэшируем оболочку приложения, чтобы таймеры и гайды работали без интернета
-const CACHE = "hookah-v15";
-const FILES = ["./", "index.html", "manifest.json", "icon.svg", "mixes.js", "catalog.js", "brands.js",
+const CACHE = "hookah-v16";
+const FILES = ["./", "index.html", "manifest.json", "icon.svg", "i18n.js", "mixes.js", "catalog.js", "brands.js",
   "fonts/fonts.css", "fonts/el-messiri-cyrillic.woff2", "fonts/el-messiri-latin.woff2", "fonts/rubik-cyrillic.woff2", "fonts/rubik-latin.woff2"];
 
 // В кэш попадают только успешные ответы своего сайта: не 401 «закрыто», не 404 и не ошибки сервера

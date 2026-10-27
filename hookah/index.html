@@ -357,6 +357,15 @@ details .body ul { padding-left: 20px; margin: 6px 0; }
       <p class="muted" id="nativeStatus" style="font-size:13px;margin:8px 0 0"></p>
     </div>
     <div class="card">
+      <b>🌐 Язык · Мова · Language</b>
+      <select id="lang" style="margin-top:8px">
+        <option value="auto">Auto · Авто</option>
+        <option value="uk">Українська</option>
+        <option value="ru">Русский</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+    <div class="card">
       <b>💾 Резервная копия</b>
       <p class="muted" style="font-size:13px;margin:4px 0 8px">Полка, остатки, миксы, сетапы, список покупок и таймеры хранятся только в этом браузере. Сохраните копию в файл, чтобы не потерять их при смене телефона, очистке браузера или нового адреса сайта.</p>
       <label style="display:flex;gap:8px;align-items:center;color:var(--text)"><input type="checkbox" id="bkKey" style="width:auto"> Включить в копию ключ Gemini</label>
@@ -393,10 +402,14 @@ details .body ul { padding-left: 20px; margin: 6px 0; }
     <svg viewBox="0 0 24 24"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>Настройки</button>
 </nav>
 
+<script src="i18n.js"></script>
 <script src="mixes.js"></script>
 <script src="catalog.js"></script>
 <script src="brands.js"></script>
 <script>
+// Статичные надписи разметки — на язык интерфейса (динамические тексты переводит tx())
+applyStaticI18n(document.body);
+
 // ---------- Хранилище ----------
 // Каждый ключ читается и проверяется отдельно: испорченная полка не сотрёт настройки, и наоборот.
 // check(value) возвращает очищенное значение или undefined, если данные непригодны.
@@ -432,7 +445,7 @@ let lastSaveWarn = 0;
 function warnNotSaved() {
   if (Date.now() - lastSaveWarn < 30000) return; // не спамим при каждом изменении
   lastSaveWarn = Date.now();
-  toast("⚠️ Не удалось сохранить изменения: память браузера недоступна или переполнена. После закрытия приложения они пропадут.", 8000);
+  toast(tx("⚠️ Не удалось сохранить изменения: память браузера недоступна или переполнена. После закрытия приложения они пропадут."), 8000);
 }
 
 // Проверки прочитанных данных
@@ -460,7 +473,7 @@ function checkSetup(s) {
   if (!isObj(s) || num(s.id) === undefined) return undefined;
   const n = (v, d) => (num(+v) > 0 ? +v : d);
   return {
-    id: s.id, name: str(s.name, "Мой кальян") || "Мой кальян",
+    id: s.id, name: str(s.name, tx("Мой кальян")) || tx("Мой кальян"),
     bowl: ["phunnel", "turk", "egypt", "fruit"].includes(s.bowl) ? s.bowl : "phunnel",
     heat: ["kaloud", "foil"].includes(s.heat) ? s.heat : "kaloud",
     coal: ["22", "25", "26"].includes(String(s.coal)) ? String(s.coal) : "25",
@@ -504,17 +517,17 @@ $("#apiKey").value = settings.apiKey;
 // ---------- Мои чаши и угли ----------
 // Старые настройки «чаша/жар» превращаем в первый сетап
 if (!settings.setups) {
-  settings.setups = [checkSetup({ id: 1, name: "Мой кальян", bowl: settings.bowl, heat: settings.heat, coal: "25", count: 3, fire: 9, warm: settings.heat === "foil" ? 5 : 6, every: settings.heat === "foil" ? 15 : 20 })];
+  settings.setups = [checkSetup({ id: 1, name: tx("Мой кальян"), bowl: settings.bowl, heat: settings.heat, coal: "25", count: 3, fire: 9, warm: settings.heat === "foil" ? 5 : 6, every: settings.heat === "foil" ? 15 : 20 })];
   settings.activeSetup = 1; saveSettings();
 }
 const setup = () => settings.setups.find((s) => s.id === settings.activeSetup) || settings.setups[0];
-const BOWL_NAME = { phunnel: "фанел", turk: "турка", egypt: "египетская чаша", fruit: "фрукт" };
-const HEAT_NAME = { kaloud: "калауд", foil: "фольга" };
+const BOWL_NAME = { phunnel: tx("фанел"), turk: tx("турка"), egypt: tx("египетская чаша"), fruit: tx("фрукт") };
+const HEAT_NAME = { kaloud: tx("калауд"), foil: tx("фольга") };
 // Короткие советы под конкретный сетап: сколько углей и как забивать
 function setupAdvice(s) {
-  const pack = { phunnel: "пушистая забивка, 2–3 мм ниже края", turk: "пушисто, вровень с краем, отверстия не забивать", egypt: "с горкой под фольгу", fruit: "пушисто, жар мягче — фрукт быстро перегревается" }[s.bowl];
-  const coals = s.heat === "kaloud" ? (s.coal === "22" ? "4 угля по 22 мм" : "3 угля") : (s.coal === "22" ? "4 угля по краю" : "3 угля по краю, не в центре");
-  return `Обычно: ${coals}; ${pack}. Прогрев ${s.warm} мин, поворачивать угли каждые ${s.every} мин.`;
+  const pack = { phunnel: tx("пушистая забивка, 2–3 мм ниже края"), turk: tx("пушисто, вровень с краем, отверстия не забивать"), egypt: tx("с горкой под фольгу"), fruit: tx("пушисто, жар мягче — фрукт быстро перегревается") }[s.bowl];
+  const coals = s.heat === "kaloud" ? (s.coal === "22" ? tx("4 угля по 22 мм") : tx("3 угля")) : (s.coal === "22" ? tx("4 угля по краю") : tx("3 угля по краю, не в центре"));
+  return `${tx("Обычно:")} ${coals}; ${pack}${tx(". Прогрев")} ${s.warm} ${tx("мин, поворачивать угли каждые")} ${s.every} ${tx("мин.")}`;
 }
 function renderSetups() {
   const s = setup();
@@ -537,11 +550,11 @@ $("#setupChips").addEventListener("click", (e) => {
   }));
 $("#suAdd").addEventListener("click", () => {
   const id = Date.now();
-  settings.setups.push({ ...setup(), id, name: `Сетап ${settings.setups.length + 1}` });
+  settings.setups.push({ ...setup(), id, name: `${tx("Сетап")} ${settings.setups.length + 1}` });
   settings.activeSetup = id; saveSettings(); renderSetups(); $("#suName").focus();
 });
 $("#suDel").addEventListener("click", () => {
-  if (settings.setups.length < 2 || !confirm(`Удалить «${setup().name}»?`)) return;
+  if (settings.setups.length < 2 || !confirm(`${tx("Удалить «")}${setup().name}»?`)) return;
   settings.setups = settings.setups.filter((x) => x.id !== setup().id);
   settings.activeSetup = settings.setups[0].id; saveSettings(); renderSetups();
 });
@@ -552,6 +565,12 @@ renderSetups();
   $("#" + k).addEventListener("change", (e) => { settings[k] = e.target.value; saveSettings(); });
 });
 $("#model").addEventListener("change", (e) => { settings.model = e.target.value; saveSettings(); });
+// Язык: «Авто» — по языку телефона. Смена языка перезапускает интерфейс
+$("#lang").value = ["ru", "uk", "en"].includes(LANG_SAVED) ? LANG_SAVED : "auto";
+$("#lang").addEventListener("change", (e) => {
+  try { e.target.value === "auto" ? localStorage.removeItem("hk_lang") : localStorage.setItem("hk_lang", JSON.stringify(e.target.value)); } catch {}
+  location.reload();
+});
 $("#apiKey").addEventListener("change", (e) => {
   const key = e.target.value.trim();
   if (key !== settings.apiKey) { settings.apiKey = key; resetBlocked(); renderModels(); } // новый ключ — свои лимиты
@@ -563,8 +582,8 @@ $("#btnShowKey").addEventListener("click", () => { const i = $("#apiKey"); i.typ
 $("#btnCheckKey").addEventListener("click", async () => {
   settings.apiKey = $("#apiKey").value.trim(); saveSettings();
   const st = $("#keyStatus");
-  if (!settings.apiKey) { st.innerHTML = '<span class="err">Сначала вставьте ключ.</span>'; return; }
-  st.textContent = "Проверяю…";
+  if (!settings.apiKey) { st.innerHTML = `<span class="err">${tx("Сначала вставьте ключ.")}</span>`; return; }
+  st.textContent = tx("Проверяю…");
   $("#btnCheckKey").disabled = true;
   try {
     const r = await fetchWithTimeout("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", { headers: { "x-goog-api-key": settings.apiKey } }, 20000);
@@ -580,9 +599,9 @@ $("#btnCheckKey").addEventListener("click", async () => {
     resetBlocked();
     if (names.length) { settings.models = names; settings.model = names[0]; }
     saveSettings(); renderModels();
-    st.innerHTML = `<span style="color:var(--ok)">✓ Ключ работает.</span> Доступно моделей: ${names.length}.`;
+    st.innerHTML = `<span style="color:var(--ok)">${tx("✓ Ключ работает.")}</span> ${tx("Доступно моделей:")} ${names.length}.`;
   } catch (e) {
-    st.innerHTML = `<span class="err">Не получилось: ${esc(e.message)}</span>`;
+    st.innerHTML = `<span class="err">${tx("Не получилось:")} ${esc(e.message)}</span>`;
   } finally {
     $("#btnCheckKey").disabled = false;
   }
@@ -613,15 +632,15 @@ function updateNotifHint() {
   const h = $("#notifHint");
   if (IS_NATIVE) {
     h.textContent = nativeReady
-      ? "Сигналы ставятся в Android как будильники: придут вовремя, даже если приложение закрыто и экран заблокирован."
-      : "Чтобы сигналы приходили при заблокированном экране, разрешите уведомления и «Будильники и напоминания» в ⚙️ Настройках.";
+      ? tx("Сигналы ставятся в Android как будильники: придут вовремя, даже если приложение закрыто и экран заблокирован.")
+      : tx("Чтобы сигналы приходили при заблокированном экране, разрешите уведомления и «Будильники и напоминания» в ⚙️ Настройках.");
     return;
   }
-  const base = "Время считается по часам и не собьётся. Но надёжный сигнал будет, только пока приложение открыто: пока таймер идёт, экран не гаснет.";
+  const base = tx("Время считается по часам и не собьётся. Но надёжный сигнал будет, только пока приложение открыто: пока таймер идёт, экран не гаснет.");
   if (!("Notification" in window)) { h.textContent = base; return; }
   h.textContent = Notification.permission === "granted"
-    ? base + " Если свернуть приложение, уведомление может прийти, а может опоздать — Android часто усыпляет фоновые страницы."
-    : base + " Уведомления можно включить в Настройках, но в фоне они не гарантированы.";
+    ? base + tx(" Если свернуть приложение, уведомление может прийти, а может опоздать — Android часто усыпляет фоновые страницы.")
+    : base + tx(" Уведомления можно включить в Настройках, но в фоне они не гарантированы.");
 }
 $("#btnNotif").addEventListener("click", async () => {
   if (IS_NATIVE) { beep(); return nativeAskPermissions(); }
@@ -634,19 +653,19 @@ async function notify(text) {
   try {
     const reg = await navigator.serviceWorker?.getRegistration();
     const opts = { body: text, icon: "icon.svg", vibrate: [400, 200, 400], tag: "hookah-" + text, requireInteraction: true };
-    if (reg) reg.showNotification("🔥 Кальян", opts); else new Notification("🔥 Кальян", opts);
+    if (reg) reg.showNotification(tx("🔥 Кальян"), opts); else new Notification(tx("🔥 Кальян"), opts);
   } catch {}
 }
 
 // ---------- Таймеры ----------
 // Таймер хранит момент окончания, поэтому переживает перезагрузку страницы
 const PRESETS = {
-  kaloud: [["Розжиг углей", 9], ["Прогрев чаши", 6], ["Поворот / смена углей", 20]],
-  foil: [["Розжиг углей", 9], ["Прогрев чаши", 5], ["Поворот / смена углей", 15]],
+  kaloud: [[tx("Розжиг углей"), 9], [tx("Прогрев чаши"), 6], [tx("Поворот / смена углей"), 20]],
+  foil: [[tx("Розжиг углей"), 9], [tx("Прогрев чаши"), 5], [tx("Поворот / смена углей"), 15]],
 };
 const checkTimers = (v) => arrOf(v, (t) => {
   if (!isObj(t) || num(t.dur) === undefined || t.dur <= 0) return undefined;
-  return { id: num(t.id) ?? Date.now() + Math.random(), name: str(t.name, "Таймер"), dur: t.dur,
+  return { id: num(t.id) ?? Date.now() + Math.random(), name: str(t.name, tx("Таймер")), dur: t.dur,
     endAt: num(t.endAt) ?? null, left: Math.min(t.dur, Math.max(0, num(t.left) ?? t.dur)), done: t.done === true, late: num(t.late) ?? 0 };
 });
 let timers = store.get("timers", null, checkTimers) || PRESETS[setup().heat].map(([name, min], i) => ({ id: Date.now() + i, name, dur: min * 60, endAt: null, left: min * 60, done: false }));
@@ -663,7 +682,7 @@ function renderTimers() {
         <div class="bar"><i data-bar></i></div>
       </div>
       <div class="btns">
-        ${t.done ? `<button class="primary" data-act="ok">Ок</button>`
+        ${t.done ? `<button class="primary" data-act="ok">${tx("Ок")}</button>`
           : t.endAt ? `<button data-act="pause">⏸</button>` : `<button class="primary" data-act="start">▶</button>`}
         <button class="small" data-act="reset">↺</button>
         <button class="small" data-act="edit">✎</button>
@@ -679,11 +698,11 @@ $("#timers").addEventListener("click", (e) => {
   if (act === "pause") { t.left = Math.max(0, (t.endAt - Date.now()) / 1000); t.endAt = null; }
   if (act === "reset" || act === "ok") { t.endAt = null; t.left = t.dur; t.done = false; t.late = 0; }
   if (act === "edit") {
-    const name = prompt("Название таймера (пусто = удалить)", t.name);
+    const name = prompt(tx("Название таймера (пусто = удалить)"), t.name);
     if (name === null) return;
     if (!name.trim()) { timers = timers.filter((x) => x !== t); }
     else {
-      const min = parseFloat(prompt("Сколько минут?", t.dur / 60));
+      const min = parseFloat(prompt(tx("Сколько минут?"), t.dur / 60));
       t.name = name.trim();
       if (min > 0) { t.dur = Math.round(min * 60); t.left = t.dur; t.endAt = null; t.done = false; }
     }
@@ -691,8 +710,8 @@ $("#timers").addEventListener("click", (e) => {
   saveTimers(); renderTimers(); updateWakeLock();
 });
 $("#addTimer").addEventListener("click", () => {
-  const name = prompt("Название таймера", "Мой таймер"); if (!name) return;
-  const min = parseFloat(prompt("Сколько минут?", "10")); if (!(min > 0)) return;
+  const name = prompt(tx("Название таймера"), tx("Мой таймер")); if (!name) return;
+  const min = parseFloat(prompt(tx("Сколько минут?"), "10")); if (!(min > 0)) return;
   timers.push({ id: Date.now(), name, dur: Math.round(min * 60), left: Math.round(min * 60), endAt: null, done: false });
   saveTimers(); renderTimers();
 });
@@ -710,7 +729,7 @@ function tick() {
       const late = now - t.endAt;
       t.late = late > 15000 ? late : 0;
       t.endAt = null; t.left = 0; t.done = true; saveTimers();
-      notify(`${t.name} — время вышло!${t.late ? ` (${lateText(t.late)})` : ""}`);
+      notify(`${t.name} ${tx("— время вышло!")}${t.late ? ` (${lateText(t.late)})` : ""}`);
       renderTimers(); updateWakeLock(); return;
     }
     if (t.done) anyDone = true;
@@ -732,12 +751,12 @@ const checkBowlMix = (m) => {
   if (!isObj(m)) return undefined;
   const parts = arrOf(m.parts, (p) => (isObj(p) && str(p.name) && num(p.pct) !== undefined
     ? { name: p.name, pct: Math.min(100, Math.max(0, p.pct)), missing: p.missing === true } : undefined)) || [];
-  return parts.length ? { n: str(m.n, "Микс") || "Микс", parts } : undefined;
+  return parts.length ? { n: str(m.n, tx("Микс")) || tx("Микс"), parts } : undefined;
 };
 const checkSessions = (v) => arrOf(v, (x) => {
   if (!isObj(x) || !["coals", "warm", "smoke"].includes(x.phase) || num(x.end) === undefined || !(num(x.dur) > 0)) return undefined;
   const pos = (v, d) => (num(v) > 0 ? v : d);
-  return { id: num(x.id) ?? Date.now(), name: str(x.name, "Кальян"), phase: x.phase, dur: x.dur, end: x.end,
+  return { id: num(x.id) ?? Date.now(), name: str(x.name, tx("Кальян")), phase: x.phase, dur: x.dur, end: x.end,
     warm: pos(x.warm, 6), every: pos(x.every, 20), started: num(x.started) ?? Date.now(),
     smokeStart: num(x.smokeStart) ?? null, rotations: num(x.rotations) ?? 0, alarm: x.alarm === true, late: num(x.late) ?? 0,
     alarmMsg: str(x.alarmMsg), flipped: x.flipped === true, finishing: x.finishing === true, mix: checkBowlMix(x.mix) || null,
@@ -747,11 +766,11 @@ const checkSessions = (v) => arrOf(v, (x) => {
 let sessions = store.get("sessions", [], checkSessions);
 const saveSessions = () => { store.set("sessions", sessions); nativeResync(); };
 const PHASE = {
-  coals: { icon: "🔥", name: "Угли", label: "до готовности углей", done: "Угли готовы — ставьте их на чашу. Прогрев уже пошёл" },
-  warm: { icon: "♨️", name: "Прогрев", label: "до конца прогрева", done: "Чаша прогрета — можно курить" },
-  smoke: { icon: "💨", name: "Курим", label: "до поворота углей", done: "Поверните угли и сдуйте пепел" },
+  coals: { icon: "🔥", name: tx("Угли"), label: tx("до готовности углей"), done: tx("Угли готовы — ставьте их на чашу. Прогрев уже пошёл") },
+  warm: { icon: "♨️", name: tx("Прогрев"), label: tx("до конца прогрева"), done: tx("Чаша прогрета — можно курить") },
+  smoke: { icon: "💨", name: tx("Курим"), label: tx("до поворота углей"), done: tx("Поверните угли и сдуйте пепел") },
 };
-const PACK = { phunnel: "пушисто, 2–3 мм ниже края, не трамбовать", turk: "пушисто, вровень с краем, отверстия не забивать", egypt: "с горкой под фольгу, фольгу натянуть", fruit: "пушисто, жар мягче — фрукт быстро перегревается" };
+const PACK = { phunnel: tx("пушисто, 2–3 мм ниже края, не трамбовать"), turk: tx("пушисто, вровень с краем, отверстия не забивать"), egypt: tx("с горкой под фольгу, фольгу натянуть"), fruit: tx("пушисто, жар мягче — фрукт быстро перегревается") };
 const fmtLong = (s) => { s = Math.max(0, Math.floor(s)); const h = Math.floor(s / 3600); return h ? `${h}:${fmt(s % 3600)}` : fmt(s); };
 
 // Подсказки на каждом этапе
@@ -759,21 +778,21 @@ function phaseTips(x, now) {
   if (x.phase === "coals") {
     const half = x.end - (x.dur * 1000) / 2;
     return [
-      `Положите ${x.coals} угля по ${x.coal} мм на плитку. ${x.flipped ? "✓ Угли перевёрнуты" : `Перевернуть через ${fmt((half - now) / 1000)} — напомню`}`,
-      "Пока греются: налейте воду (шахта в воде на 2–3 см) и проверьте тягу",
-      x.mix ? "Забейте чашу — граммы ниже ↓" : "Забейте чашу",
-      "Угли готовы, когда полностью серые, без чёрных пятен",
+      `${tx("Положите")} ${x.coals} ${tx("угля по")} ${x.coal} ${tx("мм на плитку.")} ${x.flipped ? tx("✓ Угли перевёрнуты") : `${tx("Перевернуть через")} ${fmt((half - now) / 1000)} ${tx("— напомню")}`}`,
+      tx("Пока греются: налейте воду (шахта в воде на 2–3 см) и проверьте тягу"),
+      x.mix ? tx("Забейте чашу — граммы ниже ↓") : tx("Забейте чашу"),
+      tx("Угли готовы, когда полностью серые, без чёрных пятен"),
     ];
   }
   if (x.phase === "warm") return [
-    x.heat === "kaloud" ? "Угли на калауд, крышку прикрыть" : "Угли по краю фольги, не в центр",
-    "Первые 2–3 минуты затягивайтесь мягко",
-    "Горчит — снимите один уголь; мало дыма — подождите или сдвиньте угли к центру",
+    x.heat === "kaloud" ? tx("Угли на калауд, крышку прикрыть") : tx("Угли по краю фольги, не в центр"),
+    tx("Первые 2–3 минуты затягивайтесь мягко"),
+    tx("Горчит — снимите один уголь; мало дыма — подождите или сдвиньте угли к центру"),
   ];
   return [
-    `Каждые ${x.every} мин поворачивайте угли и сдувайте пепел — напомню`,
-    "Дым слабеет — сдвиньте угли ближе к центру",
-    "Угли прогорели наполовину — меняйте на свежие (запустите отдельный таймер розжига)",
+    `${tx("Каждые")} ${x.every} ${tx("мин поворачивайте угли и сдувайте пепел — напомню")}`,
+    tx("Дым слабеет — сдвиньте угли ближе к центру"),
+    tx("Угли прогорели наполовину — меняйте на свежие (запустите отдельный таймер розжига)"),
   ];
 }
 
@@ -784,10 +803,10 @@ function toBowlMix(m) {
   return m;
 }
 function packingHtml(mix, grams, bowl) {
-  if (!mix) return `<p class="muted">Без микса. Забивка: ${esc(PACK[bowl] || "")}.</p>`;
-  return `${mix.parts.map((p) => `<div class="comp"><span class="pct">${Math.round((grams * p.pct) / 100)} г</span>
-      <span>${esc(p.name)} <span class="muted">· ${Math.round(p.pct)}%${p.missing ? " · 🛒 нет на полке" : ""}</span></span></div>`).join("")}
-    <p class="muted" style="font-size:13px;margin:6px 0 0">Всего ≈ ${grams} г. Смешайте в миске и забейте: ${esc(PACK[bowl] || "")}.</p>`;
+  if (!mix) return `<p class="muted">${tx("Без микса. Забивка:")} ${esc(PACK[bowl] || "")}.</p>`;
+  return `${mix.parts.map((p) => `<div class="comp"><span class="pct">${Math.round((grams * p.pct) / 100)} ${tx("г")}</span>
+      <span>${esc(p.name)} <span class="muted">· ${Math.round(p.pct)}%${p.missing ? tx(" · 🛒 нет на полке") : ""}</span></span></div>`).join("")}
+    <p class="muted" style="font-size:13px;margin:6px 0 0">${tx("Всего ≈")} ${grams} ${tx("г. Смешайте в миске и забейте:")} ${esc(PACK[bowl] || "")}.</p>`;
 }
 
 let hkSrc = "shelf", hkChoice = null, hkNewOpen = false;
@@ -807,24 +826,24 @@ function renderHookah() {
     }).join('<span class="step-sep">›</span>');
     if (x.finishing) return `<div class="card session" data-sid="${x.id}">
       <b>${esc(x.name)}${x.mix ? ` · ${esc(x.mix.n)}` : ""}</b>
-      <p style="margin:10px 0 6px">Как зашёл микс? Оценка сохранит его в «Сохранённые миксы».</p>
+      <p style="margin:10px 0 6px">${tx("Как зашёл микс? Оценка сохранит его в «Сохранённые миксы».")}</p>
       <div class="stars big">${[1, 2, 3, 4, 5].map((n) => `<span data-sact="rate" data-n="${n}">★</span>`).join("")}</div>
-      <div class="actions"><button data-sact="nosave">Не сохранять</button><button data-sact="back">Назад</button></div></div>`;
+      <div class="actions"><button data-sact="nosave">${tx("Не сохранять")}</button><button data-sact="back">${tx("Назад")}</button></div></div>`;
     return `<div class="card session ${x.alarm ? "alarm" : ""}" data-sid="${x.id}">
       <div class="row"><b>${esc(x.name)}</b><span class="shrink muted" style="font-size:13px">${esc(x.setupName)}</span></div>
       <div class="steps">${steps}</div>
       ${x.alarm ? `<div class="alarm-box"><div class="alarm-text">${esc(x.alarmMsg)}</div>
           ${x.late ? `<div class="meta">⚠️ ${lateText(x.late)}</div>` : ""}
-          <button class="primary" data-sact="ok" style="width:100%;margin-top:8px">Ок ✓</button></div>` : ""}
+          <button class="primary" data-sact="ok" style="width:100%;margin-top:8px">${tx("Ок ✓")}</button></div>` : ""}
       <div class="timer"><div class="info"><div class="time" data-stime>${fmt((x.end - now) / 1000)}</div>
         <div class="bar"><i data-sbar></i></div></div></div>
       <div class="meta">${PHASE[x.phase].label}</div>
       <div class="meta" data-smeta></div>
       <ul class="tips">${phaseTips(x, now).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>
-      <details ${x.phase === "coals" ? "open" : ""} class="pack"><summary>🥣 Забивка${x.mix ? `: ${esc(x.mix.n)}` : ""}</summary>${packingHtml(x.mix, x.grams, x.bowl)}</details>
+      <details ${x.phase === "coals" ? "open" : ""} class="pack"><summary>${tx("🥣 Забивка")}${x.mix ? `: ${esc(x.mix.n)}` : ""}</summary>${packingHtml(x.mix, x.grams, x.bowl)}</details>
       <div class="actions">
-        <button data-sact="next">Дальше ⏭</button><button data-sact="plus">+1 мин</button><button data-sact="restart">⟲ Заново</button>
-        <button data-sact="stop">Завершить</button>
+        <button data-sact="next">${tx("Дальше ⏭")}</button><button data-sact="plus">${tx("+1 мин")}</button><button data-sact="restart">${tx("⟲ Заново")}</button>
+        <button data-sact="stop">${tx("Завершить")}</button>
       </div>
     </div>`;
   }).join("");
@@ -835,16 +854,16 @@ function renderHookah() {
   $("#hkNew").style.display = showForm ? "" : "none";
   if (!showForm) return tickSessions(now);
   $("#hkSetups").innerHTML = settings.setups.map((x) => `<span class="chip ${x.id === s.id ? "on" : ""}" data-hsu="${x.id}">${esc(x.name)}</span>`).join("");
-  $("#hkSetupInfo").textContent = `Розжиг ${s.fire} мин → прогрев ${s.warm} мин → угли каждые ${s.every} мин · ${s.count} угля по ${s.coal} мм · ${s.grams} г табака`;
-  $("#hkSrc").innerHTML = [["shelf", "🗂️ С полки"], ["saved", "⭐ Сохранённые"], ["wheel", "🎡 Колесо"], ["none", "Без микса"]]
+  $("#hkSetupInfo").textContent = `${tx("Розжиг")} ${s.fire} ${tx("мин → прогрев")} ${s.warm} ${tx("мин → угли каждые")} ${s.every} ${tx("мин ·")} ${s.count} ${tx("угля по")} ${s.coal} ${tx("мм ·")} ${s.grams} ${tx("г табака")}`;
+  $("#hkSrc").innerHTML = [["shelf", tx("🗂️ С полки")], ["saved", tx("⭐ Сохранённые")], ["wheel", tx("🎡 Колесо")], ["none", tx("Без микса")]]
     .map(([id, name]) => `<span class="chip ${hkSrc === id ? "on" : ""}" data-hsrc="${id}">${name}</span>`).join("");
   const list = hookahChoices();
   $("#hkChoices").innerHTML = hkSrc === "none" ? "" : list.length
     ? list.map((m, i) => `<div class="pick ${hkChoice?.n === m.n ? "on" : ""}" data-hpick="${i}"><b>${esc(m.n)}</b>
         <span class="muted">${m.parts.map((p) => `${Math.round(p.pct)}% ${esc(p.name)}`).join(" · ")}</span></div>`).join("")
-    : `<p class="muted">${hkSrc === "saved" ? "Сохранённых миксов пока нет." : "На полке пока нечего смешать — добавьте 2–3 табака на 🗂️ Полку или крутаните колесо."}</p>`;
+    : `<p class="muted">${hkSrc === "saved" ? tx("Сохранённых миксов пока нет.") : tx("На полке пока нечего смешать — добавьте 2–3 табака на 🗂️ Полку или крутаните колесо.")}</p>`;
   $("#hkChosen").innerHTML = hkChoice && hkSrc !== "none"
-    ? `<div class="chosen"><div class="muted" style="font-size:13px">Выбрано · ${s.grams} г в ${BOWL_NAME[s.bowl]}</div><b>${esc(hkChoice.n)}</b>${packingHtml(hkChoice, s.grams, s.bowl)}</div>` : "";
+    ? `<div class="chosen"><div class="muted" style="font-size:13px">${tx("Выбрано ·")} ${s.grams} ${tx("г в")} ${BOWL_NAME[s.bowl]}</div><b>${esc(hkChoice.n)}</b>${packingHtml(hkChoice, s.grams, s.bowl)}</div>` : "";
   tickSessions(now);
 }
 const renderSessions = renderHookah;
@@ -866,7 +885,7 @@ function chooseForHookah(m) { hkChoice = toBowlMix(m); hkSrc = "shelf"; hkNewOpe
 $("#hkStart").addEventListener("click", () => {
   beepUnlock();
   const s = setup(), now = Date.now();
-  sessions.push({ id: now, name: `Кальян ${sessions.length + 1}`, phase: "coals", dur: s.fire * 60, end: now + s.fire * 60e3,
+  sessions.push({ id: now, name: `${tx("Кальян")} ${sessions.length + 1}`, phase: "coals", dur: s.fire * 60, end: now + s.fire * 60e3,
     warm: s.warm, every: s.every, started: now, smokeStart: null, rotations: 0, alarm: false, late: 0, alarmMsg: "",
     flipped: false, finishing: false, mix: hkSrc === "none" ? null : hkChoice,
     setupName: s.name, bowl: s.bowl, heat: s.heat, grams: s.grams, coals: s.count, coal: s.coal });
@@ -883,12 +902,12 @@ function deductStock(x) {
     if (!t || t.stock === undefined) return;
     const g = Math.round((x.grams * p.pct) / 100);
     t.stock = Math.max(0, t.stock - g);
-    done.push(`${g} г ${t.flavor || t.brand}`);
-    if (isLow(t)) low.push(`${t.flavor || t.brand} (${t.stock} г)`);
+    done.push(`${g} ${tx("г")} ${t.flavor || t.brand}`);
+    if (isLow(t)) low.push(`${t.flavor || t.brand} (${t.stock} ${tx("г)")}`);
   });
   if (!done.length) return;
   saveShelf();
-  toast(`📦 Списано: ${done.join(", ")}${low.length ? `. Заканчивается: ${low.join(", ")} — добавлено в 🛒` : ""}`, 7000);
+  toast(`${tx("📦 Списано:")} ${done.join(", ")}${low.length ? `${tx(". Заканчивается:")} ${low.join(", ")} ${tx("— добавлено в 🛒")}` : ""}`, 7000);
 }
 
 // Переход к следующему этапу; from — момент, с которого считается новый таймер
@@ -908,15 +927,15 @@ $("#hkSessions").addEventListener("click", (e) => {
   if (act === "restart") { x.end = now + x.dur * 1000; x.alarm = false; if (x.phase === "coals") x.flipped = false; }
   if (act === "stop") {
     const mins = x.smokeStart ? Math.round((now - x.smokeStart) / 60000) : 0;
-    if (!confirm(`Завершить «${x.name}»?${mins ? ` Курили ${mins} мин.` : ""}`)) return;
+    if (!confirm(`${tx("Завершить «")}${x.name}»?${mins ? ` ${tx("Курили")} ${mins} ${tx("мин.")}` : ""}`)) return;
     if (x.mix) x.finishing = true; else sessions = sessions.filter((s) => s !== x);
   }
   if (act === "back") x.finishing = false;
   if (act === "nosave") sessions = sessions.filter((s) => s !== x);
   if (act === "rate") {
     saved.unshift({ name: x.mix.n, components: x.mix.parts.map((p) => ({ tobacco: p.name, percent: p.pct })), rating: +b.dataset.n,
-      date: now, profile: `Забит ${new Date(x.started).toLocaleDateString("ru")} · ${x.setupName}`, why: "", packing: "", heat: "", strength: "", needToBuy: "" });
-    saveSaved(); toast(`⭐ Сохранено: ${x.mix.n} — ${b.dataset.n}/5`);
+      date: now, profile: `${tx("Забит")} ${new Date(x.started).toLocaleDateString(LOCALE)} · ${x.setupName}`, why: "", packing: "", heat: "", strength: "", needToBuy: "" });
+    saveSaved(); toast(`${tx("⭐ Сохранено:")} ${x.mix.n} — ${b.dataset.n}/5`);
     sessions = sessions.filter((s) => s !== x);
   }
   saveSessions(); renderHookah(); updateWakeLock();
@@ -930,7 +949,7 @@ function tickSessions(now) {
     // На середине розжига — мягкое напоминание перевернуть угли
     if (x.phase === "coals" && !x.flipped && now >= x.end - (x.dur * 1000) / 2) {
       x.flipped = true; changed = true;
-      beep(); navigator.vibrate?.(300); toast(`🔥 ${x.name}: переверните угли`); notify(`${x.name}: переверните угли`);
+      beep(); navigator.vibrate?.(300); toast(`🔥 ${x.name}${tx(": переверните угли")}`); notify(`${x.name}${tx(": переверните угли")}`);
     }
     if (now >= x.end) {
       // Этап закончился: сигналим и сразу запускаем следующий. Если приложение было свёрнуто,
@@ -951,8 +970,8 @@ function tickSessions(now) {
     const t = el.querySelector("[data-stime]"); if (t) t.textContent = fmt(left);
     const bar = el.querySelector("[data-sbar]"); if (bar) bar.style.width = 100 * (1 - left / x.dur) + "%";
     el.querySelector("[data-smeta]").textContent = x.smokeStart
-      ? `Курим ${fmtLong((now - x.smokeStart) / 1000)} · поворотов углей: ${x.rotations}`
-      : `С начала ${fmtLong((now - x.started) / 1000)}`;
+      ? `${tx("Курим")} ${fmtLong((now - x.smokeStart) / 1000)} ${tx("· поворотов углей:")} ${x.rotations}`
+      : `${tx("С начала")} ${fmtLong((now - x.started) / 1000)}`;
   });
   return alarm;
 }
@@ -972,62 +991,62 @@ window.addEventListener("pageshow", catchUp);
 window.addEventListener("focus", catchUp);
 function lateText(ms) {
   const m = Math.round(ms / 60000);
-  return `время вышло ${m >= 1 ? `${m} мин` : `${Math.round(ms / 1000)} сек`} назад — приложение было свёрнуто`;
+  return `${tx("время вышло")} ${m >= 1 ? `${m} ${tx("мин")}` : `${Math.round(ms / 1000)} ${tx("сек")}`} ${tx("назад — приложение было свёрнуто")}`;
 }
 
 // ---------- Гайды ----------
 const GUIDES = [
-  ["🌬️ Пушистая (воздушная) забивка", `
-    <p>Универсальный вариант для фанела и турки, подходит для большинства табаков.</p>
+  [tx("🌬️ Пушистая (воздушная) забивка"), `
+    <p>${tx("Универсальный вариант для фанела и турки, подходит для большинства табаков.")}</p>
     <ul>
-      <li>Табак слегка подсушите на салфетке, если он очень влажный, и разрыхлите пальцами.</li>
-      <li>Сыпьте щепотками с небольшой высоты, <b>не трамбуйте</b>.</li>
-      <li>Уровень: 2–3 мм ниже края для калауда, вровень с краем для фольги.</li>
-      <li>Отверстия в чаше не должны забиваться: табак лежит воздушно.</li>
+      <li>${tx("Табак слегка подсушите на салфетке, если он очень влажный, и разрыхлите пальцами.")}</li>
+      <li>${tx("Сыпьте щепотками с небольшой высоты,")} <b>${tx("не трамбуйте")}</b>.</li>
+      <li>${tx("Уровень: 2–3 мм ниже края для калауда, вровень с краем для фольги.")}</li>
+      <li>${tx("Отверстия в чаше не должны забиваться: табак лежит воздушно.")}</li>
     </ul>`],
-  ["🧱 Плотная забивка", `
-    <p>Для лёгких табаков на светлом листе: дольше курится и даёт больше дыма.</p>
+  [tx("🧱 Плотная забивка"), `
+    <p>${tx("Для лёгких табаков на светлом листе: дольше курится и даёт больше дыма.")}</p>
     <ul>
-      <li>Сыпьте слоями и каждый слой слегка прижимайте пальцем.</li>
-      <li>Не уплотняйте до каменного состояния: воздух должен проходить.</li>
-      <li>Нужно чуть больше жара и прогрев подольше.</li>
-      <li>Крепкие табаки на тёмном листе плотно лучше не забивать: начнут горчить.</li>
+      <li>${tx("Сыпьте слоями и каждый слой слегка прижимайте пальцем.")}</li>
+      <li>${tx("Не уплотняйте до каменного состояния: воздух должен проходить.")}</li>
+      <li>${tx("Нужно чуть больше жара и прогрев подольше.")}</li>
+      <li>${tx("Крепкие табаки на тёмном листе плотно лучше не забивать: начнут горчить.")}</li>
     </ul>`],
-  ["⛰️ Забивка «с горкой» (оверпак)", `
-    <p>Классика для египетской чаши с фольгой: много табака, много дыма.</p>
+  [tx("⛰️ Забивка «с горкой» (оверпак)"), `
+    <p>${tx("Классика для египетской чаши с фольгой: много табака, много дыма.")}</p>
     <ul>
-      <li>Табак насыпают выше края горкой, затем плотно натягивают фольгу.</li>
-      <li>Делайте много мелких отверстий, по центру реже.</li>
-      <li>Жар понадобится аккуратный: табак ближе к углям и легко пригорает.</li>
+      <li>${tx("Табак насыпают выше края горкой, затем плотно натягивают фольгу.")}</li>
+      <li>${tx("Делайте много мелких отверстий, по центру реже.")}</li>
+      <li>${tx("Жар понадобится аккуратный: табак ближе к углям и легко пригорает.")}</li>
     </ul>`],
-  ["🔥 Розжиг углей", `
+  [tx("🔥 Розжиг углей"), `
     <ul>
-      <li>Кокосовые кубики 25 мм на плитке: <b>8–10 минут</b>, на середине переверните.</li>
-      <li>Уголь готов, когда он <b>полностью серый</b> со всех сторон и нигде нет чёрных пятен.</li>
-      <li>Недожжённые угли дают горечь и неприятный запах.</li>
-      <li>Не разжигайте в закрытом помещении без проветривания: угарный газ.</li>
+      <li>${tx("Кокосовые кубики 25 мм на плитке:")} <b>${tx("8–10 минут")}</b>${tx(", на середине переверните.")}</li>
+      <li>${tx("Уголь готов, когда он")} <b>${tx("полностью серый")}</b> ${tx("со всех сторон и нигде нет чёрных пятен.")}</li>
+      <li>${tx("Недожжённые угли дают горечь и неприятный запах.")}</li>
+      <li>${tx("Не разжигайте в закрытом помещении без проветривания: угарный газ.")}</li>
     </ul>`],
-  ["🌡️ Жар и прогрев", `
+  [tx("🌡️ Жар и прогрев"), `
     <ul>
-      <li><b>Калауд:</b> обычно 3 угля. <b>Фольга:</b> 3–4 угля по краям, не по центру.</li>
-      <li>Прогрев 5–7 минут, первые затяжки делайте мягко.</li>
-      <li><b>Горчит, дым режет горло</b> → перегрев. Снимите уголь или сдвиньте угли к краю.</li>
-      <li><b>Мало дыма, нет вкуса</b> → недогрев. Подождите, сдвиньте угли к центру или добавьте один.</li>
-      <li>Каждые 15–20 минут поворачивайте угли и сдувайте с них пепел.</li>
+      <li><b>${tx("Калауд:")}</b> ${tx("обычно 3 угля.")} <b>${tx("Фольга:")}</b> ${tx("3–4 угля по краям, не по центру.")}</li>
+      <li>${tx("Прогрев 5–7 минут, первые затяжки делайте мягко.")}</li>
+      <li><b>${tx("Горчит, дым режет горло")}</b> ${tx("→ перегрев. Снимите уголь или сдвиньте угли к краю.")}</li>
+      <li><b>${tx("Мало дыма, нет вкуса")}</b> ${tx("→ недогрев. Подождите, сдвиньте угли к центру или добавьте один.")}</li>
+      <li>${tx("Каждые 15–20 минут поворачивайте угли и сдувайте с них пепел.")}</li>
     </ul>`],
-  ["💧 Колба и вода", `
+  [tx("💧 Колба и вода"), `
     <ul>
-      <li>Шахта должна быть погружена в воду на <b>2–3 см</b>. Глубже — тугая тяга, мельче — дым горячий.</li>
-      <li>Холодная вода или лёд в колбе делают дым мягче.</li>
-      <li>Проверьте тягу до установки углей: она должна быть лёгкой и без свиста.</li>
+      <li>${tx("Шахта должна быть погружена в воду на")} <b>${tx("2–3 см")}</b>${tx(". Глубже — тугая тяга, мельче — дым горячий.")}</li>
+      <li>${tx("Холодная вода или лёд в колбе делают дым мягче.")}</li>
+      <li>${tx("Проверьте тягу до установки углей: она должна быть лёгкой и без свиста.")}</li>
     </ul>`],
-  ["🎨 Как миксовать вкусы", `
+  [tx("🎨 Как миксовать вкусы"), `
     <ul>
-      <li><b>База + акцент:</b> 60–70% основного вкуса и 30–40% дополнения.</li>
-      <li>Холодок (мята, ice-вкусы) берите по 10–20%: он легко забивает всё остальное.</li>
-      <li>Кислое плюс сладкое почти всегда работает: лимон и ягоды, лайм и манго.</li>
-      <li>Пряности (корица, кардамон) — по 10–15%, иначе микс получится «аптечным».</li>
-      <li>Можно смешать табаки в миске или забить секторами и слоями, но перемешанный микс курится ровнее.</li>
+      <li><b>${tx("База + акцент:")}</b> ${tx("60–70% основного вкуса и 30–40% дополнения.")}</li>
+      <li>${tx("Холодок (мята, ice-вкусы) берите по 10–20%: он легко забивает всё остальное.")}</li>
+      <li>${tx("Кислое плюс сладкое почти всегда работает: лимон и ягоды, лайм и манго.")}</li>
+      <li>${tx("Пряности (корица, кардамон) — по 10–15%, иначе микс получится «аптечным».")}</li>
+      <li>${tx("Можно смешать табаки в миске или забить секторами и слоями, но перемешанный микс курится ровнее.")}</li>
     </ul>`],
 ];
 $("#guides").innerHTML = GUIDES.map(([t, b]) => `<details><summary>${t}</summary><div class="body">${b}</div></details>`).join("");
@@ -1044,20 +1063,20 @@ function renderBrandInfo() {
   $("#brandInfo").innerHTML = list.map((b) => {
     const i = BRAND_INFO[b] || {}, flavors = catalogFor(b), open = brandOpen === b;
     const facts = [
-      i.country && `🌍 ${i.country}`,
-      i.strength?.length && `💪 ${i.strength.join(" / ")}`,
-      i.cut && `✂️ нарезка ${i.cut.toLowerCase()}`,
-      i.smoke && `💨 дымность ${i.smoke.toLowerCase()}`,
+      i.country && `🌍 ${tx(i.country)}`,
+      i.strength?.length && `💪 ${i.strength.map(tx).join(" / ")}`,
+      i.cut && `${tx("✂️ нарезка")} ${tx(i.cut)}`,
+      i.smoke && `${tx("💨 дымность")} ${tx(i.smoke)}`,
     ].filter(Boolean);
     return `<div class="card" style="padding:12px 14px" data-brand="${esc(b)}">
-      <div class="row" style="cursor:pointer" data-bopen><b>${esc(b)}</b><span class="shrink muted" style="font-size:13px">${flavors.length ? flavors.length + " вкусов" : ""} ${open ? "▴" : "▾"}</span></div>
-      <div class="chips" style="margin-top:6px">${facts.length ? facts.map((f) => `<span class="chip sm">${esc(f)}</span>`).join("") : `<span class="muted" style="font-size:13px">нет данных о крепости</span>`}</div>
-      ${i.note ? `<p class="muted" style="font-size:13px;margin:6px 0 0">${esc(i.note)}</p>` : ""}
-      ${i.lines?.length ? `<p class="muted" style="font-size:13px;margin:6px 0 0">Линейки: ${esc(i.lines.join(", "))}</p>` : ""}
-      ${open ? `<div style="margin-top:10px;font-size:14px;max-height:220px;overflow:auto">${flavors.map((f) => { const s = splitFlavor(f); return `<div style="padding:4px 0;border-bottom:1px solid var(--line)">${esc(s.title)} <span class="muted">${esc(s.sub)}</span></div>`; }).join("") || "<span class='muted'>Списка вкусов нет</span>"}</div>
-        <button class="small" data-bshelf style="margin-top:10px">＋ Добавить вкусы на полку</button>` : ""}
+      <div class="row" style="cursor:pointer" data-bopen><b>${esc(b)}</b><span class="shrink muted" style="font-size:13px">${flavors.length ? flavors.length + tx(" вкусов") : ""} ${open ? "▴" : "▾"}</span></div>
+      <div class="chips" style="margin-top:6px">${facts.length ? facts.map((f) => `<span class="chip sm">${esc(f)}</span>`).join("") : `<span class="muted" style="font-size:13px">${tx("нет данных о крепости")}</span>`}</div>
+      ${i.note ? `<p class="muted" style="font-size:13px;margin:6px 0 0">${esc(tx(i.note))}</p>` : ""}
+      ${i.lines?.length ? `<p class="muted" style="font-size:13px;margin:6px 0 0">${tx("Линейки:")} ${esc(i.lines.join(", "))}</p>` : ""}
+      ${open ? `<div style="margin-top:10px;font-size:14px;max-height:220px;overflow:auto">${flavors.map((f) => { const s = splitFlavor(f); return `<div style="padding:4px 0;border-bottom:1px solid var(--line)">${esc(s.title)} <span class="muted">${esc(s.sub)}</span></div>`; }).join("") || `<span class='muted'>${tx("Списка вкусов нет")}</span>`}</div>
+        <button class="small" data-bshelf style="margin-top:10px">${tx("＋ Добавить вкусы на полку")}</button>` : ""}
     </div>`;
-  }).join("") || `<div class="card muted">Ничего не нашлось</div>`;
+  }).join("") || `<div class="card muted">${tx("Ничего не нашлось")}</div>`;
 }
 $("#brandSearch").addEventListener("input", renderBrandInfo);
 $("#brandInfo").addEventListener("click", (e) => {
@@ -1086,7 +1105,7 @@ const checkSaved = (v) => arrOf(v, (m) => {
   if (!isObj(m)) return undefined;
   const components = arrOf(m.components, (c) => (isObj(c) && str(c.tobacco) ? { tobacco: c.tobacco, percent: clampPct(c.percent) } : undefined)) || [];
   if (!components.length) return undefined;
-  const out = { ...m, name: str(m.name, "Микс") || "Микс", components, rating: Math.min(5, Math.max(0, num(m.rating) ?? 0)) };
+  const out = { ...m, name: str(m.name, tx("Микс")) || tx("Микс"), components, rating: Math.min(5, Math.max(0, num(m.rating) ?? 0)) };
   ["profile", "why", "packing", "heat", "strength", "needToBuy"].forEach((k) => (out[k] = str(m[k])));
   return out;
 });
@@ -1107,7 +1126,7 @@ const tagsOf = (t) => t.tags || detectFlavors(`${t.flavor} ${t.brand}`);
 let editingTags = null;
 
 // Свои метки к табаку: «любимый», «крепкий», «заканчивается»… По ним тоже работает поиск миксов
-const LABEL_SUGGEST = ["любимый", "крепкий", "лёгкий", "сладкий", "кислый", "свежий", "заканчивается", "для гостей"];
+const LABEL_SUGGEST = [tx("любимый"), tx("крепкий"), tx("лёгкий"), tx("сладкий"), tx("кислый"), tx("свежий"), tx("заканчивается"), tx("для гостей")];
 
 function renderShelf() {
   $("#shelfList").innerHTML = shelf.length ? shelf.map((t, i) => {
@@ -1117,32 +1136,32 @@ function renderShelf() {
     <div class="shelf-item" style="flex-wrap:wrap"><div class="t">
       <span data-gotob="${i}" style="cursor:pointer">${esc(tobaccoName(t))} <span class="muted">›</span></span>
       <div class="chips" style="margin-top:6px">
-        ${t.stock !== undefined ? `<span class="chip sm stock ${isLow(t) ? "low" : ""}" data-tags="${i}">📦 ${t.stock ? `${t.stock} г` : "закончился"}</span>` : ""}
+        ${t.stock !== undefined ? `<span class="chip sm stock ${isLow(t) ? "low" : ""}" data-tags="${i}">📦 ${t.stock ? `${t.stock} ${tx("г")}` : tx("закончился")}</span>` : ""}
         ${tags.map((f) => `<span class="chip sm" data-goflavor="${f}">${esc(FLAVOR_NAME[f])}</span>`).join("")}
         ${labels.map((l) => `<span class="chip sm label" data-golabel="${esc(l)}">#${esc(l)}</span>`).join("")}
-        ${!tags.length && !labels.length ? `<span class="muted" style="font-size:13px">вкус не распознан — нажмите 🏷</span>` : ""}
+        ${!tags.length && !labels.length ? `<span class="muted" style="font-size:13px">${tx("вкус не распознан — нажмите 🏷")}</span>` : ""}
       </div>
-      ${ru ? `<div class="err" style="font-size:13px">Российский бренд, официально в Украину не ввозится</div>` : ""}</div>
+      ${ru ? `<div class="err" style="font-size:13px">${tx("Российский бренд, официально в Украину не ввозится")}</div>` : ""}</div>
     <button class="small" data-tags="${i}">🏷</button>
     <button class="small" data-del="${i}">✕</button>
     ${editingTags === i ? `<div style="flex-basis:100%;margin-top:10px">
-      <div class="muted" style="font-size:13px;margin-bottom:6px">📦 Остаток в банке${t.stock !== undefined ? `: <b>${t.stock} г</b>` : " — не учитывается"}</div>
-      <div class="chips">${[25, 40, 50, 100, 200, 250].map((g) => `<span class="chip sm" data-stockadd="${g}" data-i="${i}">+${g} г</span>`).join("")}</div>
+      <div class="muted" style="font-size:13px;margin-bottom:6px">${tx("📦 Остаток в банке")}${t.stock !== undefined ? `: <b>${t.stock} ${tx("г")}</b>` : tx(" — не учитывается")}</div>
+      <div class="chips">${[25, 40, 50, 100, 200, 250].map((g) => `<span class="chip sm" data-stockadd="${g}" data-i="${i}">+${g} ${tx("г")}</span>`).join("")}</div>
       <div class="row" style="margin-top:8px"><input id="stockInput" type="number" min="0" inputmode="numeric" placeholder="Точный остаток, г" value="${t.stock ?? ""}">
-        <button class="shrink small" data-stockset="${i}">Сохранить</button>
-        ${t.stock !== undefined ? `<button class="shrink small" data-stockclear="${i}">Не учитывать</button>` : ""}</div>
-      <p class="muted" style="font-size:12px;margin:4px 0 0">«+N г» — купили пачку. Когда забиваете кальян, граммы списываются сами.</p>
-      <div class="muted" style="font-size:13px;margin:12px 0 6px">Вкусы</div>
+        <button class="shrink small" data-stockset="${i}">${tx("Сохранить")}</button>
+        ${t.stock !== undefined ? `<button class="shrink small" data-stockclear="${i}">${tx("Не учитывать")}</button>` : ""}</div>
+      <p class="muted" style="font-size:12px;margin:4px 0 0">${tx("«+N г» — купили пачку. Когда забиваете кальян, граммы списываются сами.")}</p>
+      <div class="muted" style="font-size:13px;margin:12px 0 6px">${tx("Вкусы")}</div>
       <div class="chips">${FLAVORS.map(([id, name]) =>
         `<span class="chip sm ${tags.includes(id) ? "on" : ""}" data-tag="${id}" data-i="${i}">${esc(name)}</span>`).join("")}</div>
-      <div class="muted" style="font-size:13px;margin:10px 0 6px">Свои метки</div>
+      <div class="muted" style="font-size:13px;margin:10px 0 6px">${tx("Свои метки")}</div>
       <div class="chips">${[...new Set([...LABEL_SUGGEST, ...labels])].map((l) =>
         `<span class="chip sm label ${labels.includes(l) ? "on" : ""}" data-label="${esc(l)}" data-i="${i}">#${esc(l)}</span>`).join("")}</div>
       <div class="row" style="margin-top:8px"><input id="newLabel" placeholder="Своя метка"><button class="shrink small" data-addlabel="${i}">＋</button></div>
     </div>` : ""}
     </div>`;
   }).join("")
-    : `<div class="empty">Полка пустая. Добавьте табаки вручную или после распознавания фото.</div>`;
+    : `<div class="empty">${tx("Полка пустая. Добавьте табаки вручную или после распознавания фото.")}</div>`;
 }
 // Открыть вкладку миксов с готовым поиском или выбранным табаком
 function openMixes(q, pickIdx) {
@@ -1157,7 +1176,7 @@ $("#shelfList").addEventListener("click", (e) => {
   if (d.stockadd) { const t = shelf[d.i]; t.stock = (t.stock || 0) + +d.stockadd; saveShelf(); renderShelf(); return renderShop(); }
   if (d.stockset != null) {
     const v = parseFloat($("#stockInput").value);
-    if (!Number.isFinite(v) || v < 0) return toast("Введите остаток в граммах, например 85");
+    if (!Number.isFinite(v) || v < 0) return toast(tx("Введите остаток в граммах, например 85"));
     shelf[d.stockset].stock = Math.round(v); saveShelf(); renderShelf(); return renderShop();
   }
   if (d.stockclear != null) { delete shelf[d.stockclear].stock; saveShelf(); renderShelf(); return renderShop(); }
@@ -1189,7 +1208,7 @@ function makePicker(input, list, getItems, onPick) {
     list._items = items;
     list.innerHTML = items.length
       ? items.map((it, i) => `<div class="pk-item" data-i="${i}">${esc(it.title)}${it.sub ? `<small>${esc(it.sub)}</small>` : ""}</div>`).join("")
-      : `<div class="pk-item muted">Нет в списке — впишите своё и нажмите ＋</div>`;
+      : `<div class="pk-item muted">${tx("Нет в списке — впишите своё и нажмите ＋")}</div>`;
     list.classList.add("open");
   };
   input.addEventListener("focus", render);
@@ -1204,7 +1223,7 @@ function makePicker(input, list, getItems, onPick) {
   input.addEventListener("blur", () => setTimeout(() => list.classList.remove("open"), 150));
   return render;
 }
-const BRANDS = [...new Set([...Object.keys(CATALOG), ...UA_BRANDS.map((b) => b.replace(/ \(.*/, ""))])].sort((a, b) => a.localeCompare(b, "ru"));
+const BRANDS = [...new Set([...Object.keys(CATALOG), ...UA_BRANDS.map((b) => b.replace(/ \(.*/, ""))])].sort((a, b) => a.localeCompare(b, LOCALE));
 const catalogFor = (brand) => CATALOG[Object.keys(CATALOG).find((k) => k.toLowerCase() === brand.toLowerCase())] || [];
 const splitFlavor = (s) => { const m = s.match(/^(.*?)\s*(\((.*)\))?\s*(·\s*(.*))?$/); return { title: m[1] || s, sub: [m[3], m[5]].filter(Boolean).join(" · ") }; };
 
@@ -1212,8 +1231,8 @@ makePicker($("#shelfBrand"), $("#brandPick"), (q) => {
   const lq = q.toLowerCase();
   return BRANDS.filter((b) => !lq || b.toLowerCase().includes(lq)).map((b) => {
     const n = catalogFor(b).length, note = (UA_BRANDS.find((x) => x.startsWith(b + " (")) || "").match(/\((.*)\)/)?.[1];
-    const str = BRAND_INFO[b]?.strength?.join("/");
-    return { title: b, sub: [note, str && `крепость: ${str}`, n ? `${n} вкусов в списке` : "вкусы вписываются вручную"].filter(Boolean).join(" · "), value: b };
+    const str = BRAND_INFO[b]?.strength?.map(tx).join("/");
+    return { title: b, sub: [note, str && `${tx("крепость:")} ${str}`, n ? `${n} ${tx("вкусов в списке")}` : tx("вкусы вписываются вручную")].filter(Boolean).join(" · "), value: b };
   });
 }, (it) => {
   $("#shelfBrand").value = it.value;
@@ -1239,7 +1258,7 @@ function addShelfFromForm() {
   const before = shelf.length;
   addToShelf({ brand, flavor });
   $("#shelfFlavor").value = ""; // бренд оставляем: удобно добавить несколько вкусов подряд
-  $("#shelfHint").textContent = shelf.length > before ? `✓ Добавлено: ${tobaccoName({ brand, flavor })}` : "Такой табак уже есть на полке";
+  $("#shelfHint").textContent = shelf.length > before ? `${tx("✓ Добавлено:")} ${tobaccoName({ brand, flavor })}` : tx("Такой табак уже есть на полке");
   renderShelf();
 }
 $("#shelfAdd").addEventListener("click", addShelfFromForm);
@@ -1253,23 +1272,23 @@ function addToShelf(t) {
 // Сам собирается из двух источников: табаки, которые заканчиваются, и вкусы,
 // которых чаще всего не хватает для миксов базы. Плюс свои пункты.
 function shopSuggestions() {
-  const lowItems = shelf.filter(isLow).map((t) => ({ text: tobaccoName(t), why: t.stock ? `осталось ${t.stock} г` : "закончился" }));
+  const lowItems = shelf.filter(isLow).map((t) => ({ text: tobaccoName(t), why: t.stock ? `${tx("осталось")} ${t.stock} ${tx("г")}` : tx("закончился") }));
   const { almost } = matchMixes(shelf.map((t) => ({ label: tobaccoName(t), tags: tagsOf(t) })));
   const need = {};
   almost.forEach((m) => m.missing.forEach((f) => (need[f] = need[f] || []).push(m.n)));
   const flavorItems = Object.entries(need).sort((a, b) => b[1].length - a[1].length).slice(0, 4).map(([f, mixes]) => ({
-    text: `${FLAVOR_NAME[f]}${UA_EXAMPLES[f] ? ` (например ${UA_EXAMPLES[f][0]})` : ""}`,
-    why: `откроет ${mixes.length} микс${mixes.length > 4 ? "ов" : mixes.length > 1 ? "а" : ""}: ${mixes.slice(0, 3).join(", ")}`,
+    text: `${FLAVOR_NAME[f]}${UA_EXAMPLES[f] ? ` ${tx("(например")} ${UA_EXAMPLES[f][0]})` : ""}`,
+    why: `${tx("откроет миксов:")} ${mixes.length} (${mixes.slice(0, 3).join(", ")})`,
   }));
   return { lowItems, flavorItems };
 }
 function renderShop() {
   const { lowItems, flavorItems } = shopSuggestions();
   const auto = (title, items) => items.length ? `<div class="muted" style="font-size:13px;margin:4px 0">${title}</div>` + items.map((x) =>
-    `<div class="shop-item"><span class="t">${esc(x.text)}<small>${esc(x.why)}</small></span><button class="small" data-shopadd="${esc(x.text)}">＋ в список</button></div>`).join("") : "";
-  $("#shopAuto").innerHTML = auto("📦 Заканчивается на полке", lowItems) + auto("💡 Чего не хватает для новых миксов", flavorItems)
-    || (shop.length ? "" : `<p class="muted" style="margin:0">Пока пусто. Укажите остатки табака на полке (🏷 → 📦), и то, что заканчивается, появится здесь само.</p>`);
-  $("#shopList").innerHTML = shop.length ? `<div class="muted" style="font-size:13px;margin:10px 0 4px">Мой список</div>` + shop.map((x, i) =>
+    `<div class="shop-item"><span class="t">${esc(x.text)}<small>${esc(x.why)}</small></span><button class="small" data-shopadd="${esc(x.text)}">${tx("＋ в список")}</button></div>`).join("") : "";
+  $("#shopAuto").innerHTML = auto(tx("📦 Заканчивается на полке"), lowItems) + auto(tx("💡 Чего не хватает для новых миксов"), flavorItems)
+    || (shop.length ? "" : `<p class="muted" style="margin:0">${tx("Пока пусто. Укажите остатки табака на полке (🏷 → 📦), и то, что заканчивается, появится здесь само.")}</p>`);
+  $("#shopList").innerHTML = shop.length ? `<div class="muted" style="font-size:13px;margin:10px 0 4px">${tx("Мой список")}</div>` + shop.map((x, i) =>
     `<div class="shop-item ${x.done ? "done" : ""}"><label class="t"><input type="checkbox" data-shopdone="${i}" ${x.done ? "checked" : ""}> ${esc(x.text)}</label><button class="small" data-shopdel="${i}">✕</button></div>`).join("") : "";
 }
 function addShopItem(text) {
@@ -1290,9 +1309,9 @@ $("#shopCopy").addEventListener("click", async () => {
   const { lowItems, flavorItems } = shopSuggestions();
   const lines = [...shop.filter((x) => !x.done).map((x) => x.text), ...lowItems.map((x) => x.text), ...flavorItems.map((x) => x.text)];
   const text = [...new Set(lines)].map((l) => "• " + l).join("\n");
-  if (!text) return toast("Список пуст");
-  try { await navigator.clipboard.writeText("🛒 Для кальяна:\n" + text); toast("📋 Список скопирован — вставьте в мессенджер"); }
-  catch { prompt("Скопируйте список:", text); }
+  if (!text) return toast(tx("Список пуст"));
+  try { await navigator.clipboard.writeText(tx("🛒 Для кальяна:\n") + text); toast(tx("📋 Список скопирован — вставьте в мессенджер")); }
+  catch { prompt(tx("Скопируйте список:"), text); }
 });
 
 let picked = new Set();
@@ -1307,14 +1326,14 @@ $("#shelfPick").addEventListener("click", (e) => {
 
 function renderSaved() {
   $("#savedMixes").innerHTML = saved.length ? saved.map((m, i) => mixCard(m, { savedIdx: i })).join("")
-    : `<div class="empty">Тут появятся миксы, которые вы сохраните.</div>`;
+    : `<div class="empty">${tx("Тут появятся миксы, которые вы сохраните.")}</div>`;
 }
 $("#savedMixes").addEventListener("click", (e) => {
   const star = e.target.closest("[data-star]");
   if (star) { saved[star.dataset.idx].rating = +star.dataset.star; saveSaved(); renderSaved(); return; }
   if (e.target.dataset.sbowl != null) return chooseForHookah(saved[e.target.dataset.sbowl]);
   const del = e.target.closest("[data-unsave]");
-  if (del && confirm("Удалить микс?")) { saved.splice(del.dataset.unsave, 1); saveSaved(); renderSaved(); }
+  if (del && confirm(tx("Удалить микс?"))) { saved.splice(del.dataset.unsave, 1); saveSaved(); renderSaved(); }
 });
 
 // ---------- Офлайн-база миксов ----------
@@ -1323,14 +1342,14 @@ function offlineCard(m) {
   const i = offlineShown.push(m) - 1;
   const rows = m.rows.map((r) => {
     const src = r.tobaccos.length ? r.tobaccos.join(" / ")
-      : `<span class="muted">${m.missing.includes(r.flavor) ? "🛒 нет на полке" : "любой"}${UA_EXAMPLES[r.flavor] ? ` · в Украине: ${esc(UA_EXAMPLES[r.flavor].join(", "))}` : ""}</span>`;
+      : `<span class="muted">${m.missing.includes(r.flavor) ? tx("🛒 нет на полке") : tx("любой")}${UA_EXAMPLES[r.flavor] ? ` ${tx("· в Украине:")} ${esc(UA_EXAMPLES[r.flavor].join(", "))}` : ""}</span>`;
     return `<div class="comp"><span class="pct">${r.pct}%</span><span class="pbar"><i style="width:${r.pct}%"></i></span>
       <span><b>${esc(FLAVOR_NAME[r.flavor])}</b><br><span style="font-size:14px">${r.tobaccos.length ? esc(src) : src}</span></span></div>`;
   }).join("");
   return `<div class="card mix"><h3>${esc(m.n)}</h3>
-    ${m.missing.length ? `<span class="tag">🛒 докупить: ${esc(m.missing.map((f) => FLAVOR_NAME[f]).join(", "))}</span>` : ""}
+    ${m.missing.length ? `<span class="tag">${tx("🛒 докупить:")} ${esc(m.missing.map((f) => FLAVOR_NAME[f]).join(", "))}</span>` : ""}
     <div style="margin:8px 0">${rows}</div><p class="muted">${esc(m.d)}</p>
-    <button class="small" data-osave="${i}">💾 Сохранить</button> <button class="small" data-obowl="${i}">🔥 Забить</button></div>`;
+    <button class="small" data-osave="${i}">${tx("💾 Сохранить")}</button> <button class="small" data-obowl="${i}">${tx("🔥 Забить")}</button></div>`;
 }
 // Все миксы базы с отметкой, что есть на полке и чего не хватает
 function allMixesForShelf() {
@@ -1340,7 +1359,9 @@ function allMixesForShelf() {
 // Поиск понимает и вкусы («кавун», «ice»), и настроения («свежее», «десерт»), и названия,
 // и табаки с полки вместе с их метками («whitesmok», «любимый»).
 // Миксы сортируются по числу совпавших слов, так что работает и фраза «что-то свежее с ягодами».
+// i18n-skip-start
 const STOP = new Set(["что", "то", "что-то", "щось", "хочу", "хочется", "хочеться", "не", "слишком", "занадто", "очень", "дуже", "мне", "мені", "или", "або", "без", "чтобы", "щоб", "был", "було", "было", "with", "and"]);
+// i18n-skip-end
 const norm = (s) => String(s).toLowerCase().replace(/ё/g, "е");
 function searchMixes(q) {
   const words = norm(q).split(/[\s,.!?;]+/).filter((w) => w.length > 1 && !STOP.has(w));
@@ -1390,11 +1411,11 @@ function renderDayMix() {
   const d = new Date(), seed = d.getFullYear() * 400 + d.getMonth() * 32 + d.getDate();
   const m = list[(seed * 7919) % list.length];
   $("#dayMix").innerHTML = `<div class="row" style="align-items:flex-start">
-      <div><div class="muted" style="font-size:13px">⭐ Микс дня</div>
+      <div><div class="muted" style="font-size:13px">${tx("⭐ Микс дня")}</div>
         <b style="font-size:17px">${esc(m.n)}</b>
         <div class="muted" style="font-size:14px">${m.rows.map((r) => `${r.pct}% ${esc(FLAVOR_NAME[r.flavor])}`).join(" · ")}</div></div>
-      <button class="shrink small" data-dayopen>Открыть</button></div>
-    <button class="primary" id="btnWheel" style="width:100%;margin-top:12px">🎡 Крутить колесо миксов</button>`;
+      <button class="shrink small" data-dayopen>${tx("Открыть")}</button></div>
+    <button class="primary" id="btnWheel" style="width:100%;margin-top:12px">${tx("🎡 Крутить колесо миксов")}</button>`;
   $("#dayMix").dataset.mix = m.n;
 }
 $("#dayMix").addEventListener("click", (e) => {
@@ -1429,7 +1450,7 @@ function shelfCombos() {
     const [pa, pb] = isCool(B) ? [75, 25] : [60, 40];
     out.push({
       n: `${FLAVOR_NAME[fa].split(/[ /:]/)[0]} + ${FLAVOR_NAME[fb].split(/[ /:]/)[0]}`,
-      d: isCool(B) ? "Основа с холодком — с вашей полки." : "Эти вкусы часто сочетают — оба табака есть на полке.",
+      d: isCool(B) ? tx("Основа с холодком — с вашей полки.") : tx("Эти вкусы часто сочетают — оба табака есть на полке."),
       p: [[fa, pa], [fb, pb]], missing: [], fromShelf: true,
       rows: [{ flavor: fa, pct: pa, tobaccos: [A.label] }, { flavor: fb, pct: pb, tobaccos: [B.label] }],
     });
@@ -1451,17 +1472,17 @@ function openWheel() {
   const n = wheelItems.length, a = 360 / n, R = 150, C = 160;
   const pt = (deg, r) => [C + r * Math.cos((deg * Math.PI) / 180), C + r * Math.sin((deg * Math.PI) / 180)];
   const segs = wheelItems.map((m, i) => {
-    const s = -90 + i * a, e = s + a, [x1, y1] = pt(s, R), [x2, y2] = pt(e, R), mid = s + a / 2, [tx, ty] = pt(mid, R * 0.58);
+    const s = -90 + i * a, e = s + a, [x1, y1] = pt(s, R), [x2, y2] = pt(e, R), mid = s + a / 2, [lx, ly] = pt(mid, R * 0.58);
     const label = m.n.length > 14 ? m.n.slice(0, 13) + "…" : m.n;
     const dark = i % 2 === 1;
     return `<path d="M${C},${C} L${x1},${y1} A${R},${R} 0 ${a > 180 ? 1 : 0} 1 ${x2},${y2} Z" fill="${WHEEL_COLORS[i % 8]}" stroke="#211913" stroke-width="2"/>
-      <text x="${tx}" y="${ty}" transform="rotate(${mid > 90 && mid < 270 ? mid + 180 : mid} ${tx} ${ty})" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="600" fill="${dark ? "#fff3e6" : "#2a1308"}">${esc(label)}</text>`;
+      <text x="${lx}" y="${ly}" transform="rotate(${mid > 90 && mid < 270 ? mid + 180 : mid} ${lx} ${ly})" text-anchor="middle" dominant-baseline="middle" font-size="12" font-weight="600" fill="${dark ? "#fff3e6" : "#2a1308"}">${esc(label)}</text>`;
   }).join("");
   $("#wheelSvg").innerHTML = segs + `<circle cx="${C}" cy="${C}" r="18" fill="#211913" stroke="#ffb26b" stroke-width="3"/>`;
   const profLabel = profile ? " · " + PROFILES.find((p) => p[0] === profile)[1] : "";
   $("#wheelResult").innerHTML = wheelShelfOnly
-    ? `<p class="muted" style="text-align:center">🗂️ Только с вашей полки: ${n} вариантов${profLabel}</p>`
-    : `<p class="muted" style="text-align:center">На полке мало табаков, поэтому крутим миксы из базы${profLabel}.<br>Добавьте хотя бы 2–3 табака на 🗂️ Полку.</p>`;
+    ? `<p class="muted" style="text-align:center">${tx("🗂️ Только с вашей полки:")} ${n} ${tx("вариантов")}${profLabel}</p>`
+    : `<p class="muted" style="text-align:center">${tx("На полке мало табаков, поэтому крутим миксы из базы")}${profLabel}.<br>${tx("Добавьте хотя бы 2–3 табака на 🗂️ Полку.")}</p>`;
   $("#wheelModal").classList.add("open");
 }
 function spinWheel() {
@@ -1473,8 +1494,8 @@ function spinWheel() {
   $("#btnSpin").disabled = true;
   setTimeout(() => {
     $("#btnSpin").disabled = false;
-    $("#wheelResult").innerHTML = `<p style="text-align:center;font-size:18px">🎉 Выпало: <b>${esc(wheelItems[k].n)}</b></p>
-      <button class="primary" data-wbowl="${k}" style="width:100%;margin-bottom:10px">🔥 Забить этот микс</button>` + offlineCard(wheelItems[k]);
+    $("#wheelResult").innerHTML = `<p style="text-align:center;font-size:18px">${tx("🎉 Выпало:")} <b>${esc(wheelItems[k].n)}</b></p>
+      <button class="primary" data-wbowl="${k}" style="width:100%;margin-bottom:10px">${tx("🔥 Забить этот микс")}</button>` + offlineCard(wheelItems[k]);
     navigator.vibrate?.(80);
   }, 4300);
 }
@@ -1487,7 +1508,7 @@ $("#wheelModal").addEventListener("click", (e) => {
   if (wb) { const m = wheelItems[wb.dataset.wbowl]; closeWheel(); return chooseForHookah(m); }
   if (e.target.dataset.obowl != null) { const m = offlineShown[e.target.dataset.obowl]; closeWheel(); return chooseForHookah(m); }
   const i = e.target.dataset.osave; if (i == null) return;
-  saveOfflineMix(offlineShown[i]); e.target.textContent = "✓ Сохранено"; e.target.disabled = true;
+  saveOfflineMix(offlineShown[i]); e.target.textContent = tx("✓ Сохранено"); e.target.disabled = true;
 });
 
 function renderOffline() {
@@ -1498,26 +1519,26 @@ function renderOffline() {
   const profName = profile ? PROFILES.find((p) => p[0] === profile)[1] : "";
   if (q || picked.size || profile) {
     const found = (q || picked.size ? searchMixes(q) : allMixesForShelf().sort((a, b) => a.missing.length - b.missing.length)).filter(prof);
-    const what = [q && `«${esc(q)}»`, picked.size && "выбранным табакам", profName].filter(Boolean).join(" + ");
+    const what = [q && `«${esc(q)}»`, picked.size && tx("выбранным табакам"), profName].filter(Boolean).join(" + ");
     $("#offline").innerHTML = found.length
-      ? `<p class="muted">Найдено по ${what}: ${found.length}</p>` + found.slice(0, 30).map(offlineCard).join("")
-      : `<div class="card muted">Ничего не нашлось по ${what}. Попробуйте другой вкус или нажмите «Спросить Gemini».</div>`;
+      ? `<p class="muted">${tx("Найдено по")} ${what}: ${found.length}</p>` + found.slice(0, 30).map(offlineCard).join("")
+      : `<div class="card muted">${tx("Ничего не нашлось по")} ${what}${tx(". Попробуйте другой вкус или нажмите «Спросить Gemini».")}</div>`;
     renderOfflineAll(); // кнопки «Сохранить» ссылаются на offlineShown, пересобираем и нижний список
     return;
   }
   const items = shelf.map((t) => ({ label: tobaccoName(t), tags: tagsOf(t) }));
   const { ready, almost } = matchMixes(items);
   let html = "";
-  if (!shelf.length) html = `<div class="card muted">Добавьте свои табаки на 🗂️ Полку, и тут появятся миксы, которые можно забить прямо сейчас.</div>`;
+  if (!shelf.length) html = `<div class="card muted">${tx("Добавьте свои табаки на 🗂️ Полку, и тут появятся миксы, которые можно забить прямо сейчас.")}</div>`;
   else {
-    html += ready.length ? `<p class="muted">Можно забить из того, что есть: ${ready.length}</p>` + ready.map(offlineCard).join("")
-      : `<div class="card muted">Из табаков на полке готовых миксов в базе нет. Ниже те, где не хватает одного вкуса.</div>`;
-    if (almost.length) html += `<p class="muted">Не хватает одного вкуса: ${almost.length}</p>` + almost.slice(0, 12).map(offlineCard).join("");
+    html += ready.length ? `<p class="muted">${tx("Можно забить из того, что есть:")} ${ready.length}</p>` + ready.map(offlineCard).join("")
+      : `<div class="card muted">${tx("Из табаков на полке готовых миксов в базе нет. Ниже те, где не хватает одного вкуса.")}</div>`;
+    if (almost.length) html += `<p class="muted">${tx("Не хватает одного вкуса:")} ${almost.length}</p>` + almost.slice(0, 12).map(offlineCard).join("");
   }
   $("#offline").innerHTML = html;
   renderOfflineAll();
 }
-$("#offlineFilter").innerHTML = `<option value="">Все вкусы</option>` + FLAVORS.map(([id, name]) => `<option value="${id}">${esc(name)}</option>`).join("");
+$("#offlineFilter").innerHTML = `<option value="">${tx("Все вкусы")}</option>` + FLAVORS.map(([id, name]) => `<option value="${id}">${esc(name)}</option>`).join("");
 $("#offlineFilter").addEventListener("change", renderOfflineAll);
 function renderOfflineAll() {
   const f = $("#offlineFilter").value;
@@ -1538,7 +1559,7 @@ function saveOfflineMix(m) {
 document.querySelector("#tab-mix").addEventListener("click", (e) => {
   if (e.target.dataset.obowl != null) return chooseForHookah(offlineShown[e.target.dataset.obowl]);
   const i = e.target.dataset.osave; if (i == null) return;
-  saveOfflineMix(offlineShown[i]); e.target.textContent = "✓ Сохранено"; e.target.disabled = true;
+  saveOfflineMix(offlineShown[i]); e.target.textContent = tx("✓ Сохранено"); e.target.disabled = true;
 });
 
 // ---------- Фото ----------
@@ -1556,7 +1577,7 @@ const MAX_PHOTOS = 6;
     try { photos.push(await shrink(f)); renderPhotos(); }
     catch { failed++; }
   }
-  const msgs = [failed && `не удалось прочитать фото: ${failed} (файл повреждён или формат не поддерживается)`, skipped && `пропущено ${skipped}: максимум ${MAX_PHOTOS} фото`].filter(Boolean);
+  const msgs = [failed && `${tx("не удалось прочитать фото:")} ${failed} ${tx("(файл повреждён или формат не поддерживается)")}`, skipped && `${tx("пропущено")} ${skipped}${tx(": максимум")} ${MAX_PHOTOS} ${tx("фото")}`].filter(Boolean);
   $("#askHint").innerHTML = msgs.length ? `<span class="err">${esc(msgs.join("; "))}</span>` : "";
 }));
 // Уменьшаем фото до ~1280px: этикетка читается, а запрос лёгкий
@@ -1592,12 +1613,13 @@ function renderPhotos() {
 $("#photos").addEventListener("click", (e) => { const i = e.target.dataset.rm; if (i != null) { photos.splice(i, 1); renderPhotos(); } });
 
 // ---------- Gemini ----------
+// i18n-skip-start
 const HEAT = { kaloud: "калауд/HMD", foil: "фольга" };
 const BOWL = { phunnel: "фанел", turk: "турка", egypt: "египетская чаша", fruit: "фрукт" };
 const STR = { light: "лёгкая", medium: "средняя", strong: "крепкая" };
 
 function buildPrompt(wish, shelfItems) {
-  return `Ты опытный кальянный мастер. Отвечай по-русски, живо и по делу.
+  return `Ты опытный кальянный мастер. Отвечай живо и по делу. Язык ответа (все текстовые поля JSON): ${{ ru: "русский", uk: "українська", en: "English" }[LANG]}.
 Сетап: ${BOWL[setup().bowl]}, ${HEAT[setup().heat]}, ${setup().count} угля по ${setup().coal} мм. Желаемая крепость: ${STR[settings.strength]}.
 Человек живёт в Украине. Если советуешь что-то докупить, называй только бренды, которые продаются в Украине: ${UA_BRANDS.join(", ")}. Российские бренды (Darkside, Musthave, Black Burn, Sebero, Chabacco и т.п.) не предлагай.
 ${photos.length ? `На фото пачки табака. Распознай бренд и вкус каждой пачки по этикетке. Если надпись не читается, напиши свою догадку и отметь это в notes.` : ""}
@@ -1624,6 +1646,7 @@ ${wish ? `Пожелание: ${wish}` : "Пожеланий нет: предл�
   "advice": "общий совет, можно пусто"
 }`;
 }
+// i18n-skip-end
 
 // fetch с ограничением времени: зависший запрос обрывается и превращается в понятную ошибку
 let GEMINI_TIMEOUT_MS = 60000;
@@ -1634,8 +1657,8 @@ async function fetchWithTimeout(url, opts, ms = GEMINI_TIMEOUT_MS) {
     return await fetch(url, { ...opts, signal: ctrl.signal });
   } catch (e) {
     const err = new Error(e.name === "AbortError"
-      ? `Gemini не ответил за ${Math.round(ms / 1000)} секунд: медленный интернет или сервер перегружен. Попробуйте ещё раз.`
-      : navigator.onLine === false ? "Нет подключения к интернету." : "Не удалось связаться с Gemini: проблема с сетью.");
+      ? `${tx("Gemini не ответил за")} ${Math.round(ms / 1000)} ${tx("секунд: медленный интернет или сервер перегружен. Попробуйте ещё раз.")}`
+      : navigator.onLine === false ? tx("Нет подключения к интернету.") : tx("Не удалось связаться с Gemini: проблема с сетью."));
     err.kind = e.name === "AbortError" ? "timeout" : "network";
     throw err;
   } finally {
@@ -1653,7 +1676,7 @@ async function generateWithFallback(body, onStatus = () => {}) {
   let queue = unique.filter((m) => !isBlocked(m));
   // Все модели исключены — пробуем их снова, вдруг лимиты уже восстановились
   if (!queue.length) queue = unique;
-  if (!queue.length) throw new Error("Список моделей пуст. Нажмите «Проверить ключ» в Настройках.");
+  if (!queue.length) throw new Error(tx("Список моделей пуст. Нажмите «Проверить ключ» в Настройках."));
   let lastErr, networkFails = 0, timeouts = 0;
   for (const model of queue) {
     for (let attempt = 0; attempt < 3; attempt++) {
@@ -1692,19 +1715,19 @@ async function generateWithFallback(body, onStatus = () => {}) {
       break;
     }
   }
-  throw lastErr || new Error("Не нашлось ни одной доступной модели. Нажмите «Проверить ключ» в Настройках.");
+  throw lastErr || new Error(tx("Не нашлось ни одной доступной модели. Нажмите «Проверить ключ» в Настройках."));
 }
 function friendlyError(status, msg) {
   let e;
   if (status >= 500 || /high demand|overloaded/i.test(msg)) {
-    e = new Error("Серверы Gemini сейчас перегружены. Обычно это проходит за несколько минут. Попробуйте ещё раз чуть позже.");
+    e = new Error(tx("Серверы Gemini сейчас перегружены. Обычно это проходит за несколько минут. Попробуйте ещё раз чуть позже."));
   } else if (status === 429) {
     const wait = msg.match(/retry in ([\dhms.]+)/i)?.[1]?.replace(/\.\d+s$/, "s");
-    e = new Error(`Бесплатный лимит Gemini на сейчас исчерпан.${wait ? ` Можно повторить через ${wait}.` : " Попробуйте через минуту."} Или выберите другую модель в Настройках.`);
+    e = new Error(`${tx("Бесплатный лимит Gemini на сейчас исчерпан.")}${wait ? ` ${tx("Можно повторить через")} ${wait}.` : tx(" Попробуйте через минуту.")} ${tx("Или выберите другую модель в Настройках.")}`);
   } else if (status === 401 || (status === 400 && /api.?key/i.test(msg))) {
-    e = new Error("Ключ не подходит. Проверьте его в Настройках."); e.auth = true;
+    e = new Error(tx("Ключ не подходит. Проверьте его в Настройках.")); e.auth = true;
   } else if (status === 403) {
-    e = new Error("Доступ запрещён. Проверьте ключ и что Gemini API доступен в вашем регионе."); e.auth = true;
+    e = new Error(tx("Доступ запрещён. Проверьте ключ и что Gemini API доступен в вашем регионе.")); e.auth = true;
   } else {
     e = new Error(msg);
   }
@@ -1714,10 +1737,10 @@ function friendlyError(status, msg) {
 // Проверка ответа модели: структура, типы, проценты 0–100 и их сумма.
 // Микс с битыми процентами отбрасываем; сумму 95–105 подравниваем до 100, остальное пересчитываем пропорционально.
 function validateResult(data) {
-  const bad = (why) => { const e = new Error(`Gemini вернул ответ в неожиданном формате (${why}). Попробуйте ещё раз.`); e.format = true; return e; };
-  if (!isObj(data)) throw bad("это не объект");
-  if (data.recognized !== undefined && !Array.isArray(data.recognized)) throw bad("recognized — не список");
-  if (!Array.isArray(data.mixes)) throw bad("нет списка mixes");
+  const bad = (why) => { const e = new Error(`${tx("Gemini вернул ответ в неожиданном формате (")}${why}${tx("). Попробуйте ещё раз.")}`); e.format = true; return e; };
+  if (!isObj(data)) throw bad(tx("это не объект"));
+  if (data.recognized !== undefined && !Array.isArray(data.recognized)) throw bad(tx("recognized — не список"));
+  if (!Array.isArray(data.mixes)) throw bad(tx("нет списка mixes"));
   const recognized = (data.recognized || []).filter(isObj)
     .map((t) => ({ brand: str(t.brand).trim(), flavor: str(t.flavor).trim(), notes: str(t.notes) }))
     .filter((t) => t.brand || t.flavor);
@@ -1736,42 +1759,42 @@ function validateResult(data) {
       comps[0].percent += 100 - comps.reduce((s, c) => s + c.percent, 0);
       if (Math.abs(sum - 100) > 5) fixed++;
     }
-    const out = { name: str(m.name).trim() || `Микс ${i + 1}`, components: comps };
+    const out = { name: str(m.name).trim() || `${tx("Микс")} ${i + 1}`, components: comps };
     ["profile", "why", "packing", "heat", "strength", "needToBuy"].forEach((k) => (out[k] = str(m[k])));
     return out;
   }).filter(Boolean);
-  if (!mixes.length && !recognized.length) throw bad("ни одного корректного микса");
+  if (!mixes.length && !recognized.length) throw bad(tx("ни одного корректного микса"));
   return { recognized, mixes, advice: str(data.advice), fixed, dropped: data.mixes.length - mixes.length };
 }
 
 $("#btnAsk").addEventListener("click", async () => {
   const hint = $("#askHint"), btn = $("#btnAsk"), out = $("#mixResult");
-  if (!settings.apiKey) { hint.innerHTML = '<span class="err">Нужен ключ Gemini: вставьте его в ⚙️ Настройках.</span>'; return; }
+  if (!settings.apiKey) { hint.innerHTML = `<span class="err">${tx("Нужен ключ Gemini: вставьте его в ⚙️ Настройках.")}</span>`; return; }
   const wish = $("#wish").value.trim();
   const shelfItems = [...picked].map((i) => shelf[i]).filter(Boolean).map(tobaccoName);
-  if (!photos.length && !wish && !shelfItems.length) { hint.innerHTML = '<span class="err">Сфоткайте пачки, выберите табаки с полки или напишите пожелание.</span>'; return; }
+  if (!photos.length && !wish && !shelfItems.length) { hint.innerHTML = `<span class="err">${tx("Сфоткайте пачки, выберите табаки с полки или напишите пожелание.")}</span>`; return; }
 
   hint.textContent = ""; btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Думаю над миксами…';
+  btn.innerHTML = `<span class="spinner"></span>${tx("Думаю над миксами…")}`;
   out.innerHTML = "";
   try {
     const parts = [{ text: buildPrompt(wish, shelfItems) }, ...photos.map((p) => ({ inline_data: { mime_type: "image/jpeg", data: p.b64 } }))];
     const j = await generateWithFallback(
       { contents: [{ role: "user", parts }], generationConfig: { responseMimeType: "application/json", temperature: 0.9 } },
-      (model, attempt) => { btn.innerHTML = `<span class="spinner"></span>Думаю над миксами… (${esc(model)}${attempt ? `, попытка ${attempt + 1}` : ""})`; });
+      (model, attempt) => { btn.innerHTML = `<span class="spinner"></span>${tx("Думаю над миксами… (")}${esc(model)}${attempt ? `${tx(", попытка")} ${attempt + 1}` : ""})`; });
     const cand = Array.isArray(j?.candidates) ? j.candidates[0] : null;
     const text = (Array.isArray(cand?.content?.parts) ? cand.content.parts : []).map((p) => str(p?.text)).join("");
-    if (!text) throw new Error(cand?.finishReason === "SAFETY" ? "Модель отказалась отвечать на этот запрос. Попробуйте переформулировать." : "Модель вернула пустой ответ. Попробуйте ещё раз.");
+    if (!text) throw new Error(cand?.finishReason === "SAFETY" ? tx("Модель отказалась отвечать на этот запрос. Попробуйте переформулировать.") : tx("Модель вернула пустой ответ. Попробуйте ещё раз."));
     let raw;
     try { raw = JSON.parse(text.replace(/^```(json)?|```$/g, "").trim()); }
-    catch { throw new Error("Gemini вернул не JSON, а обычный текст. Попробуйте ещё раз."); }
+    catch { throw new Error(tx("Gemini вернул не JSON, а обычный текст. Попробуйте ещё раз.")); }
     const data = validateResult(raw);
     lastResult = data;
     renderResult(data);
   } catch (e) {
-    out.innerHTML = `<div class="card err">Ошибка: ${esc(e.message || "что-то пошло не так")}</div>`;
+    out.innerHTML = `<div class="card err">${tx("Ошибка:")} ${esc(e.message || tx("что-то пошло не так"))}</div>`;
   } finally {
-    btn.disabled = false; btn.innerHTML = "✨ Спросить Gemini";
+    btn.disabled = false; btn.innerHTML = tx("✨ Спросить Gemini");
   }
 });
 
@@ -1785,37 +1808,37 @@ function mixCard(m, { idx, savedIdx } = {}) {
     ? `<div class="stars">${[1, 2, 3, 4, 5].map((n) => `<span data-star="${n}" data-idx="${savedIdx}" class="${n <= (m.rating || 0) ? "on" : ""}">★</span>`).join("")}</div>` : "";
   return `<div class="card mix">
     <h3>${esc(m.name)}</h3>
-    ${m.strength ? `<span class="tag">${esc(m.strength)}</span>` : ""}${m.needToBuy ? `<span class="tag">🛒 докупить: ${esc(m.needToBuy)}</span>` : ""}
+    ${m.strength ? `<span class="tag">${esc(m.strength)}</span>` : ""}${m.needToBuy ? `<span class="tag">${tx("🛒 докупить:")} ${esc(m.needToBuy)}</span>` : ""}
     <div style="margin:8px 0">${comps}</div>
     ${m.profile ? `<p>${esc(m.profile)}</p>` : ""}
     ${m.why ? `<p class="muted">💡 ${esc(m.why)}</p>` : ""}
     ${m.packing ? `<p class="muted">🥣 ${esc(m.packing)}</p>` : ""}
     ${m.heat ? `<p class="muted">🔥 ${esc(m.heat)}</p>` : ""}
     ${stars}
-    ${idx != null ? `<button class="small" data-save="${idx}">💾 Сохранить</button> <button class="small" data-gbowl="${idx}">🔥 Забить</button>` : ""}
-    ${savedIdx != null ? `<button class="small" data-sbowl="${savedIdx}">🔥 Забить</button>` : ""}
-    ${savedIdx != null ? `<button class="small" data-unsave="${savedIdx}">Удалить</button>` : ""}
+    ${idx != null ? `<button class="small" data-save="${idx}">${tx("💾 Сохранить")}</button> <button class="small" data-gbowl="${idx}">${tx("🔥 Забить")}</button>` : ""}
+    ${savedIdx != null ? `<button class="small" data-sbowl="${savedIdx}">${tx("🔥 Забить")}</button>` : ""}
+    ${savedIdx != null ? `<button class="small" data-unsave="${savedIdx}">${tx("Удалить")}</button>` : ""}
   </div>`;
 }
 function renderResult(d) {
   let html = "";
   if (d.recognized?.length) {
-    html += `<div class="card"><b>Распознал на фото:</b>
+    html += `<div class="card"><b>${tx("Распознал на фото:")}</b>
       ${d.recognized.map((t) => `<div class="shelf-item"><div class="t">${esc(tobaccoName(t))}${t.notes ? `<div class="muted">${esc(t.notes)}</div>` : ""}</div></div>`).join("")}
-      <button class="small" id="btnToShelf" style="margin-top:8px">＋ Всё на полку</button></div>`;
+      <button class="small" id="btnToShelf" style="margin-top:8px">${tx("＋ Всё на полку")}</button></div>`;
   }
   html += d.mixes.map((m, i) => mixCard(m, { idx: i })).join("");
-  if (!d.mixes.length) html += `<div class="card muted">Миксов в ответе нет — только распознанные табаки. Добавьте их на полку и спросите ещё раз.</div>`;
-  const notes = [d.dropped && `пропущено миксов с некорректными процентами: ${d.dropped}`, d.fixed && `проценты пересчитаны до 100% в миксах: ${d.fixed}`].filter(Boolean);
+  if (!d.mixes.length) html += `<div class="card muted">${tx("Миксов в ответе нет — только распознанные табаки. Добавьте их на полку и спросите ещё раз.")}</div>`;
+  const notes = [d.dropped && `${tx("пропущено миксов с некорректными процентами:")} ${d.dropped}`, d.fixed && `${tx("проценты пересчитаны до 100% в миксах:")} ${d.fixed}`].filter(Boolean);
   if (notes.length) html += `<p class="muted" style="font-size:13px">ℹ️ ${notes.join("; ")}.</p>`;
   if (d.advice) html += `<div class="card muted">${esc(d.advice)}</div>`;
   $("#mixResult").innerHTML = html;
 }
 $("#mixResult").addEventListener("click", (e) => {
-  if (e.target.id === "btnToShelf") { lastResult.recognized.forEach(addToShelf); e.target.textContent = "✓ Добавлено"; e.target.disabled = true; return; }
+  if (e.target.id === "btnToShelf") { lastResult.recognized.forEach(addToShelf); e.target.textContent = tx("✓ Добавлено"); e.target.disabled = true; return; }
   if (e.target.dataset.gbowl != null) return chooseForHookah(lastResult.mixes[e.target.dataset.gbowl]);
   const s = e.target.dataset.save;
-  if (s != null) { saved.unshift({ ...lastResult.mixes[s], date: Date.now(), rating: 0 }); saveSaved(); e.target.textContent = "✓ Сохранено"; e.target.disabled = true; }
+  if (s != null) { saved.unshift({ ...lastResult.mixes[s], date: Date.now(), rating: 0 }); saveSaved(); e.target.textContent = tx("✓ Сохранено"); e.target.disabled = true; }
 });
 
 // ---------- Резервная копия ----------
@@ -1833,10 +1856,10 @@ $("#bkSave").addEventListener("click", async () => {
   if (IS_NATIVE) {
     try {
       const r = await nativePlugin("Filesystem").writeFile({ path: fileName, data: JSON.stringify(data, null, 1), directory: "CACHE", encoding: "utf8" });
-      await nativePlugin("Share").share({ title: "Резервная копия кальяна", files: [r.uri] });
-      $("#bkStatus").textContent = `✓ Копия готова: сохраните её туда, где не потеряется (Google Диск, Telegram «Избранное»).${withKey ? " В ней ключ — не пересылайте чужим." : ""}`;
+      await nativePlugin("Share").share({ title: tx("Резервная копия кальяна"), files: [r.uri] });
+      $("#bkStatus").textContent = `${tx("✓ Копия готова: сохраните её туда, где не потеряется (Google Диск, Telegram «Избранное»).")}${withKey ? tx(" В ней ключ — не пересылайте чужим.") : ""}`;
     } catch (e) {
-      if (!/cancel/i.test(e?.message || "")) $("#bkStatus").innerHTML = '<span class="err">Не получилось сохранить копию.</span>';
+      if (!/cancel/i.test(e?.message || "")) $("#bkStatus").innerHTML = `<span class="err">${tx("Не получилось сохранить копию.")}</span>`;
     }
     return;
   }
@@ -1847,9 +1870,9 @@ $("#bkSave").addEventListener("click", async () => {
     a.download = fileName;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-    $("#bkStatus").textContent = `✓ Файл ${a.download} сохранён в «Загрузки»: ${shelf.length} табаков, ${saved.length} миксов${withKey ? ", с ключом — не пересылайте его чужим" : ", без ключа"}.`;
+    $("#bkStatus").textContent = `${tx("✓ Файл")} ${a.download} ${tx("сохранён в «Загрузки»:")} ${shelf.length} ${tx("табаков,")} ${saved.length} ${tx("миксов")}${withKey ? tx(", с ключом — не пересылайте его чужим") : tx(", без ключа")}.`;
   } catch {
-    $("#bkStatus").innerHTML = '<span class="err">Не получилось сохранить файл.</span>';
+    $("#bkStatus").innerHTML = `<span class="err">${tx("Не получилось сохранить файл.")}</span>`;
   }
 });
 $("#bkLoad").addEventListener("click", () => $("#bkFile").click());
@@ -1859,16 +1882,16 @@ $("#bkFile").addEventListener("change", async (e) => {
   const st = $("#bkStatus");
   let raw;
   try { raw = JSON.parse(await file.text()); }
-  catch { st.innerHTML = '<span class="err">Это не файл резервной копии: не удалось прочитать JSON.</span>'; return; }
-  if (!isObj(raw) || raw.app !== BACKUP_APP || !isObj(raw.data)) { st.innerHTML = '<span class="err">Этот файл не похож на копию кальянного помощника.</span>'; return; }
+  catch { st.innerHTML = `<span class="err">${tx("Это не файл резервной копии: не удалось прочитать JSON.")}</span>`; return; }
+  if (!isObj(raw) || raw.app !== BACKUP_APP || !isObj(raw.data)) { st.innerHTML = `<span class="err">${tx("Этот файл не похож на копию кальянного помощника.")}</span>`; return; }
   // Каждый раздел проверяем как при обычном чтении: битое поле не ломает остальные
   const d = raw.data;
   const nShelf = checkShelf(d.shelf), nSaved = checkSaved(d.saved), nShop = checkShop(d.shop), nTimers = checkTimers(d.timers);
   const nSettings = isObj(d.settings) ? checkSettings(d.settings) : null;
-  const when = num(Date.parse(raw.created)) ? new Date(raw.created).toLocaleString("ru") : "неизвестной даты";
-  const what = [nShelf && `${nShelf.length} табаков`, nSaved && `${nSaved.length} миксов`, nShop && `список покупок`, nSettings?.setups && `${nSettings.setups.length} сетап(ов)`].filter(Boolean).join(", ");
-  if (!what) { st.innerHTML = '<span class="err">В файле нет данных, которые можно загрузить.</span>'; return; }
-  if (!confirm(`Загрузить копию от ${when}?\n\nВ ней: ${what}.\nТекущие данные в этих разделах будут заменены.`)) return;
+  const when = num(Date.parse(raw.created)) ? new Date(raw.created).toLocaleString(LOCALE) : tx("неизвестной даты");
+  const what = [nShelf && `${nShelf.length} ${tx("табаков")}`, nSaved && `${nSaved.length} ${tx("миксов")}`, nShop && `${tx("список покупок")}`, nSettings?.setups && `${nSettings.setups.length} ${tx("сетап(ов)")}`].filter(Boolean).join(", ");
+  if (!what) { st.innerHTML = `<span class="err">${tx("В файле нет данных, которые можно загрузить.")}</span>`; return; }
+  if (!confirm(`${tx("Загрузить копию от")} ${when}${tx("?\n\nВ ней:")} ${what}${tx(".\nТекущие данные в этих разделах будут заменены.")}`)) return;
   if (nShelf) { shelf = nShelf; saveShelf(); picked.clear(); }
   if (nSaved) { saved = nSaved; saveSaved(); }
   if (nShop) { shop = nShop; saveShop(); }
@@ -1882,7 +1905,7 @@ $("#bkFile").addEventListener("change", async (e) => {
     renderModels(); renderSetups();
   }
   renderTimers(); renderShelf(); renderShop(); renderSaved();
-  st.innerHTML = `<span style="color:var(--ok)">✓ Загружено: ${esc(what)}.</span>`;
+  st.innerHTML = `<span style="color:var(--ok)">${tx("✓ Загружено:")} ${esc(what)}.</span>`;
 });
 
 // ---------- Android-приложение: точные системные будильники ----------
@@ -1902,7 +1925,7 @@ function plannedAlarms(now = Date.now()) {
     const title = `🔥 ${x.name}`;
     let base = x.end, firstK = 0;
     if (x.phase === "coals") {
-      if (!x.flipped) add(x.end - (x.dur * 1000) / 2, title, "Переверните угли");
+      if (!x.flipped) add(x.end - (x.dur * 1000) / 2, title, tx("Переверните угли"));
       add(x.end, title, PHASE.coals.done);
       base = x.end + x.warm * 60e3;
       add(base, title, PHASE.warm.done);
@@ -1913,7 +1936,7 @@ function plannedAlarms(now = Date.now()) {
     }
     for (let k = firstK; k < firstK + SMOKE_AHEAD; k++) add(base + k * x.every * 60e3, title, PHASE.smoke.done);
   });
-  timers.forEach((t) => { if (t.endAt) add(t.endAt, `⏱ ${t.name}`, "Время вышло!"); });
+  timers.forEach((t) => { if (t.endAt) add(t.endAt, `⏱ ${t.name}`, tx("Время вышло!")); });
   return out.sort((a, b) => a.at - b.at).slice(0, 60);
 }
 
@@ -1931,7 +1954,7 @@ function nativeResync() {
         id: i + 1, title: a.title, body: a.body, channelId: CHANNEL, smallIcon: "ic_stat_hookah", iconColor: "#ff8a3d",
         autoCancel: true, schedule: { at: new Date(a.at), allowWhileIdle: true },
       })) });
-    } catch (e) { console.warn("Не удалось поставить будильники:", e?.message); }
+    } catch (e) { console.warn(tx("Не удалось поставить будильники:"), e?.message); }
   }, 300);
 }
 
@@ -1946,11 +1969,11 @@ async function nativeStatus(ask = false) {
     try { ex = await LN.checkExactNotificationSetting(); } catch {}
     const okN = p.display === "granted", okE = ex.exact_alarm === "granted";
     nativeReady = okN && okE;
-    st.innerHTML = `${okN ? "✅" : "❌"} Уведомления<br>${okE ? "✅" : "❌"} Будильники и напоминания (точное время)`
-      + (nativeReady ? "" : "<br>Нажмите кнопку выше, чтобы включить.");
-    $("#btnNotif").textContent = nativeReady ? "🔔 Сигналы включены" : "🔔 Разрешить сигналы";
+    st.innerHTML = `${okN ? "✅" : "❌"} ${tx("Уведомления")}<br>${okE ? "✅" : "❌"} ${tx("Будильники и напоминания (точное время)")}`
+      + (nativeReady ? "" : `<br>${tx("Нажмите кнопку выше, чтобы включить.")}`);
+    $("#btnNotif").textContent = nativeReady ? tx("🔔 Сигналы включены") : tx("🔔 Разрешить сигналы");
   } catch {
-    st.textContent = "Не удалось проверить разрешения.";
+    st.textContent = tx("Не удалось проверить разрешения.");
   }
   updateNotifHint();
 }
@@ -1968,7 +1991,7 @@ async function nativeInit() {
   if (!LN) return;
   document.documentElement.classList.add("native");
   try {
-    await LN.createChannel({ id: CHANNEL, name: "Сигналы кальяна", description: "Угли, прогрев, повороты углей и таймеры",
+    await LN.createChannel({ id: CHANNEL, name: tx("Сигналы кальяна"), description: tx("Угли, прогрев, повороты углей и таймеры"),
       importance: 5, visibility: 1, vibration: true, lights: true, lightColor: "#FF8A3D" });
   } catch {}
   await nativeStatus(true);
