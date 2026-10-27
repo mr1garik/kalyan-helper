@@ -1,0 +1,23 @@
+name: "💡 Ідея · Идея · Idea"
+description: "Нова функція, мікс, переклад · Новая функция, микс, перевод · Feature, mix, translation"
+labels: ["idea"]
+body:
+  - type: dropdown
+    id: kind
+    attributes:
+      label: "Про що? · О чём? · About"
+      options:
+        - "Нова функція · Новая функция · New feature"
+        - "Мікс у базу · Микс в базу · Mix for the database"
+        - "Переклад · Перевод · Translation"
+        - "Тютюн або бренд · Табак или бренд · Tobacco or brand"
+        - "Інше · Другое · Other"
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: "Опишіть · Опишите · Describe"
+      description: "Для міксу: смаки й пропорції, бренди. · Для микса: вкусы и пропорции. · For a mix: flavors and proportions."
+    validations:
+      required: true

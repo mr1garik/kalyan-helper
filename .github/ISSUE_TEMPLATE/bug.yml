@@ -1,0 +1,30 @@
+name: "🐞 Помилка · Ошибка · Bug"
+description: "Щось працює не так · Что-то работает не так · Something doesn't work"
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: "Що сталося? · Что случилось? · What happened?"
+      description: "Що робили, що очікували і що вийшло. Скриншот дуже допоможе. · Что делали, что ожидали и что получилось. · What you did, expected and got."
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: "Де? · Где? · Where?"
+      options:
+        - "Android-застосунок / приложение / app"
+        - "Сайт у браузері / в браузере / website"
+    validations:
+      required: true
+  - type: input
+    id: phone
+    attributes:
+      label: "Телефон і версія Android · Phone and Android version"
+      placeholder: "Xiaomi 13, Android 14"
+  - type: input
+    id: version
+    attributes:
+      label: "Версія застосунку · Версия · App version"
+      placeholder: "v1.0.3"
