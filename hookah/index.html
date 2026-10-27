@@ -7,6 +7,7 @@
 <title>Кальянный помощник</title>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="fonts/fonts.css">
 <style>
 :root {
   --bg: #16120f;
@@ -23,7 +24,12 @@
 }
 * { box-sizing: border-box; }
 html { background: var(--bg); }
-html, body { margin: 0; color: var(--text); font: 16px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+/* Rubik — основной текст, El Messiri — заголовки; системные шрифты — запасной вариант */
+:root {
+  --font-body: "Rubik", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-title: "El Messiri", "Rubik", Georgia, serif;
+}
+html, body { margin: 0; color: var(--text); font: 16px/1.45 var(--font-body); }
 body { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
 /* Фон в арабском стиле: восьмиконечные звёзды (руб-эль-хизб) золотом поверх тёплого свечения углей.
    Узор тянется сеткой: звезда в центре плитки и четверти звёзд по углам складываются в сплошной орнамент. */
@@ -43,15 +49,18 @@ body::after {
 }
 /* Заголовки вкладок с золотым орнаментом */
 section.tab > h2:first-child::after {
-  content: ""; display: block; width: 120px; height: 10px; margin-top: 8px;
+  content: ""; display: block; width: 120px; height: 10px; margin: 10px auto 0;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='10' viewBox='0 0 120 10'%3E%3Cg fill='none' stroke='%23e0b15c' stroke-width='1.2'%3E%3Cpath d='M0 5h46M74 5h46'/%3E%3Cpath d='M60 0l5 5-5 5-5-5z' fill='%23e0b15c'/%3E%3Cpath d='M50 5l3-3 3 3-3 3zM64 5l3-3 3 3-3 3z'/%3E%3C/g%3E%3C/svg%3E") no-repeat;
 }
 :root { --gold: #e0b15c; }
+/* Восточный шрифт — для заголовков разделов, названий миксов и крупных подписей */
+h2, h3, .card > b:first-child, .alarm-text, .pick b, .chosen b { font-family: var(--font-title); font-weight: 600; letter-spacing: .2px; }
 main { padding: calc(20px + env(safe-area-inset-top)) 16px 16px; max-width: 640px; margin: 0 auto; }
 section.tab { display: none; }
 section.tab.active { display: block; }
 h2 { font-size: 18px; margin: 18px 0 10px; }
-section.tab > h2:first-child { font-size: 26px; letter-spacing: -.3px; margin-bottom: 16px; }
+/* Заголовок вкладки по центру, орнамент под ним тоже по центру */
+section.tab > h2:first-child { font-size: 32px; font-weight: 700; line-height: 1.15; text-align: center; color: #f6e6cf; margin-bottom: 18px; }
 h2:first-child { margin-top: 0; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
 .muted { color: var(--muted); font-size: 14px; }
