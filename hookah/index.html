@@ -8,6 +8,22 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
 <link rel="stylesheet" href="fonts/fonts.css">
+<script>
+// Тема: «auto» — как в системе телефона. Ставим до отрисовки, чтобы экран не мигал тёмным
+(function () {
+  let t = null;
+  try { t = JSON.parse(localStorage.getItem("hk_theme")); } catch {}
+  const mq = window.matchMedia("(prefers-color-scheme: light)");
+  window.applyTheme = (pref) => {
+    window.THEME = ["light", "dark"].includes(pref) ? pref : "auto";
+    const light = window.THEME === "light" || (window.THEME === "auto" && mq.matches);
+    document.documentElement.dataset.theme = light ? "light" : "dark";
+    document.querySelector('meta[name="theme-color"]').content = light ? "#f6ede1" : "#16120f";
+  };
+  mq.addEventListener?.("change", () => window.THEME === "auto" && window.applyTheme("auto"));
+  window.applyTheme(t);
+})();
+</script>
 <style>
 :root {
   --bg: #16120f;
@@ -21,6 +37,44 @@
   --ok: #6fcf97;
   --danger: #ff6b6b;
   --radius: 14px;
+  --gold: #e0b15c;
+  --title: #f6e6cf;
+  --nav-bg: rgba(24, 18, 14, .88);
+  --pop-bg: #2a211b;
+  --sheet-bg: #211913;
+  --toast-bg: #3a2a1f;
+  --pulse: #3a1f1a;
+  --on-accent: #1b120a;
+  --bg-glow: rgba(255, 138, 61, .24);
+  --bg-top: #1d1410;
+  --bg-bottom: #110c09;
+  --vignette: rgba(10, 7, 5, .55);
+  color-scheme: dark;
+}
+/* Светлая тема: пергамент и тёмное золото, тот же восточный узор */
+:root[data-theme="light"] {
+  --bg: #f6ede1;
+  --card: rgba(255, 251, 245, .86);
+  --card2: rgba(240, 228, 212, .95);
+  --line: #e2d2bd;
+  --text: #2b1d13;
+  --muted: #7a6554;
+  --accent: #e8702e;
+  --accent2: #b9531a;
+  --ok: #2e9457;
+  --danger: #cf3f3f;
+  --gold: #a97a26;
+  --title: #4a2c17;
+  --nav-bg: rgba(250, 243, 233, .92);
+  --pop-bg: #fffaf3;
+  --sheet-bg: #fbf4ea;
+  --toast-bg: #fff6ea;
+  --pulse: #f8d9d2;
+  --bg-glow: rgba(255, 150, 80, .22);
+  --bg-top: #fbf3e7;
+  --bg-bottom: #f1e4d2;
+  --vignette: rgba(160, 110, 60, .10);
+  color-scheme: light;
 }
 * { box-sizing: border-box; }
 html { background: var(--bg); }
@@ -37,22 +91,21 @@ body::before {
   content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cg fill='none' stroke='%23e0b15c' stroke-opacity='.11' stroke-width='1.1'%3E%3Cg id='s'%3E%3Crect x='30' y='30' width='36' height='36'/%3E%3Crect x='30' y='30' width='36' height='36' transform='rotate(45 48 48)'/%3E%3Ccircle cx='48' cy='48' r='9'/%3E%3C/g%3E%3Cuse href='%23s' x='-48' y='-48'/%3E%3Cuse href='%23s' x='48' y='-48'/%3E%3Cuse href='%23s' x='-48' y='48'/%3E%3Cuse href='%23s' x='48' y='48'/%3E%3Cpath d='M48 0v12M48 84v12M0 48h12M84 48h12'/%3E%3C/g%3E%3C/svg%3E") center top / 96px 96px,
-    radial-gradient(120% 60% at 50% -10%, rgba(255, 138, 61, .24), transparent 60%),
+    radial-gradient(120% 60% at 50% -10%, var(--bg-glow), transparent 60%),
     radial-gradient(90% 50% at 100% 110%, rgba(255, 90, 40, .15), transparent 60%),
     radial-gradient(70% 45% at 0% 55%, rgba(224, 177, 92, .07), transparent 70%),
-    linear-gradient(180deg, #1d1410 0%, #110c09 100%);
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
 }
 /* Затемнение к краям, чтобы узор не спорил с текстом */
 body::after {
   content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background: radial-gradient(90% 70% at 50% 40%, transparent 40%, rgba(10, 7, 5, .55) 100%);
+  background: radial-gradient(90% 70% at 50% 40%, transparent 40%, var(--vignette) 100%);
 }
 /* Заголовки вкладок с золотым орнаментом */
 section.tab > h2:first-child::after {
   content: ""; display: block; width: 120px; height: 10px; margin: 10px auto 0;
   background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='10' viewBox='0 0 120 10'%3E%3Cg fill='none' stroke='%23e0b15c' stroke-width='1.2'%3E%3Cpath d='M0 5h46M74 5h46'/%3E%3Cpath d='M60 0l5 5-5 5-5-5z' fill='%23e0b15c'/%3E%3Cpath d='M50 5l3-3 3 3-3 3zM64 5l3-3 3 3-3 3z'/%3E%3C/g%3E%3C/svg%3E") no-repeat;
 }
-:root { --gold: #e0b15c; }
 /* Восточный шрифт — для заголовков разделов, названий миксов и крупных подписей */
 h2, h3, .card > b:first-child, .alarm-text, .pick b, .chosen b { font-family: var(--font-title); font-weight: 600; letter-spacing: .2px; }
 main { padding: calc(20px + env(safe-area-inset-top)) 16px 16px; max-width: 640px; margin: 0 auto; }
@@ -60,12 +113,12 @@ section.tab { display: none; }
 section.tab.active { display: block; }
 h2 { font-size: 18px; margin: 18px 0 10px; }
 /* Заголовок вкладки по центру, орнамент под ним тоже по центру */
-section.tab > h2:first-child { font-size: 32px; font-weight: 700; line-height: 1.15; text-align: center; color: #f6e6cf; margin-bottom: 18px; }
+section.tab > h2:first-child { font-size: 32px; font-weight: 700; line-height: 1.15; text-align: center; color: var(--title); margin-bottom: 18px; }
 h2:first-child { margin-top: 0; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin-bottom: 12px; }
 .muted { color: var(--muted); font-size: 14px; }
 button, .btn { font: inherit; border: 0; border-radius: 12px; padding: 12px 16px; background: var(--card2); color: var(--text); cursor: pointer; }
-button.primary { background: var(--accent); color: #1b120a; font-weight: 600; }
+button.primary { background: var(--accent); color: var(--on-accent); font-weight: 600; }
 button.small { padding: 6px 10px; font-size: 14px; border-radius: 10px; }
 a.link-btn { display: block; text-align: center; text-decoration: none; }
 button:disabled { opacity: .5; }
@@ -77,7 +130,7 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 10px 0 4px
 .row > .shrink { flex: 0 0 auto; }
 
 .card { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
-nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: rgba(24, 18, 14, .88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); z-index: 10; }
+nav { position: fixed; bottom: 0; left: 0; right: 0; display: flex; background: var(--nav-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border-top: 1px solid var(--line); padding-bottom: env(safe-area-inset-bottom); z-index: 10; }
 nav button { flex: 1; background: none; border-radius: 0; padding: 8px 2px 8px; font-size: 11px; color: var(--muted); display: flex; flex-direction: column; align-items: center; gap: 3px; }
 nav button svg { width: 24px; height: 24px; padding: 4px 14px; box-sizing: content-box; border-radius: 999px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: background .2s; }
 nav button.active { color: var(--accent2); }
@@ -94,7 +147,7 @@ nav button.active svg { background: rgba(255, 138, 61, .18); }
 .timer .btns { display: flex; flex-direction: column; gap: 6px; }
 .bar { height: 4px; background: var(--card2); border-radius: 2px; margin-top: 6px; overflow: hidden; }
 .bar i { display: block; height: 100%; background: var(--accent); width: 0; }
-@keyframes pulse { 50% { background: #3a1f1a; } }
+@keyframes pulse { 50% { background: var(--pulse); } }
 
 /* Гайды */
 details { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); margin-bottom: 10px; }
@@ -111,11 +164,11 @@ details .body ul { padding-left: 20px; margin: 6px 0; }
 .photos .ph button { position: absolute; top: 2px; right: 2px; padding: 0 7px; font-size: 14px; background: #000a; border-radius: 8px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .chip { background: var(--card2); border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px; font-size: 14px; cursor: pointer; user-select: none; }
-.chip.on { background: var(--accent); color: #1b120a; border-color: var(--accent); }
+.chip.on { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 .chip.sm { padding: 3px 10px; font-size: 13px; }
 /* Выпадающий список с поиском */
 .picker { position: relative; }
-.pk-list { position: absolute; left: 0; right: 0; top: 100%; margin-top: 4px; max-height: 300px; overflow-y: auto; background: #2a211b; border: 1px solid var(--line); border-radius: 12px; z-index: 20; display: none; box-shadow: 0 12px 30px #000a; }
+.pk-list { position: absolute; left: 0; right: 0; top: 100%; margin-top: 4px; max-height: 300px; overflow-y: auto; background: var(--pop-bg); border: 1px solid var(--line); border-radius: 12px; z-index: 20; display: none; box-shadow: 0 12px 30px #000a; }
 .pk-list.open { display: block; }
 .pk-item { padding: 10px 12px; border-bottom: 1px solid var(--line); cursor: pointer; }
 .pk-item:last-child { border-bottom: 0; }
@@ -125,12 +178,12 @@ details .body ul { padding-left: 20px; margin: 6px 0; }
 .chips.scroll-x { flex-wrap: nowrap; overflow-x: auto; margin: 0 -16px 12px; padding: 0 16px 4px; scrollbar-width: none; }
 .chips.scroll-x::-webkit-scrollbar { display: none; }
 .chips.scroll-x .chip { flex: 0 0 auto; }
-#toast { position: fixed; left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 60; background: #3a2a1f; border: 1px solid var(--accent); color: var(--text); border-radius: 12px; padding: 12px 14px; font-size: 14px; box-shadow: 0 10px 30px #000a; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity .2s, transform .2s; max-width: 608px; margin: 0 auto; }
+#toast { position: fixed; left: 16px; right: 16px; bottom: calc(84px + env(safe-area-inset-bottom)); z-index: 60; background: var(--toast-bg); border: 1px solid var(--accent); color: var(--text); border-radius: 12px; padding: 12px 14px; font-size: 14px; box-shadow: 0 10px 30px #000a; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity .2s, transform .2s; max-width: 608px; margin: 0 auto; }
 #toast.show { opacity: 1; transform: none; }
 /* Колесо миксов */
 .modal { position: fixed; inset: 0; z-index: 50; background: #000b; display: none; align-items: flex-end; justify-content: center; }
 .modal.open { display: flex; }
-.sheet { background: #211913; border: 1px solid var(--line); border-radius: 20px 20px 0 0; width: 100%; max-width: 640px; max-height: 92vh; overflow-y: auto; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); }
+.sheet { background: var(--sheet-bg); border: 1px solid var(--line); border-radius: 20px 20px 0 0; width: 100%; max-width: 640px; max-height: 92vh; overflow-y: auto; padding: 16px 16px calc(16px + env(safe-area-inset-bottom)); }
 .wheel-wrap { position: relative; width: min(84vw, 320px); margin: 8px auto 14px; }
 .wheel-wrap svg { width: 100%; display: block; transition: transform 4.2s cubic-bezier(.17, .84, .2, 1); }
 .wheel-pointer { position: absolute; top: -6px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 22px solid var(--accent2); filter: drop-shadow(0 2px 3px #000); z-index: 2; }
@@ -143,7 +196,7 @@ details .body ul { padding-left: 20px; margin: 6px 0; }
 /* Вкладка «Кальян» */
 .steps { display: flex; align-items: center; gap: 4px; margin: 10px 0 6px; flex-wrap: wrap; }
 .step { font-size: 13px; padding: 4px 10px; border-radius: 999px; background: var(--card2); color: var(--muted); }
-.step.on { background: var(--accent); color: #1b120a; font-weight: 700; }
+.step.on { background: var(--accent); color: var(--on-accent); font-weight: 700; }
 .step.done { color: var(--gold); }
 .step-sep { color: var(--muted); }
 .tips { margin: 10px 0 4px; padding-left: 18px; font-size: 14px; }
@@ -184,6 +237,22 @@ details .body ul { padding-left: 20px; margin: 6px 0; }
 .shelf-item:last-child { border-bottom: 0; }
 .shelf-item .t { flex: 1; }
 .empty { text-align: center; color: var(--muted); padding: 20px 0; }
+/* Журнал */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; }
+.stats div { background: var(--card2); border-radius: 12px; padding: 10px 4px; }
+.stats b { display: block; font-size: 22px; color: var(--accent2); font-variant-numeric: tabular-nums; }
+.stats span { font-size: 12px; color: var(--muted); }
+.top { margin: 10px 0 0; font-size: 14px; }
+.top b { color: var(--gold); font-weight: 600; }
+.jr { margin-bottom: 8px; }
+.jr summary { padding: 12px 14px; }
+.jr summary::after, .jr[open] summary::after { content: none; }
+.jr .when { font-size: 12px; color: var(--muted); display: block; }
+.jr .line { font-size: 13px; color: var(--muted); }
+.jr .rate { float: right; color: var(--gold); font-size: 14px; letter-spacing: 1px; }
+.jr dl { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 8px 0; font-size: 14px; }
+.jr dt { color: var(--muted); }
+.jr dd { margin: 0; }
 </style>
 </head>
 <body>
@@ -206,6 +275,10 @@ details .body ul { padding-left: 20px; margin: 6px 0; }
       <button class="primary" id="hkStart" style="width:100%;padding:16px;font-size:17px;margin-top:14px">🔥 Начать: ставлю угли</button>
       <p class="muted" style="font-size:13px;margin:8px 0 0;text-align:center">Таймеры пойдут друг за другом: угли → прогрев → курим, с напоминаниями на каждом шаге.</p>
     </div>
+    <h2>📓 Журнал</h2>
+    <div class="chips" id="jrRange" style="margin-bottom:10px"></div>
+    <div class="card" id="jrStats"></div>
+    <div id="jrList"></div>
   </section>
 
   <section class="tab" id="tab-timers">
@@ -372,8 +445,16 @@ details .body ul { padding-left: 20px; margin: 6px 0; }
       </select>
     </div>
     <div class="card">
+      <b>🎨 Тема</b>
+      <select id="theme" style="margin-top:8px">
+        <option value="auto">Как в системе</option>
+        <option value="dark">Тёмная</option>
+        <option value="light">Светлая</option>
+      </select>
+    </div>
+    <div class="card">
       <b>💾 Резервная копия</b>
-      <p class="muted" style="font-size:13px;margin:4px 0 8px">Полка, остатки, миксы, сетапы, список покупок и таймеры хранятся только в этом браузере. Сохраните копию в файл, чтобы не потерять их при смене телефона, очистке браузера или нового адреса сайта.</p>
+      <p class="muted" style="font-size:13px;margin:4px 0 8px">Полка, остатки, миксы, сетапы, журнал, список покупок, таймеры, тема и язык хранятся только на этом устройстве. Сохраните копию в файл, чтобы перенести всё на другой телефон или ноутбук и не потерять при очистке браузера.</p>
       <label style="display:flex;gap:8px;align-items:center;color:var(--text)"><input type="checkbox" id="bkKey" style="width:auto"> Включить в копию ключ Gemini</label>
       <div class="row" style="margin-top:10px"><button id="bkSave">⬇️ Сохранить копию</button><button id="bkLoad">⬆️ Загрузить</button></div>
       <input type="file" id="bkFile" accept="application/json,.json" hidden>
@@ -577,6 +658,8 @@ $("#lang").addEventListener("change", (e) => {
   try { e.target.value === "auto" ? localStorage.removeItem("hk_lang") : localStorage.setItem("hk_lang", JSON.stringify(e.target.value)); } catch {}
   location.reload();
 });
+$("#theme").value = THEME;
+$("#theme").addEventListener("change", (e) => { applyTheme(e.target.value); store.set("theme", THEME); });
 $("#apiKey").addEventListener("change", (e) => {
   const key = e.target.value.trim();
   if (key !== settings.apiKey) { settings.apiKey = key; resetBlocked(); renderModels(); } // новый ключ — свои лимиты
@@ -767,7 +850,7 @@ const checkSessions = (v) => arrOf(v, (x) => {
     smokeStart: num(x.smokeStart) ?? null, rotations: num(x.rotations) ?? 0, alarm: x.alarm === true, late: num(x.late) ?? 0,
     alarmMsg: str(x.alarmMsg), flipped: x.flipped === true, finishing: x.finishing === true, mix: checkBowlMix(x.mix) || null,
     setupName: str(x.setupName), bowl: str(x.bowl, "phunnel"), heat: str(x.heat, "kaloud"),
-    grams: pos(x.grams, 18), coals: pos(x.coals, 3), coal: str(x.coal, "25") };
+    grams: pos(x.grams, 18), coals: pos(x.coals, 3), coal: str(x.coal, "25"), endedAt: num(x.endedAt) ?? null };
 });
 let sessions = store.get("sessions", [], checkSessions);
 const saveSessions = () => { store.set("sessions", sessions); nativeResync(); };
@@ -825,6 +908,12 @@ function hookahChoices() {
 }
 function renderHookah() {
   const s = setup(), now = Date.now();
+  // Оценку и заметку на экране завершения сохраняем: соседний кальян может перерисовать вкладку
+  const drafts = {};
+  document.querySelectorAll("#hkSessions [data-frate]").forEach((el) => {
+    const card = el.closest("[data-sid]");
+    drafts[card.dataset.sid] = { rate: el.dataset.frate, note: card.querySelector("[data-fnote]").value, save: card.querySelector("[data-fsave]")?.checked };
+  });
   $("#hkSessions").innerHTML = sessions.map((x) => {
     const steps = ["coals", "warm", "smoke"].map((p, i) => {
       const cur = ["coals", "warm", "smoke"].indexOf(x.phase);
@@ -832,9 +921,14 @@ function renderHookah() {
     }).join('<span class="step-sep">›</span>');
     if (x.finishing) return `<div class="card session" data-sid="${x.id}">
       <b>${esc(x.name)}${x.mix ? ` · ${esc(x.mix.n)}` : ""}</b>
-      <p style="margin:10px 0 6px">${tx("Как зашёл микс? Оценка сохранит его в «Сохранённые миксы».")}</p>
-      <div class="stars big">${[1, 2, 3, 4, 5].map((n) => `<span data-sact="rate" data-n="${n}">★</span>`).join("")}</div>
-      <div class="actions"><button data-sact="nosave">${tx("Не сохранять")}</button><button data-sact="back">${tx("Назад")}</button></div></div>`;
+      <div class="meta">${esc(sessionSummary(x))}</div>
+      <p style="margin:10px 0 6px">${x.mix ? tx("Как зашёл микс?") : tx("Как покурили?")}</p>
+      <div class="stars big" data-frate="0">${[1, 2, 3, 4, 5].map((n) => `<span data-sact="star" data-n="${n}">★</span>`).join("")}</div>
+      <label>${tx("Заметка (необязательно)")}</label>
+      <textarea data-fnote placeholder="${tx("Например: жарило на 3 углях, мало дыма, добавить мяты")}"></textarea>
+      ${x.mix ? `<label style="display:flex;gap:8px;align-items:center;color:var(--text)"><input type="checkbox" data-fsave style="width:auto" checked> ${tx("Добавить в «Сохранённые миксы», если 4–5 ★")}</label>` : ""}
+      <button class="primary" data-sact="log" style="width:100%;margin-top:10px">${tx("📓 Записать в журнал")}</button>
+      <div class="actions"><button data-sact="nosave">${tx("Не записывать")}</button><button data-sact="back">${tx("Назад")}</button></div></div>`;
     return `<div class="card session ${x.alarm ? "alarm" : ""}" data-sid="${x.id}">
       <div class="row"><b>${esc(x.name)}</b><span class="shrink muted" style="font-size:13px">${esc(x.setupName)}</span></div>
       <div class="steps">${steps}</div>
@@ -853,11 +947,19 @@ function renderHookah() {
       </div>
     </div>`;
   }).join("");
+  Object.entries(drafts).forEach(([sid, d]) => {
+    const card = document.querySelector(`#hkSessions [data-sid="${sid}"]`); if (!card?.querySelector("[data-frate]")) return;
+    const box = card.querySelector("[data-frate]"); box.dataset.frate = d.rate;
+    box.querySelectorAll("span").forEach((el) => (el.style.opacity = +el.dataset.n <= +d.rate ? 1 : ""));
+    card.querySelector("[data-fnote]").value = d.note;
+    const cb = card.querySelector("[data-fsave]"); if (cb && d.save !== undefined) cb.checked = d.save;
+  });
 
   // Форма нового кальяна; при идущих кальянах свёрнута в кнопку
   const showForm = !sessions.length || hkNewOpen;
   $("#hkMore").style.display = showForm ? "none" : "";
   $("#hkNew").style.display = showForm ? "" : "none";
+  renderJournal();
   if (!showForm) return tickSessions(now);
   $("#hkSetups").innerHTML = settings.setups.map((x) => `<span class="chip ${x.id === s.id ? "on" : ""}" data-hsu="${x.id}">${esc(x.name)}</span>`).join("");
   $("#hkSetupInfo").textContent = `${tx("Розжиг")} ${s.fire} ${tx("мин → прогрев")} ${s.warm} ${tx("мин → угли каждые")} ${s.every} ${tx("мин ·")} ${s.count} ${tx("угля по")} ${s.coal} ${tx("мм ·")} ${s.grams} ${tx("г табака")}`;
@@ -934,17 +1036,136 @@ $("#hkSessions").addEventListener("click", (e) => {
   if (act === "stop") {
     const mins = x.smokeStart ? Math.round((now - x.smokeStart) / 60000) : 0;
     if (!confirm(`${tx("Завершить «")}${x.name}»?${mins ? ` ${tx("Курили")} ${mins} ${tx("мин.")}` : ""}`)) return;
-    if (x.mix) x.finishing = true; else sessions = sessions.filter((s) => s !== x);
+    x.finishing = true; x.endedAt = now;
   }
-  if (act === "back") x.finishing = false;
+  if (act === "back") { x.finishing = false; x.endedAt = null; }
   if (act === "nosave") sessions = sessions.filter((s) => s !== x);
-  if (act === "rate") {
-    saved.unshift({ name: x.mix.n, components: x.mix.parts.map((p) => ({ tobacco: p.name, percent: p.pct })), rating: +b.dataset.n,
-      date: now, profile: `${tx("Забит")} ${new Date(x.started).toLocaleDateString(LOCALE)} · ${x.setupName}`, why: "", packing: "", heat: "", strength: "", needToBuy: "" });
-    saveSaved(); toast(`${tx("⭐ Сохранено:")} ${x.mix.n} — ${b.dataset.n}/5`);
+  // Звёзды только подсвечиваются; запись — по кнопке, вместе с заметкой
+  if (act === "star") {
+    const box = b.closest("[data-frate]"); box.dataset.frate = b.dataset.n;
+    box.querySelectorAll("span").forEach((s) => (s.style.opacity = +s.dataset.n <= +b.dataset.n ? 1 : ""));
+    return;
+  }
+  if (act === "log") {
+    const card = b.closest("[data-sid]");
+    const rating = +card.querySelector("[data-frate]").dataset.frate;
+    const entry = journalEntry(x, rating, card.querySelector("[data-fnote]").value.trim());
+    journal.unshift(entry); saveJournal();
+    if (x.mix && rating >= 4 && card.querySelector("[data-fsave]")?.checked) {
+      saved.unshift({ name: x.mix.n, components: x.mix.parts.map((p) => ({ tobacco: p.name, percent: p.pct })), rating,
+        date: now, profile: `${tx("Забит")} ${new Date(x.started).toLocaleDateString(LOCALE)} · ${x.setupName}`, why: "", packing: "", heat: "", strength: "", needToBuy: "" });
+      saveSaved();
+    }
+    toast(`${tx("📓 Записано в журнал:")} ${x.mix ? x.mix.n : x.name}${rating ? ` — ${rating}/5` : ""}`);
     sessions = sessions.filter((s) => s !== x);
   }
   saveSessions(); renderHookah(); updateWakeLock();
+});
+
+// ---------- Журнал ----------
+// Запись о каждом выкуренном кальяне: микс с граммами, сетап, время, повороты углей, оценка и заметка.
+const checkJournal = (v) => arrOf(v, (j) => {
+  if (!isObj(j) || num(j.started) === undefined) return undefined;
+  const parts = arrOf(j.parts, (p) => (isObj(p) && str(p.name) ? { name: p.name, pct: Math.min(100, Math.max(0, num(p.pct) ?? 0)), g: num(p.g) ?? 0 } : undefined)) || [];
+  return { id: num(j.id) ?? j.started, started: j.started, ended: num(j.ended) ?? j.started, smokeMin: num(j.smokeMin) ?? 0,
+    rotations: num(j.rotations) ?? 0, mix: str(j.mix), parts, grams: num(j.grams) ?? 0, setupName: str(j.setupName),
+    bowl: str(j.bowl), heat: str(j.heat), coals: num(j.coals) ?? 0, coal: str(j.coal),
+    rating: Math.min(5, Math.max(0, num(j.rating) ?? 0)), note: str(j.note) };
+});
+let journal = store.get("journal", [], checkJournal);
+const saveJournal = () => store.set("journal", journal);
+let jrRange = "all";
+
+function sessionSummary(x) {
+  const end = x.endedAt || Date.now();
+  const mins = x.smokeStart ? Math.round((end - x.smokeStart) / 60000) : 0;
+  return `${tx("Курили")} ${mins} ${tx("мин")} · ${tx("поворотов углей:")} ${x.rotations} · ${x.grams} ${tx("г")}`;
+}
+function journalEntry(x, rating, note) {
+  const end = x.endedAt || Date.now();
+  return { id: Date.now(), started: x.started, ended: end, smokeMin: x.smokeStart ? Math.round((end - x.smokeStart) / 60000) : 0,
+    rotations: x.rotations, mix: x.mix?.n || "", grams: x.grams,
+    parts: (x.mix?.parts || []).map((p) => ({ name: p.name, pct: p.pct, g: Math.round((x.grams * p.pct) / 100) })),
+    setupName: x.setupName, bowl: x.bowl, heat: x.heat, coals: x.coals, coal: x.coal, rating, note };
+}
+const stars = (n) => (n ? "★".repeat(n) + "☆".repeat(5 - n) : "");
+const fmtDur = (m) => (m >= 60 ? `${Math.floor(m / 60)} ${tx("ч")} ${m % 60} ${tx("мин")}` : `${m} ${tx("мин")}`);
+
+function renderJournal() {
+  const ranges = [["7", tx("7 дней")], ["30", tx("30 дней")], ["all", tx("Всё время")]];
+  $("#jrRange").innerHTML = ranges.map(([id, n]) => `<span class="chip sm ${jrRange === id ? "on" : ""}" data-jrange="${id}">${n}</span>`).join("");
+  const from = jrRange === "all" ? 0 : Date.now() - +jrRange * 864e5;
+  const list = journal.filter((j) => j.started >= from);
+  if (!list.length) {
+    $("#jrStats").style.display = "none";
+    $("#jrList").innerHTML = `<div class="empty">${journal.length ? tx("За этот период записей нет.") : tx("Тут появится история: после «Завершить» оцените кальян и запишите его в журнал.")}</div>`;
+    return;
+  }
+  // Статистика за период
+  const smoked = list.filter((j) => j.smokeMin > 0);
+  const avgMin = smoked.length ? Math.round(smoked.reduce((a, j) => a + j.smokeMin, 0) / smoked.length) : 0;
+  const rated = list.filter((j) => j.rating);
+  const avgRate = rated.length ? (rated.reduce((a, j) => a + j.rating, 0) / rated.length).toFixed(1) : "—";
+  const grams = list.reduce((a, j) => a + j.parts.reduce((b, p) => b + p.g, 0), 0);
+  const top = (pairs) => Object.entries(pairs.reduce((m, [k, v]) => ((m[k] = (m[k] || 0) + v), m), {})).sort((a, b) => b[1] - a[1]).slice(0, 3);
+  const topTob = top(list.flatMap((j) => j.parts.map((p) => [p.name, p.g])));
+  const topMix = top(list.filter((j) => j.mix).map((j) => [j.mix, 1]));
+  $("#jrStats").style.display = "";
+  $("#jrStats").innerHTML = `<div class="stats">
+      <div><b>${list.length}</b><span>${tx("кальянов")}</span></div>
+      <div><b>${avgMin ? fmtDur(avgMin) : "—"}</b><span>${tx("в среднем")}</span></div>
+      <div><b>${avgRate}</b><span>${tx("средняя оценка")}</span></div></div>
+    ${grams ? `<p class="top">📦 ${tx("Ушло табака:")} <b>${grams} ${tx("г")}</b></p>` : ""}
+    ${topMix.length ? `<p class="top">🔥 ${tx("Чаще всего:")} ${topMix.map(([n, c]) => `<b>${esc(n)}</b> ×${c}`).join(", ")}</p>` : ""}
+    ${topTob.length ? `<p class="top">🍃 ${tx("Любимые табаки:")} ${topTob.map(([n, g]) => `<b>${esc(n)}</b> ${g} ${tx("г")}`).join(", ")}</p>` : ""}`;
+
+  $("#jrList").innerHTML = list.map((j) => {
+    const d = new Date(j.started);
+    const when = `${d.toLocaleDateString(LOCALE, { weekday: "short", day: "numeric", month: "long" })}, ${d.toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" })}`;
+    const setupLine = [j.setupName, BOWL_NAME[j.bowl], HEAT_NAME[j.heat], j.coals && `${j.coals} ${tx("угля по")} ${j.coal} ${tx("мм")}`].filter(Boolean).join(" · ");
+    return `<details class="jr card" style="padding:0">
+      <summary><span class="rate">${stars(j.rating)}</span><span class="when">${esc(when)}</span>
+        <b>${esc(j.mix || tx("Без микса"))}</b>
+        <div class="line">${j.smokeMin ? fmtDur(j.smokeMin) : tx("не докурили")} · ${tx("поворотов углей:")} ${j.rotations}</div></summary>
+      <div class="body">
+        ${j.parts.length ? j.parts.map((p) => `<div class="comp"><span class="pct">${p.g} ${tx("г")}</span><span>${esc(p.name)} <span class="muted">· ${Math.round(p.pct)}%</span></span></div>`).join("") : ""}
+        <dl>
+          <dt>${tx("Сетап")}</dt><dd>${esc(setupLine || "—")}</dd>
+          <dt>${tx("Время")}</dt><dd>${new Date(j.started).toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" })} – ${new Date(j.ended).toLocaleTimeString(LOCALE, { hour: "2-digit", minute: "2-digit" })}</dd>
+          ${j.grams ? `<dt>${tx("Табак")}</dt><dd>${j.grams} ${tx("г")}</dd>` : ""}
+        </dl>
+        <div class="stars" data-jid="${j.id}">${[1, 2, 3, 4, 5].map((n) => `<span class="${n <= j.rating ? "on" : ""}" data-jstar="${n}">★</span>`).join("")}</div>
+        <label>${tx("Заметка")}</label>
+        <textarea data-jnote="${j.id}" placeholder="${tx("Что запомнить на следующий раз")}">${esc(j.note)}</textarea>
+        <div class="actions" style="display:flex;gap:8px;margin-top:10px">
+          ${j.parts.length ? `<button class="small" data-jagain="${j.id}">${tx("🔥 Забить снова")}</button>` : ""}
+          <button class="small" data-jdel="${j.id}">${tx("🗑️ Удалить")}</button>
+        </div>
+      </div></details>`;
+  }).join("");
+}
+$("#jrRange").addEventListener("click", (e) => { const c = e.target.closest("[data-jrange]"); if (c) { jrRange = c.dataset.jrange; renderJournal(); } });
+$("#jrList").addEventListener("click", (e) => {
+  const st = e.target.closest("[data-jstar]");
+  if (st) {
+    const j = journal.find((x) => x.id == st.parentElement.dataset.jid); if (!j) return;
+    j.rating = j.rating === +st.dataset.jstar ? 0 : +st.dataset.jstar; saveJournal();
+    st.parentElement.querySelectorAll("span").forEach((s) => s.classList.toggle("on", +s.dataset.jstar <= j.rating));
+    st.closest("details").querySelector(".rate").textContent = stars(j.rating);
+    return;
+  }
+  const again = e.target.closest("[data-jagain]");
+  if (again) {
+    const j = journal.find((x) => x.id == again.dataset.jagain);
+    if (j) { chooseForHookah({ n: j.mix, parts: j.parts.map((p) => ({ name: p.name, pct: p.pct })) }); $("#hkNew").scrollIntoView({ behavior: "smooth" }); }
+    return;
+  }
+  const del = e.target.closest("[data-jdel]");
+  if (del && confirm(tx("Удалить запись из журнала?"))) { journal = journal.filter((x) => x.id != del.dataset.jdel); saveJournal(); renderJournal(); }
+});
+$("#jrList").addEventListener("change", (e) => {
+  const id = e.target.dataset.jnote; if (id == null) return;
+  const j = journal.find((x) => x.id == id); if (j) { j.note = e.target.value.trim(); saveJournal(); }
 });
 
 // Возвращает true, если какой-то кальян ждёт подтверждения (тогда пищим)
@@ -1854,7 +2075,8 @@ $("#bkSave").addEventListener("click", async () => {
   const withKey = $("#bkKey").checked;
   const data = {
     app: BACKUP_APP, version: 1, created: new Date().toISOString(),
-    data: { settings: { ...settings, apiKey: withKey ? settings.apiKey : "" }, shelf, saved, shop, timers },
+    data: { settings: { ...settings, apiKey: withKey ? settings.apiKey : "" }, shelf, saved, shop, timers, journal,
+      theme: THEME, lang: LANG_SAVED || "auto" },
   };
   const fileName = `kalyan-backup-${new Date().toISOString().slice(0, 10)}.json`;
   // В приложении скачивание через ссылку не работает: пишем файл и открываем меню «Поделиться»
@@ -1876,7 +2098,7 @@ $("#bkSave").addEventListener("click", async () => {
     a.download = fileName;
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 10000);
-    $("#bkStatus").textContent = `${tx("✓ Файл")} ${a.download} ${tx("сохранён в «Загрузки»:")} ${shelf.length} ${tx("табаков,")} ${saved.length} ${tx("миксов")}${withKey ? tx(", с ключом — не пересылайте его чужим") : tx(", без ключа")}.`;
+    $("#bkStatus").textContent = `${tx("✓ Файл")} ${a.download} ${tx("сохранён в «Загрузки»:")} ${shelf.length} ${tx("табаков,")} ${saved.length} ${tx("миксов,")} ${journal.length} ${tx("записей журнала")}${withKey ? tx(", с ключом — не пересылайте его чужим") : tx(", без ключа")}.`;
   } catch {
     $("#bkStatus").innerHTML = `<span class="err">${tx("Не получилось сохранить файл.")}</span>`;
   }
@@ -1893,15 +2115,20 @@ $("#bkFile").addEventListener("change", async (e) => {
   // Каждый раздел проверяем как при обычном чтении: битое поле не ломает остальные
   const d = raw.data;
   const nShelf = checkShelf(d.shelf), nSaved = checkSaved(d.saved), nShop = checkShop(d.shop), nTimers = checkTimers(d.timers);
+  const nJournal = checkJournal(d.journal);
+  const nTheme = ["auto", "dark", "light"].includes(d.theme) ? d.theme : null;
+  const nLang = ["auto", "ru", "uk", "en"].includes(d.lang) ? d.lang : null;
   const nSettings = isObj(d.settings) ? checkSettings(d.settings) : null;
   const when = num(Date.parse(raw.created)) ? new Date(raw.created).toLocaleString(LOCALE) : tx("неизвестной даты");
-  const what = [nShelf && `${nShelf.length} ${tx("табаков")}`, nSaved && `${nSaved.length} ${tx("миксов")}`, nShop && `${tx("список покупок")}`, nSettings?.setups && `${nSettings.setups.length} ${tx("сетап(ов)")}`].filter(Boolean).join(", ");
+  const what = [nShelf && `${nShelf.length} ${tx("табаков")}`, nSaved && `${nSaved.length} ${tx("миксов")}`, nJournal && `${nJournal.length} ${tx("записей журнала")}`, nShop && `${tx("список покупок")}`, nSettings?.setups && `${nSettings.setups.length} ${tx("сетап(ов)")}`].filter(Boolean).join(", ");
   if (!what) { st.innerHTML = `<span class="err">${tx("В файле нет данных, которые можно загрузить.")}</span>`; return; }
   if (!confirm(`${tx("Загрузить копию от")} ${when}${tx("?\n\nВ ней:")} ${what}${tx(".\nТекущие данные в этих разделах будут заменены.")}`)) return;
   if (nShelf) { shelf = nShelf; saveShelf(); picked.clear(); }
   if (nSaved) { saved = nSaved; saveSaved(); }
   if (nShop) { shop = nShop; saveShop(); }
   if (nTimers?.length) { timers = nTimers; saveTimers(); }
+  if (nJournal) { journal = nJournal; saveJournal(); }
+  if (nTheme) { applyTheme(nTheme); store.set("theme", THEME); $("#theme").value = THEME; }
   if (nSettings) {
     const key = nSettings.apiKey || settings.apiKey; // копия без ключа не стирает текущий
     if (!nSettings.setups) { delete nSettings.setups; delete nSettings.activeSetup; }
@@ -1910,8 +2137,13 @@ $("#bkFile").addEventListener("change", async (e) => {
     $("#apiKey").value = settings.apiKey; $("#strength").value = settings.strength;
     renderModels(); renderSetups();
   }
-  renderTimers(); renderShelf(); renderShop(); renderSaved();
+  renderTimers(); renderShelf(); renderShop(); renderSaved(); renderJournal();
   st.innerHTML = `<span style="color:var(--ok)">${tx("✓ Загружено:")} ${esc(what)}.</span>`;
+  // Язык из копии применяется перезапуском интерфейса
+  if (nLang && nLang !== (LANG_SAVED || "auto")) {
+    try { nLang === "auto" ? localStorage.removeItem("hk_lang") : localStorage.setItem("hk_lang", JSON.stringify(nLang)); } catch {}
+    setTimeout(() => location.reload(), 1200);
+  }
 });
 
 // ---------- Android-приложение: точные системные будильники ----------
