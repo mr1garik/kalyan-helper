@@ -812,7 +812,7 @@ function packingHtml(mix, grams, bowl) {
   if (!mix) return `<p class="muted">${tx("Без микса. Забивка:")} ${esc(PACK[bowl] || "")}.</p>`;
   return `${mix.parts.map((p) => `<div class="comp"><span class="pct">${Math.round((grams * p.pct) / 100)} ${tx("г")}</span>
       <span>${esc(p.name)} <span class="muted">· ${Math.round(p.pct)}%${p.missing ? tx(" · 🛒 нет на полке") : ""}</span></span></div>`).join("")}
-    <p class="muted" style="font-size:13px;margin:6px 0 0">${tx("Всего ≈")} ${grams} ${tx("г. Смешайте в миске и забейте:")} ${esc(PACK[bowl] || "")}.</p>`;
+    <p class="muted" style="font-size:13px;margin:6px 12px 10px">${tx("Всего ≈")} ${grams} ${tx("г. Смешайте в миске и забейте:")} ${esc(PACK[bowl] || "")}.</p>`;
 }
 
 let hkSrc = "shelf", hkChoice = null, hkNewOpen = false;
