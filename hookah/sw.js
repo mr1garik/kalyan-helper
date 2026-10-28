@@ -1,5 +1,5 @@
 // Кэшируем оболочку приложения, чтобы таймеры и гайды работали без интернета
-const CACHE = "hookah-v17";
+const CACHE = "hookah-v18";
 const FILES = ["./", "index.html", "manifest.json", "icon.svg", "i18n.js", "mixes.js", "catalog.js", "brands.js",
   "fonts/fonts.css", "fonts/el-messiri-cyrillic.woff2", "fonts/el-messiri-latin.woff2", "fonts/rubik-cyrillic.woff2", "fonts/rubik-latin.woff2"];
 

@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Варианты логотипа</title>
+<link rel="stylesheet" href="../../hookah/fonts/fonts.css">
+<style>
+  body { margin: 0; background: #120d0a; color: #f3ebe3; font-family: "Rubik", sans-serif; padding: 36px; width: 1400px; box-sizing: border-box; }
+  h1 { font-family: "El Messiri"; font-size: 40px; margin: 0 0 6px; text-align: center; color: #f6e6cf; }
+  .sub { text-align: center; color: #a8998a; margin-bottom: 30px; font-size: 17px; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+  .card { background: #1e1611; border: 1px solid #3a2f26; border-radius: 22px; padding: 26px 20px 22px; text-align: center; }
+  .num { font-family: "El Messiri"; font-size: 24px; color: #e0b15c; margin-bottom: 4px; }
+  .name { font-size: 15px; color: #a8998a; margin-bottom: 18px; min-height: 40px; }
+  .icon { width: 200px; height: 200px; display: block; margin: 0 auto; filter: drop-shadow(0 10px 24px #000a); }
+  .row { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 20px; }
+  .row svg { width: 48px; height: 48px; }
+  .row .tiny { width: 24px; height: 24px; }
+  .word { font-family: "El Messiri"; font-weight: 700; font-size: 26px; color: #f6e6cf; line-height: 1; text-align: left; }
+  .word small { display: block; font-family: "Rubik"; font-weight: 400; font-size: 13px; color: #e0b15c; letter-spacing: 1.5px; margin-top: 4px; }
+  .light { background: #f3ebe3; border-radius: 14px; padding: 10px 14px; margin-top: 14px; display: inline-flex; gap: 12px; align-items: center; }
+  .light .word { color: #2a1a12; font-size: 20px; }
+  .light svg { width: 36px; height: 36px; }
+</style>
+</head>
+<body>
+<h1>Логотип: варианты</h1>
+<div class="sub">Иконка приложения · маленький размер · с названием · на светлом фоне</div>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="22%" r="85%"><stop offset="0" stop-color="#4a2a17"/><stop offset=".55" stop-color="#1e1510"/><stop offset="1" stop-color="#120d0a"/></radialGradient>
+    <radialGradient id="ember" cx="50%" cy="45%" r="55%"><stop offset="0" stop-color="#fff1c2"/><stop offset=".4" stop-color="#ffb24d"/><stop offset="1" stop-color="#e2470f"/></radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6d58c"/><stop offset=".5" stop-color="#e0b15c"/><stop offset="1" stop-color="#a8752a"/></linearGradient>
+    <linearGradient id="flame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#e2470f"/><stop offset=".55" stop-color="#ff8a3d"/><stop offset="1" stop-color="#ffd29b"/></linearGradient>
+    <linearGradient id="glass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff9a4d"/><stop offset="1" stop-color="#c2410c"/></linearGradient>
+
+    <!-- 1. Звезда и уголь: восьмиконечная звезда (руб-эль-хизб) с тлеющим углём внутри -->
+    <symbol id="l1" viewBox="0 0 100 100">
+      <g transform="translate(50 50)">
+        <rect x="-30" y="-30" width="60" height="60" fill="none" stroke="url(#gold)" stroke-width="4" stroke-linejoin="round"/>
+        <rect x="-30" y="-30" width="60" height="60" fill="none" stroke="url(#gold)" stroke-width="4" stroke-linejoin="round" transform="rotate(45)"/>
+        <circle r="17" fill="url(#ember)"/>
+        <path d="M-7 -4h14M-9 3h18M-5 10h10" stroke="#7a2a08" stroke-width="2.4" stroke-linecap="round" opacity=".55"/>
+      </g>
+    </symbol>
+
+    <!-- 2. Чаша сверху: три угля на калауде, вид сверху — узнаваемо и очень просто -->
+    <symbol id="l2" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="36" fill="none" stroke="url(#gold)" stroke-width="5"/>
+      <circle cx="50" cy="50" r="27" fill="none" stroke="url(#gold)" stroke-width="1.6" stroke-dasharray="3 4" opacity=".7"/>
+      <rect x="39" y="26" width="22" height="18" rx="4" fill="url(#ember)" transform="rotate(8 50 35)"/>
+      <rect x="25" y="51" width="22" height="18" rx="4" fill="url(#ember)" transform="rotate(-12 36 60)"/>
+      <rect x="53" y="51" width="22" height="18" rx="4" fill="url(#ember)" transform="rotate(14 64 60)"/>
+    </symbol>
+
+    <!-- 3. Пламя-капля: язык пламени, внутри — силуэт кальяна -->
+    <symbol id="l3" viewBox="0 0 100 100">
+      <path d="M50 8c10 15 30 27 30 51a30 30 0 0 1-60 0c0-14 8-24 14-31 1 9 5 14 10 16-3-13 0-25 6-36z" fill="url(#flame)"/>
+      <g fill="#2a1408">
+        <path d="M42 40h16l-3 5h-10z"/><rect x="48.5" y="45" width="3" height="18"/><rect x="45" y="51" width="10" height="2.6" rx="1.3"/>
+        <path d="M46 63h8c0 3 7 5 7 11 0 6-5 9-11 9s-11-3-11-9c0-6 7-8 7-11z"/>
+      </g>
+    </symbol>
+
+    <!-- 4. Линия: тонкий золотой кальян одной линией, как иконки в приложении -->
+    <symbol id="l4" viewBox="0 0 100 100">
+      <g fill="none" stroke="url(#gold)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M37 18h26l-6 10H43z"/><path d="M50 28v34M42 39h16M44 50h12"/>
+        <path d="M44 62h12c0 5 13 8 13 18a19 13 0 0 1-38 0c0-10 13-13 13-18z"/>
+        <path d="M57 46c12 1 20 8 19 20"/>
+      </g>
+      <g fill="url(#ember)"><rect x="40" y="10" width="7" height="6" rx="1.5"/><rect x="48.5" y="8.5" width="7" height="6" rx="1.5"/><rect x="57" y="10" width="7" height="6" rx="1.5"/></g>
+    </symbol>
+
+    <!-- 5. Дым-полумесяц: кольцо дыма в форме полумесяца и звезда-уголёк -->
+    <symbol id="l5" viewBox="0 0 100 100">
+      <path d="M62 16a36 36 0 1 0 22 52 30 30 0 1 1-22-52z" fill="url(#gold)"/>
+      <path d="M30 70c8-6 4-14 12-18s14 2 20-4" fill="none" stroke="#f3ebe3" stroke-opacity=".55" stroke-width="3.2" stroke-linecap="round"/>
+      <g transform="translate(70 34)"><path d="M0-12l3.2 8.8L12 0l-8.8 3.2L0 12l-3.2-8.8L-12 0l8.8-3.2z" fill="url(#ember)"/></g>
+    </symbol>
+
+    <!-- 6. Арка: восточная арка-окно, в ней кальян с горящими углями -->
+    <symbol id="l6" viewBox="0 0 100 100">
+      <path d="M22 88V46c0-18 12-28 28-36 16 8 28 18 28 36v42z" fill="none" stroke="url(#gold)" stroke-width="4" stroke-linejoin="round"/>
+      <g transform="translate(50 0)">
+        <g fill="url(#ember)"><rect x="-10" y="27" width="5.5" height="5" rx="1.2"/><rect x="-2.75" y="25.5" width="5.5" height="5" rx="1.2"/><rect x="4.5" y="27" width="5.5" height="5" rx="1.2"/></g>
+        <path d="M-12 33h24l-4 6h-16z" fill="#d8cabb"/><rect x="-1.6" y="39" width="3.2" height="24" fill="#d8cabb"/><rect x="-6" y="47" width="12" height="2.8" rx="1.4" fill="#d8cabb"/>
+        <path d="M-5 63h10c0 3 9 6 9 13 0 6-6 9-14 9s-14-3-14-9c0-7 9-10 9-13z" fill="url(#glass)"/>
+      </g>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="grid">
+  <script>
+    const concepts = [
+      ["1", "Звезда и уголь", "Восточная звезда, как в фоне приложения, с тлеющим углём в центре"],
+      ["2", "Угли сверху", "Чаша с тремя углями, вид сверху. Простой и необычный знак"],
+      ["3", "Пламя", "Язык пламени, внутри силуэт кальяна. Яркий и тёплый"],
+      ["4", "Золотая линия", "Кальян тонкой линией в стиле иконок приложения, угли светятся"],
+      ["5", "Полумесяц и дым", "Полумесяц, дымок и звезда-уголёк. Атмосфера восточной ночи"],
+      ["6", "Арка", "Восточная арка-окно, в ней кальян. Ближе всего к текущей иконке"],
+    ];
+    for (const [n, name, desc] of concepts) {
+      document.write(`
+      <div class="card">
+        <div class="num">${n}. ${name}</div>
+        <div class="name">${desc}</div>
+        <svg class="icon" viewBox="0 0 120 120"><rect width="120" height="120" rx="28" fill="url(#bg)"/><rect x="1" y="1" width="118" height="118" rx="27" fill="none" stroke="#e0b15c" stroke-opacity=".25"/><use href="#l${n}" x="12" y="12" width="96" height="96"/></svg>
+        <div class="row">
+          <svg viewBox="0 0 120 120"><rect width="120" height="120" rx="28" fill="url(#bg)"/><use href="#l${n}" x="12" y="12" width="96" height="96"/></svg>
+          <svg class="tiny" viewBox="0 0 120 120"><rect width="120" height="120" rx="28" fill="url(#bg)"/><use href="#l${n}" x="12" y="12" width="96" height="96"/></svg>
+          <div class="word">Hookah Helper<small>КАЛЬЯННИЙ ПОМІЧНИК</small></div>
+        </div>
+        <div class="light"><svg viewBox="0 0 100 100"><use href="#l${n}"/></svg><span class="word">Hookah Helper</span></div>
+      </div>`);
+    }
+  </script>
+</div>
+</body>
+</html>

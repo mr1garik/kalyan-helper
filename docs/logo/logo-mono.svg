@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Одноцветный знак: для значка уведомлений Android и монохромных иконок -->
+  <circle cx="50" cy="50" r="36" fill="none" stroke="#fff" stroke-width="7"/>
+  <rect x="39" y="25.5" width="22" height="18" rx="4" fill="#fff" transform="rotate(8 50 34.5)"/>
+  <rect x="25.5" y="51" width="22" height="18" rx="4" fill="#fff" transform="rotate(-12 36.5 60)"/>
+  <rect x="52.5" y="51" width="22" height="18" rx="4" fill="#fff" transform="rotate(14 63.5 60)"/>
+</svg>

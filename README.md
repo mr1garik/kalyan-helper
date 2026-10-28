@@ -1,4 +1,6 @@
-# 🔥 Кальянний помічник · Кальянный помощник · Hookah Helper
+<p align="center"><img src="docs/logo/logo-256.png" width="128" alt="Hookah Helper logo"></p>
+
+# Кальянний помічник · Кальянный помощник · Hookah Helper
 
 **[Українська](#-українська) · [Русский](#-русский) · [English](#-english)**
 

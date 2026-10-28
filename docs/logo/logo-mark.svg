@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Знак «Угли сверху»: чаша-калауд с тремя тлеющими углями, вид сверху. Фон прозрачный. -->
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f6d58c"/><stop offset=".5" stop-color="#e0b15c"/><stop offset="1" stop-color="#a8752a"/>
+    </linearGradient>
+    <radialGradient id="ember" cx="45%" cy="40%" r="65%">
+      <stop offset="0" stop-color="#fff3c9"/><stop offset=".35" stop-color="#ffb24d"/><stop offset=".8" stop-color="#ef5a14"/><stop offset="1" stop-color="#b8360a"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#ff8a3d" stop-opacity=".45"/><stop offset="1" stop-color="#ff8a3d" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <circle cx="50" cy="50" r="30" fill="url(#glow)"/>
+  <circle cx="50" cy="50" r="36" fill="none" stroke="url(#gold)" stroke-width="5"/>
+  <circle cx="50" cy="50" r="27.5" fill="none" stroke="url(#gold)" stroke-width="1.6" stroke-dasharray="3 4" opacity=".7"/>
+  <g stroke="#7a2508" stroke-width="1" stroke-opacity=".5">
+    <rect x="39" y="25.5" width="22" height="18" rx="4" fill="url(#ember)" transform="rotate(8 50 34.5)"/>
+    <rect x="25.5" y="51" width="22" height="18" rx="4" fill="url(#ember)" transform="rotate(-12 36.5 60)"/>
+    <rect x="52.5" y="51" width="22" height="18" rx="4" fill="url(#ember)" transform="rotate(14 63.5 60)"/>
+  </g>
+  <!-- блики на углях -->
+  <g fill="#fff" opacity=".35">
+    <rect x="42" y="28" width="7" height="2.4" rx="1.2" transform="rotate(8 50 34.5)"/>
+    <rect x="28.5" y="53.5" width="7" height="2.4" rx="1.2" transform="rotate(-12 36.5 60)"/>
+    <rect x="55.5" y="53.5" width="7" height="2.4" rx="1.2" transform="rotate(14 63.5 60)"/>
+  </g>
+</svg>
